@@ -1,0 +1,1230 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE rfc SYSTEM "rfc2629-xhtml.ent">
+<rfc category="bcp" submissionType="IETF" docName="draft-lemon-stub-networks-04" ipr="trust200902"
+     xmlns:xi="http://www.w3.org/2001/XInclude" version="3"
+     scripts="Common,Latin" sortRefs="false"
+     symRefs="true" tocDepth="3" tocInclude="true" xml:lang="en">
+  <front>
+    <title abbrev='Automatic Stub Networks'>Automatically Connecting Stub Networks to Unmanaged Infrastructure</title>
+    <author initials="T" surname="Lemon" fullname="Ted Lemon">
+      <organization>Apple Inc.</organization>
+      <address>
+	<postal>
+          <street>One Apple Park Way</street>
+          <city>Cupertino</city>
+          <region>California</region>
+          <code>95014</code>
+          <country>USA</country>
+        </postal>
+        <email>mellon@fugue.com</email>
+      </address>
+    </author>
+
+    <date year='2022' month='October' day='7'/>
+    <area>Internet</area>
+    <workgroup>Internet Engineering Task Force</workgroup>
+    <abstract>
+      <t>
+
+	This document describes a set of practices for connecting stub networks to adjacent infrastructure networks, as well as to
+	larger network fabrics. This is applicable in cases such as constrained (Internet of Things) networks where there is a need
+	to provide functional parity of service discovery and reachability between devices on the stub network and devices on an
+	adjacent infrastructure link (for example, a home network).
+      </t><t>
+
+	The stub networks use case is intended to fully address the need to attach a single network link to an infrastructure
+	network, where the attached link provides no through routing and in cases where integration to the infrastructure routing
+	fabric (if any) is not available.
+      </t>
+    </abstract>
+  </front>
+
+  <middle>
+    <section>
+      <name>Introduction</name>
+      <t>
+
+	This document describes a set of practices for connecting stub networks to adjacent infrastructure networks, as well as to
+	larger network fabrics. This is applicable in cases such as constrained (Internet of Things) networks where there is a need
+	to provide functional parity of service discovery and reachability between devices on the stub network and devices on an
+	adjacent infrastructure link (for example, a home network).
+      </t><t>
+
+	The stub networks use case is intended to fully address the need to attach a single network link to an infrastructure
+	network, where the attached link provides no through routing and in cases where integration to the infrastructure routing
+	fabric (if any) is not available.
+      </t>
+    </section>
+
+    <section>
+      <name>Glossary</name>
+      <dl>
+	<dt>Addressability</dt>
+	<dd>The ability to associate each node on a link with its own IPv6 address.</dd>
+	<dt>
+
+	  Reachability</dt><dd>Given an IPv6 destination address that is not on-link for any link to which a node is attached, the
+	  information required that allows the node to send packets to a router that can forward those packets towards a link where
+	  the destination address is on-link.
+	</dd>
+	<dt>Infrastructure network</dt>
+	<dd>
+
+	  the network infrastructure to which a stub router connects. This network can be a single link, or a network of links. The
+	  network may also provide some services, such as a DNS resolver, a DHCPv4 server, and a DHCPv6 prefix delegation server,
+	  for example.
+	</dd>
+	<dt>Infrastructure link</dt>
+	<dd>any link in a network infrastructure that is managed by a single entity.</dd>
+	<dt>Adjacent infrastructure link (AIL)</dt>
+	<dd>an infrastructure link to which a stub router is directly connected.</dd>
+	<dt>Non-adjacent infrastructure link (NAIL)</dt>
+	<dd>an infrastructure link to which a stub router is not directly connected.</dd>
+	<dt>Non-adjacent link (NAL)</dt>
+	<dd>
+
+	  any link to which the stub router is not directly connected, whether within an infrastructure or elsewhere on the
+	  Internet.
+	</dd>
+	<dt>Off-Stub-Network-Routable (OSNR) Prefix</dt>
+	<dd>a prefix advertised on the stub network that can be used for communication with hosts not on the stub network.</dd>
+      </dl>
+    </section>
+
+    <section>
+      <name>Support for adjacent infrastructure links</name>
+      <t>
+
+	We assume that adjacent infrastructure link supports Router and Prefix Discovery using router advertisements. Adjacent
+	infrastructure links on networks where this is not supported are out of scope for this document.
+      </t>
+      <section>
+	<name>Managing addressability on the adjacent infrastructure link</name>
+	<t>
+
+	  In order to provide IPv6 routing to the stub network, IPv6 addressing must be available on the adjacent infrastructure
+	  link. In the ideal case, such addressing is already present on the link, and need not be provided. In this case, the stub
+	  router SHOULD NOT provide addressability on the adjacent infrastructure link.
+	</t>
+	<section>
+	  <name>IP addressability already present on adjacent infrastructure link</name>
+	  <t>
+
+	    IPv6 addressing is considered to be present on the link if a usable on-link prefix is advertised on the adjacent
+	    infrastructure link. A usable on-link prefix could be a prefix advertised on the link that is on-link and allows
+	    autonomous configuration. A prefix is also a usable on-link prefix if it is advertised on the link as on-link, and if
+	    the 'm' bit is set in the Router Advertisement message header
+
+	    (<xref target="RFC4861" section="4.2" sectionFormat="comma" />) that contains the Prefix option. This indicates that
+	    node addressibility is being managed using DHCPv6.
+	  </t><t>
+
+	    A prefix is advertised on the link if, when a Router Solicit message
+
+	    (<xref target="RFC4861" section="4.1" sectionFormat="comma"/>) is sent, a Router Advertisement message is received in
+	    response which contains a prefix information option (<xref target="RFC4861" section="4.6.2" sectionFormat="comma"/>)
+	    for that prefix.
+	  </t><t>
+
+	    After such an RA message has been received, it can be assumed for some period of time thereafter that the prefix
+	    is still valid on the link. However, prefix lifetimes and router lifetimes are often quite long. The mere fact that a
+	    prefix that has been advertised is still within its valid lifetime does not mean that that prefix is still being
+	    advertised on the link.
+	  </t><t>
+
+	    This is important because when a new host appears on the adjacent infrastructure link and sends an initial router
+	    solicit, if it does not receive a usable on-link prefix, it will not be able to communicate. Consequently, the stub
+	    router MUST monitor router solicits and advertisements on the link in order to determine whether a prefix that has been
+	    advertised on the link is still being advertised.
+	  </t><t>
+
+	    There are several methods that can be used to accomplish this:
+	  </t><t>
+
+	    The stub router MUST listen for router advertisements on the adjacent infrastructure link, and record the time at
+	    which each router advertisement was received. A router advertisement that is more than STALE_RA_TIME seconds old MUST be
+	    assumed to no longer be advertised on the link. When the last non-stale router advertisement containing a usable
+	    prefixes on the link is marked stale, the stub router should begin Router Discovery
+	    (<xref target="RFC4861" section="6.3" sectionFormat="comma"/>).
+	  </t><t>
+
+	    The stub router MUST listen for router solicits on the adjacent infrastructure link. When a router solicit is
+	    received, the router SHOULD set a timer for VICARIOUS_SOLICIT_TIME seconds. If, after that amount of time, no router
+	    advertisements are received that contain a usable on-link prefix, the stub router MUST begin router discovery. This is
+	    necessary in case the response to the router solicit was unicast, since in this case the stub router would not see that
+	    response.  When the stub router first connects to the adjacent infrastructure link, it MUST begin router discovery.
+	  </t><t>
+
+	    When router discovery completes, the stub router evaluates whether or not a usable on-link prefix has been seen in a
+	    non-stale router advertisement during router discovery. If no usable on-link prefix has been seen, then the stub router
+	    MUST begin to provide a usable on-link prefix.
+	  </t><t>
+
+	    As an alternative to the vicarious router discovery process described here, the stub router could monitor the presence
+	    of the router advertising the on-link prefix in the neighbor cache. If the neighbor cache entry becomes stale, this
+	    could be an indication that the prefix is also stale. If the neighbor cache entry goes stale, the router would need to
+	    try to refresh it, and if that fails, then the stub router must begin advertising its own on-link prefix on the stub
+	    network.
+
+	  </t>
+	</section>
+	<section>
+	  <name>IP addressability not present on adjacent infrastructure link</name>
+	  <t>
+	    When there is no usable on-link prefix on the adjacent infrastructure network, the stub router provides its own on-link
+	    prefix. This prefix has a valid and preferred lifetime of STUB_PROVIDED_PREFIX_LIFETIME seconds. This prefix MUST allow
+	    for autonomous configuration (SLAAC).
+	  </t><t>
+	    The stub router must advertise this prefix every BEACON_INTERVAL seconds. When the stub router is advertising
+	    reachability to the stub network, the on-link prefix advertisement and the route information advertisement must be
+	    contained in the same router advertisement.
+	  </t><t>
+
+	    When the stub router is advertising an on-link prefix on the AIL, it may receive a router advertisement containing a
+	    usable on-link prefix for the AIL with a non-zero preferred lifetime. In this case, the stub router should begin to
+	    deprecate the on-link prefix it is advertising on the AIL. The preferred lifetime for this prefix should be set to zero
+	    in subsequent advertisements.
+	  </t><t>
+
+	    The valid lifetime (VALID) is computed based on three values: the current time when a router advertisement is being
+	    generated (NOW), the time at which the new usable on-link prefix advertisement was received (DEPRECATE_TIME), and
+	    STUB_PROVIDED_PREFIX_LIFETIME. All of these values are in seconds. VALID is computed as follows:
+	  </t><t>
+
+	    VALID = STUB_PROVIDED_PREFIX_LIFETIME - (NOW - DEPRECATE_TIME)
+	  </t><t>
+
+	    If VALID is less than BEACON_INTERVAL, the stub router does not include the deprecated prefix in the router
+	    advertisement. Note that VALID could be less than zero. Otherwise, the prefix is provided in the advertisement, but with
+	    a valid lifetime of VALID.
+	  </t>
+
+	</section>
+	<section>
+	  <name>Resolving contention over which prefix to deprecate</name>
+
+	  <t>
+	    It is also possible that all routers on the link that are capable of advertising prefixes might be following the same
+	    protocol of deprecating their own prefix when a valid prefix shows up. To prevent a situation where all routers
+	    deprecate their prefix and wait until there are no valid prefixes being advertised before advertising a prefix, each
+	    stub router must detect the situation where, having deprecated its own prefix, all of the other prefixes being
+	    advertised on the link have also been deprecated.
+	  </t><t>
+
+	    When this situation occurs, each router on the link MUST compare the valid lifetimes of all the prefixes that have been
+	    seen. If the router's own prefix expires last, then that router should immediately resume publishing its prefix as a
+	    preferred prefix.
+	  </t><t>
+
+	    If a router observes this situation and its prefix is not the one that expires last, it MUST set a timer for
+	    UNDEPRECATE_WAIT seconds, while continuing to observe prefix advertisements on the link. If, when the timer expires, the
+	    prefix that expires last has not been re-published as a preferred prefix, then that prefix is marked as 'really
+	    deprecated', and no longer considered a candidate for de-deprecation.
+	  </t><t>
+
+	    Using the remaining list of prefixes, the router should then apply the same algorithm. It should continue to apply this
+	    algorithm until either its prefix becomes the one to re-publish as preferred, or some other router has re-published its
+	    prefix as preferred.
+	  </t>
+
+	</section>
+	<section>
+	  <name>Handling the presence of multiple stub routers</name>
+	  <t>
+	    When multiple stub routers are connected to the same AIL, and no usable on-link prefix is being provided on that link by
+	    the infrastructure, there will be a competition between routers to provide a usable on-link prefix. In order to avoid
+	    duplication, stub routers MUST include a random offset in the time interval across which router discovery is
+	    performed. This ensures that after a power failure, not all stub routers will exit router discovery at the exact same
+	    time, and so one stub router should advertise a usable on-link prefix before the others. This should prevent the other
+	    stub routers from advertising additional on-link prefixes.
+	  </t><t>
+	    There is no particular harm caused by advertising multiple on-link prefixes, but it is preferable to minimize this,
+	    because each on-link prefix consumes space in every on-link host&apos;s routing table, and consumes time when making source
+	    address selection and routing decisions.
+	  </t>
+	</section>
+      </section>
+      <section>
+	<name>Managing addressability on the stub network</name>
+	<t>
+	  How addressability is managed on stub networks depends on the nature of the stub network. For some stub networks, the stub
+	  router can be sure that it is the only router. For example, a stub router that is providing a Wi-Fi network for tethering
+	  will advertise its own SSID and use its own joining credentials; in this case, it can assume that it is the only router
+	  for that network, and advertise a default route and on-link prefix just like any other router.
+	</t><t>
+	  However, some stub networks are more cooperative in nature, for example IP mesh networks. On such networks, multiple stub
+	  routers may be present and be providing addressability and reachability.
+	</t><t>
+	  In either case, some stub router connected to the stub network MUST provide a usable on-link prefix (the OSNR prefix) for
+	  the stub network.  If the stub network is a multicast-capable medium where Router Advertisements are used for router
+	  discovery, the same mechanism described in section [Support for adjacent infrastructure links] is used.
+	</t><t>
+	  Stub networks that do not support the use of Router Advertisements for router discovery must use some similar
+	  mechanism that is compatible with that type of network. Describing the process of establishing a common OSNR prefix on
+	  such networks is out of scope for this document.
+	</t>
+	<section>
+	  <name>Maintenance across stub router restarts</name>
+	  <t>
+	    Stub routers may restart from time to time; when a restart occurs, the stub router may have been advertising state to the
+	    network which, following the restart, is no longer required.
+	  </t><t>
+	    For example, suppose there are two stub routers connected to the same infrastructure link. When the first stub router is
+	    restarted, the second takes over providing an on-link prefix. Now the first router rejoins the link. It sees that the
+	    second stub router&apos;s prefix is advertised on the infrastructure link, and therefore does not advertise its own.
+	  </t><t>
+	    This behavior can cause problems because the first stub router no longer sees the on-link prefix it had been
+	    advertising on infrastructure as on-link. Consequently, if it receives a packet to forward to such an address, it will
+	    forward that packet directly to a default router, if one is present; otherwise, it will have no route to the destination,
+	    and will drop the packet.
+	  </t><t>
+	    To address this problem, stub routers SHOULD remember the last time a prefix was advertised across restarts. On restart,
+	    the router can immediately begin deprecating the prefix, and can stop after the prefix valid lifetime goes to zero, based
+	    on the recorded time that the last advertisement was sent.
+	  </t><t>
+	    When a stub router has only flash memory with limited write lifetime, it may be inappropriate to do a write to flash
+	    every time a prefix beacon happens. In this case, the router SHOULD record the set of prefixes that have been advertised
+	    on infrastructure and the maximum valid lifetime that was advertised. On restart, the router should assume that hosts on
+	    the infrastructure link have received advertisements for any such prefixes, and should immediately deprecate them, and
+	    continue to do so until the maximum valid lifetime has elapsed after restart.
+	  </t>
+	</section>
+	<section>
+	  <name>Generating a ULA prefix to provide addressability</name>
+	  <t>
+	    In order to be able to provide addressability either on the stub network or on an adjacent infrastructure network, a stub
+	    router must allocate its own ULA prefix. ULA prefixes, described in Unique Local IPv6 Unicast Addresses
+	    (<xref target="RFC4193"/>) are randomly allocated prefixes. A stub router MUST allocate a single ULA prefix for use in
+	    providing on-link prefixes to the stub network and the infrastructure network, as needed.
+	  </t><t>
+	    The ULA prefix allocated by a stub router SHOULD be maintained across reboots, and SHOULD remain stable over
+	    time. For privacy reasons, a stub router that roams from network to network may wish to allocate a different ULA prefix
+	    each time it connects to a different infrastructure network.
+
+	  </t><t>
+	    If IPv6 prefix delegation is available, which implies that IPv6 service is also available on the infrastructure
+	    link, then the stub router MAY use IPv6 prefix delegation to acquire a prefix to advertise on the stub network, rather
+	    than allocating one out of its ULA prefix.
+	  </t>
+	</section>
+      </section>
+      <section>
+	<name>Managing reachability on the adjacent infrastructure link</name>
+	<t>
+	  Stub routers MUST advertise reachability to stub network OSNR prefixes on any AIL to which they are connected.
+	</t><t>
+	  Each stub network will have some set of prefixes that are advertised as on-link for that network. A stub router connected
+	  to that network SHOULD advertise reachability to all such prefixes on any AIL to which it is attached using router
+	  advertisements
+	</t>
+      </section>
+      <section>
+	<name>Managing reachability on the stub network</name>
+	<t>
+	  The stub router MAY advertise itself as a default router on the stub network, if it itself has a default route on the
+	  AIL. In some cases it may not be desirable to advertise reachability to the Internet as a whole; in this case the stub
+	  router need not advertise itself as a default router.
+	</t><t>
+	  If the stub router is not advertising itself as a default on the stub network, it MUST advertise reachability to any
+	  prefixes that are being advertised as on-link on AILs to which it is attached. This is true for prefixes it is advertising,
+	  and for other prefixes being advertised on that link.
+	</t><t>
+	  Note that in some stub network configurations, it is possible for more than one stub router to be connected to the stub
+	  network, and each stub router may be connected to a different AIL. In this case, a stub router advertising a default route
+	  may receive a packet destined for a link that is not an AIL for that router, but is an AIL for a different router. In such a
+	  case, if the infrastructure is not capable of routing between these two AILs, a packet which could have been delivered by
+	  another stub router will be lost by the stub router that received it.
+	</t><t>
+	  Consequently, stub routers SHOULD be configurable to not advertise themselves as default routers on the stub network. Stub
+	  routers SHOULD be configurable to explicitly advertise AIL prefixes on the stub network even if they are advertising as a
+	  default router. Stub routers SHOULD be configurable to advertise NAIL prefixes on the stub network; such configuration would
+	  include a list of NAIL prefixes to advertise. This list may be configured in a management interface or as a result of these
+	  routes being delivered in a routing protocol or through router discovery. The mechanisms by which such configuration can be
+	  accomplished are out of scope for this document.
+	</t>
+      </section>
+      <section>
+	<name>Providing discoverability of stub network hosts on the adjacent infrastructure link</name>
+	<t>
+
+	  In some cases it will be necessary for hosts on the adjacent infrastructure link to be able to discover devices on the stub
+	  network. In other cases, this will be unnecessary or even undesirable. For example, it may be undesirable for devices on an
+	  adjacent infrastructure link to be able to discover devices on a Wi-Fi tether, for example provided by a mobile phone.
+	</t><t>
+
+	  One example of a use case for stub networks where such discovery is desirable is the constrained network use case. In this
+	  case a low-power, low-cost stub network provides connectivity for devices that provide services to the infrastructure. For
+	  such networks, it is necessary that devices on the infrastructure be able to discover devices on the stub network.
+	</t><t>
+
+	  The most basic use case for this is to provide feature parity with existing solutions like multicast DNS (mDNS). For
+	  example, a light bulb with built-in Wi-Fi connectivity might be discoverable on the infrastructure link to which it is
+	  connected, using mDNS, but likely is not discoverable on other links. To provide equivalent functionality for an equivalent
+	  device on a constrained network that is a stub network, the stub network device must be discoverable on the infrastructure
+	  link (which is an AIL from the perspective of the stub network).
+	</t><t>
+
+	  If services are to be advertised using DNS Service Discovery <xref target="RFC6763"/>, there are in principle two ways to
+	  accomplish this. One is to present services on the stub network as a DNS zone which can then be configured as a browsing
+	  domain in the DNS (<xref target="RFC6763" section="11" sectionFormat="comma"/>). The second is to advertise stub network
+	  services on the AIL using multicast DNS (mDNS) <xref target="RFC6762"/>.
+	</t><t>
+
+	  Stub network routers cannot be assumed to be able to integrate into the DNS naming hierarchy of the infrastructure
+	  network. Therefore, stub networks must be able to rely on ad-hoc service advertisement protocols. Since mDNS is in wide use,
+	  this is a suitable protocol for this use case. This is not to say that mDNS is the only such protocol that could be
+	  used, but it is the one that we suggest implementing.
+	</t><t>
+
+	  In order to provide mDNS discovery for devices on the stub network, one of two solutions is likely to be applicable,
+	  depending on the operational practicalities of the stub network. For a constrained stub network, on which battery operated
+	  devices may be attached, mass multicast traffic for service discovery is impractical, since every device needs to wake up
+	  for every service discovery, even if they don&apos;t offer that service, and since many such devices may be operating on
+	  battery power. For such a network, multicast DNS is not a good choice.
+	</t><t>
+
+	  For such networks, a unicast service registration protocol such as DNS-SD Service Registration Protocol (SRP)
+	  <xref target="I-D.ietf-dnssd-srp"/> is a good solution. The stub router can act as an SRP server on the stub network,
+	  accepting service advertisements from stub network devices. On the adjacent infrastructure network, it can advertise those
+	  services as multicast DNS Advertising Proxy <xref target="I-D.sctl-advertising-proxy"/>.
+	</t><t>
+
+	  For other stub networks, for example a Wi-Fi-based Personal Area Network provided as part of a tethering function on a mobile
+	  device, multicast DNS may be the only option. For Wi-Fi stub networks, there is such a large installed base of devices
+	  supporting mDNS that requiring some other service advertisement solution would be problematic simply because it would
+	  require new software for that entire installed base. For other networks, particularly constrained networks, where devices do
+	  not currently support mDNS, no such obstacle exists.
+	</t><t>
+
+	  Because the primary use case for discovery of devices on a stub network is the use case where the stub network is joining a
+	  constrained network to an existing infrastructure link, we currently only describe a solution (DNS-SD SRP) for that use
+	  case. A solution for the use case where the stub router must provide discoverability for a stub network where mDNS
+	  advertising is preferred is out of scope for this document.
+	</t>
+      </section>
+      <section>
+	<name>Providing discoverability of adjacent infrastructure hosts on the stub network</name>
+	<t>
+
+	  Hosts on the stub network may need to discover hosts on the adjacent infrastructure network. In the IoT network example
+	  we've been using, there might be a light switch on the stub network which needs to be able to actuate a light bulb connected
+	  to the adjacent infrastructure network. In order to know where to send the actuation messages, the light switch will need to
+	  be able to discover the light bulb's address somehow.
+	</t><t>
+
+	  In the case of a Wi-Fi stub network, devices on the stub network will need to be able to access the Internet, and may also
+	  need to be able to access local services on the adjacent infrastructure link.
+	</t><t>
+
+	  In order to address these use cases, the stub network router SHOULD provide a DNS-SD Discovery Proxy
+	  <xref target="RFC8766"/> and a DNS resolver. Since these two functions are combined, if the stub router provides them, it
+	  MUST offer both services on the standard DNS UDP and TCP ports.
+	</t>
+      </section>
+    </section>
+    <section>
+      <name>Providing reachability to IPv4 services to the stub network</name>
+      <section>
+	<name>NAT64 provided by infrastructure</name>
+	<t>
+	  Stub networks are defined to be IPv6-only because it would be difficult to implement a stub network using IPv4
+	  technology. However, stub network devices may need to be able to communicate with IPv4-only services either on the
+	  adjacent infrastructure, or on the global internet. Ideally, the infrastructure network fully supports IPv6, and all
+	  services on the infrastructure network are IPv6-capable. In this case, perhaps the infrastructure network provides NAT64
+	  service to IPv4-only hosts on the internet. In this ideal setting, the stub router need do nothing—the infrastructure
+	  network is doing it all.
+	</t><t>
+	  In this situation, if there are multiple stub routers, each connected to the same adjacent infrastructure link, there is
+	  no need for special behavior—each stub router can advertise a default route, and any stub router will do to route NAT64
+	  traffic. If some stub routers are connected to different adjacent infrastructure links than others, some of which support
+	  NAT64 and some of which do not, then the default route may not carry traffic to the correct link for NAT64 service. In
+	  this case, a more specific address to the infrastructure NAT64 prefix(es) MUST be advertised by those stub routers that
+	  are able to discover it.
+	</t>
+      </section>
+      <section>
+	<name>NAT64 provided by stub router(s)</name>
+	<t>
+	  Most infrastructure networks at present do not provide NAT64 service. It is therefore necessary for stub routers to
+	  be able to provide NAT64 service if IPv4 hosts are to be reachable from the stub network.
+	</t><t>
+	  To provide NAT64 service, a stub router must allocate a NAT64 prefix. For convenience, the stub network allocates a single
+	  prefix out of the /48 ULA prefix that it maintains. Out of the 2^16 possible subnets of the /48, the stub router SHOULD
+	  use the numerically highest /64 prefix.
+	</t><t>
+	  If there are multiple stub routers providing connectivity between the stub network and infrastructure, each stub network
+	  uses its own NAT64 prefix—there is no common NAT64 prefix. The reason for this is that NAT64 translation is not stateless,
+	  and is tied to the stub router&apos;s IPv4 address. Therefore each NAT64 egress is not equivalent.
+	</t><t>
+	  A stub network that services a Wi-Fi stub network SHOULD provide DNS64 translation: hosts on the stub network cannot be
+	  assumed to be able to do DNS64 synthesis in the stub resolver. In this case the DNS resolver on the stub router MUST honor
+	  the CD and DO bits if received in a request, since this indicates that the stub resolver on the requestor intends to do
+	  DNSSEC validation. In this case, the resolver on the stub router MUST NOT perform DNS64 synthesis.
+	</t><t>
+	  On specific stub networks it may be desirable to require the stub network device to perform DNS64 synthesis. Stub network
+	  routers for such networks do not need to provide DNS64 synthesis. Instead, they MUST provide an ipv4only.arpa answer that
+	  advertises the NAT64 prefix for that stub router, and MUST provide an explicit route to that NAT64 prefix on the stub
+	  network using RA or whatever technology is specific to that stub network type.
+	</t><t>
+	  In constrained networks it can be very useful if stub network resolvers provide the information required to do DNS64
+	  translation in the answer to the AAAA query. If the answer to an AAAA query comes back with "no data" (not NXDOMAIN), this
+	  suggests that there may be an A record. In this case, the stub network&apos;s resolver SHOULD attempt to look up an A record on
+	  the same name. If such a record exists, the resolver SHOULD return no data in the Answer section of the DNS response, and
+	  SHOULD provide any CNAME records that were involved in returning the "no data" answer to the AAAA query, and SHOULD
+	  provide any A records that were ultimately returned, in the Additional section. The resolver should also include an
+	  ipv4only.arpa record in the Additional section.
+	</t>
+      </section>
+    </section>
+    <section>
+      <name>Handling partitioning events on a stub network</name>
+      <t>
+
+	If a stub network is constructed using mesh technology, it may become partitioned. In such a situation, it may be one stub
+	router is connected to one partition, and another stub router is connected to the other partition. In this situation, in
+	order for all nodes to be reachable, it is necessary that each partition of the stub network have its own prefix. When
+	such a partition occurs, the stub routers must detect that it has occurred. If a stub router is currently providing a
+	prefix on the stub network, it need take no action. If a stub router had not been providing a prefix on the stub network,
+	and now discovers that there is no stub router providing a prefix on the network, it MUST begin to provide its own prefix
+	on the stub network. It MUST also advertise reachability to that new prefix on its adjacent infrastructure link(s).
+      </t><t>
+
+	When partitions of this type occur, they may also heal. When a partition heals in a situation where two stub routers have
+	both been advertising a prefix, it will now appear that there are two prefixes on the stub network. Since partition events
+	may represent a recurring situation, stub routers SHOULD wait for at least PARTITION_HEAL_WAIT_TIME before deprecating one
+	of these prefixes.
+      </t><t>
+
+	When the time comes to deprecate one or more prefixes as a result of a network partition healing, only one prefix should
+	remain. If there are any GUA prefixes, and if there is no specific configuration contradicting this, the GUA prefix that is
+	numerically lowest should be kept, and all others deprecated. If there are no GUA prefixes, then the ULA prefix that is
+	numerically lowest should be kept, and the others deprecated. By using this approach, it is not necessary for the routers to
+	coordinate in advance.
+      </t>
+    </section>
+    <section>
+      <name>Support for non-adjacent links</name>
+      <t>
+	There are two ways that connectivity to non-adjacent links can be established. The first is that if the infrastructure
+	network as a whole has a working IPv4 routing fabric, NAT64 can be used to enable hosts on the stub network to establish
+	communications with hosts on non-adjacent links, including the Internet. In some cases, this is all that is needed.
+      </t><t>
+	However, if it will be necessary for nodes on non-adjacent networks to establish communications with nodes on the stub
+	network, this will require a working IPv6 routing fabric connecting the stub network to any non-adjacent links from which
+	communications will need to be established.
+      </t><t>
+	In order for such routing to work, the stub network will also need to acquire a prefix that the infrastructure network is
+	aware of and can route to. The ULA prefix that can work for communicating to adjacent infrastructure links will not work for
+	communicating to non-adjacent links.
+      </t>
+      <section>
+	<name>Acquiring an off-stub-network-routable prefix for the stub network</name>
+	<t>
+	  A prefix may be acquired by using DHCPv6 Prefix Delegation
+	  (<xref target="RFC8415" section="6.3" sectionFormat="comma"/>). The stub router then advertises this prefix as the
+	  on-link prefix for the stub network, as before. It also advertises reachability to this prefix using router
+	  advertisements, as before.
+	</t><t>
+	  In the case where there is more than one stub router, it would be best if only one stub router requested a delegated
+	  prefix. This can be managed through the mechanism described earlier: the stub router only acquires a prefix to advertise
+	  when it has decided that it needs to advertise a prefix, and so in most cases only one stub router at a time will request
+	  a delegated prefix.
+	</t><t>
+	  In order to avoid excessive consumption of delegated prefixes, stub routers connected to stub networks that support
+	  multiple stub routers SHOULD request short lifetimes for delegated prefixes and renew frequently. Stub routers SHOULD
+	  request a lifetime of PREFIX_DELEGATION_INTERVAL. Stub routers SHOULD record the time that a prefix was acquired in stable
+	  storage, and SHOULD release the prefix using a "DHCP Release" transaction when shutting down, or when it determines that a
+	  prefix is no longer needed (See "graceful shutdown" in Figure 9 of <xref target="RFC8415"/> for details). Stub routers
+	  SHOULD release any remembered still-valid prefix after reboot, if after rebooting it is discovered that another prefix is
+	  being advertised on the stub network.
+	</t>
+      </section>
+      <section>
+	<name>Arranging for routing to a stub network&apos;s off-stub-network routable prefix</name>
+	<t>
+	  We can assume that a side effect of the prefix delegation process will be to establish routing to the stub router that
+	  requested the prefix. This should mean that any node that wishes to establish communication with a node on the stub
+	  network will be able to do so through the delegating router that provides the prefix or, if it is attached to an
+	  infrastructure link that is adjacent to the stub router, through the stub router itself by means of the router
+	  advertisement it is providing.
+	</t><t>
+	  The case of multiple stub routers is more complicated however. Any routing that comes as a side-effect of DHCPv6 Prefix
+	  Delegation will only route through the stub router that acquired the prefix. Other stub routers can provide reachability
+	  on their respective adjacent infrastructure links, but reachability across the full routing fabric of the infrastructure
+	  network will only be possible if there is some routing protocol present on the infrastructure network. Addressing this
+	  problem is out of scope for this document.
+	</t>
+      </section>
+      <section>
+	<name>Making service advertisements available on non-adjacent infrastructure</name>
+	<t>
+
+	  In order for service advertisements to be available on non-adjacent infrastructure, the infrastructure must provide SRP
+	  service for constrained stub networks, and must advertise the availability of such service so that stub routers can
+	  forward SRP updates to that SRP service, rather than providing SRP as a local service. This SRP service can be discovered
+	  using DNS-SD, using the _dnssd-srp-tls service type. If the stub network requires UDP-based SRP rather than tls-based SRP,
+	  the stub router MUST act as a proxy to deliver SRP updates over the tcp+tls transport.
+	</t><t>
+
+	  For stub networks that use multicast DNS, stub routers must provide a discovery proxy service, and most advertise that
+	  service to the infrastructure. In turn, the infrastructure must configure that service to be discoverable by devices on
+	  the infrastructure, as described in <xref target="RFC8766" section="6" sectionFormat="comma"/>.
+	</t>
+      </section>
+      <section>
+	<name>Making service advertisements available on the internet</name>
+	<t>
+
+	  The mechanism described previously for making service advertisements available to non-adjacent infrastructure also scales
+	  to the internet, since it uses DNS. Indeed, the question an operator should ask before enabling such discovery is, do they
+	  want their stub network devices to be discoverable on the internet. If it becomes possible to configure service
+	  advertising automatically, behavior similar to that specified in
+	  <xref target="RFC6092" section="3.2" sectionFormat="comma"/> and 3.3, would be advised: do not automatically advertise
+	  stub network devices on the Internet.
+	</t>
+      </section>
+      <section>
+	<name>Distinction between non-adjacent infrastructure and global internet connectivity</name>
+	<t>
+
+	  Stub routers may be mobile, or fixed. That is, they may move from location to location along with some or all of their
+	  connected devices, attaching to whatever infrastructure is available. Or they may be fixed devices that are only ever
+	  expected to exist in one particular location.
+	</t><t>
+
+	  For devices that are intended to be in a fixed location, the distinction between infrastructure links and the internet as
+	  a whole is meaningful; for mobile nodes it most likely is not, unless such a node is only going to ever attach to trusted
+	  infrastructure as it moves from location to location—not a common scenario.
+	</t><t>
+
+	  For fixed links, the infrastructure may be trusted, in which case the distinction between infrastructure and internet can
+	  be expected to be managed by the infrastructure, and therefore only visible to the stub router in the sense that some
+	  non-adjacent destinations may be reachable (infrastructure destinations, for example) while others are not.
+	</t><t>
+
+	  The reason for mentioning this here is to point out that the stub router can&apos;t be expected to manage this interface:
+	  it is up to the infrastructure network to do so, either implicitly or explicitly. <xref target="RFC7084"/> provides a set
+	  of default behaviors for home routers that may be adequate for automatically managing this interface, but further work in
+	  this area may be warranted.
+	</t>
+      </section>
+    </section>
+  </middle>
+  <back>
+    <references>
+      <name>Normative References</name>
+      <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.4861.xml" />
+      <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.4193.xml" />
+      <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.6092.xml" />
+      <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.6762.xml" />
+      <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.6763.xml" />
+      <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.7084.xml" />
+      <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.8415.xml" />
+      <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.8766.xml" />
+      <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml3/reference.I-D.ietf-dnssd-srp.xml" />
+      <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml3/reference.I-D.sctl-advertising-proxy.xml" />
+    </references>
+    <references title="Informative References">
+      <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.4191.xml" />
+      <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.6105.xml" />
+      <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.6887.xml" />
+      <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.8929.xml" />
+    </references>
+
+    <section><name>Problem Statement</name>
+      <t>
+
+	These appendices describe the problem of linking stub networks to existing networks automatically, in the same way that hosts,
+	when connected to an existing network, are able to discover network addressing parameters, information about routing, and
+	services that are advertised on the network.
+
+      </t>
+      <t>
+	There are several use cases for stub networks. Motivating factors include:
+      </t>
+      <ul>
+	<li>
+
+	    Transitory connectivity: a mobile device acting as a router for a set of co-located devices could connect to a network
+	    and gain access to services for itself and for the co-located devices.  Such a stub network is unlikely to have more
+	    than one stub router.
+
+	  </li>
+	  <li>
+
+	    Incompatible media: for example, a constrained 802.15.4 network connected as a stub network to a WiFi or ethernet
+	    infrastructure network.  In the case of an 802.15.4 network, it is quite possible that the devices used to link the
+	    infrastructure network to the stub network will not be conceived of by the end user as routers.  Consequently, we cannot
+	    assume that these devices will be on all the time. A solution for this use case will require some sort of commissioning
+	    process for stub routers, and can't assume that any particular stub router will always be available; rather, any stub
+	    router that is available must be able to adapt to current conditions to provide reachability.
+
+	  </li>
+	  <li>
+
+	    Convenience: end users often connect devices to each other in order to extend networks
+
+	  </li>
+	</ul>
+      <t>
+
+	What makes stub networks a distinct type of network is simply that a stub network never provides transit between networks to
+	which it is connected. The term "stub" refers to the way the network is seen by the link to which it is connected: there is
+	reachability through a stub network router to the stub network from that link, but there is no reachability to any link
+	beyond that one.
+
+      </t>
+      <t>
+
+	Stub networks may be globally reachable, or may be only locally reachable. A host on a globally reachable stub network can
+	interoperate with other hosts anywhere on the Internet. A host on a locally reachable stub network can only interoperate
+	with hosts on the network link(s) to which it is connected.
+
+      </t>
+      <t>
+
+	The goal of this document is to describe the minimal set of changes or behaviors required to use existing IETF
+	specifications to support the stub network use case. The result should be a small set of protocol enhancements
+	(ideally no changes at all to protocols) and should be deployable on existing networks without requiring changes
+	to those networks.  Both the locally-reachable and globally-reachable use case should be able to be made to work,
+	and ideally the globally-reachable use case should build on what is used to make the locally-reachable use case
+	work, rather than requiring two separate solutions.
+
+      </t>
+      <section anchor="interop-goals"><name>Interoperability Goals</name>
+	<t>
+	  What we mean by "interoperate" is that a host on a stub network:
+	</t>
+	  <ul>
+	    <li>is discoverable by applicable hosts that are not on the stub network</li>
+	    <li>is able to acquire an IP address that can be used to communicate with applicable hosts not on the stub network</li>
+	    <li>has reachability to the network(s) to which applicable hosts are attached</li>
+	    <li>is reachable from the network(s) to which applicable hosts are attached</li>
+	  </ul>
+	<t>
+
+	  Discoverability here means "discoverable using DNS, or DNS Service Discovery".  As an example, when one host connected to
+	  a specific WiFi network wishes to discover services on hosts connected to that same WiFi network, it can do so using
+	  multicast DNS (RFC6762), which is an example of DNS Service Discovery.  Similarly, when a host on some other network
+	  wishes to discover the same service, it must use DNS-based DNS Service Discovery <xref target="RFC6763"/>.  In both cases,
+	  "discoverable using DNS" means that the host has an entry in the DNS.
+
+	</t>
+	<t>
+
+	  NOTE: it may be tempting to ask, why do we lump discoverability in with reachability and addressability, both of
+	  which are essentially Layer 3 issues? The answer is that it does us no good to automatically set up connectivity
+	  between stub network hosts and infrastructure hosts if the infrastructure hosts have no mechanism for learning
+	  about the availability of services provided by stub network hosts. For stub networks that only consume cloud services
+	  this will not be an issue, but for stub networks that provide services, e.g. the incompatible media use case
+	  mentioned earlier, discoverability is necessary in order for stub network connectivity to be useful.
+
+	</t>
+	<t>
+
+	  Ability to acquire an IP address that can be used to communicate means that the IP address a host on the stub network
+	  acquires can be used to communicate with it by hosts on neighbor networks, for locally reachable stub networks, or by
+	  hosts on any network, for globally reachable networks. Various means of providing such addresses are discussed later.
+
+	</t>
+	<t>
+
+	  Reachability to networks on which applicable hosts are attached means that when a host on the stub network has the IP
+	  address of an applicable host with which it intends to communicate, that host knows of a next-hop router to which it can
+	  send datagrams, so that they will ultimately reach the host with that IP address.
+
+	</t>
+	<t>
+
+	  Reachability from networks on which applicable hosts are attached means that when such a host has a datagram destined for
+	  an IP address on the stub network, a next-hop router is known by that host which, when the datagram is sent to that
+	  router, will ultimately result in the datagram reaching the intended stub network host.
+
+	</t>
+      </section>
+      <section anchor="usability-goals"><name>Usability Goals</name>
+	<t>
+
+	  In addition to the interoperability goals we've described above, the additional goal for stub networks is that they be
+	  able to be connected automatically, with no user intervention.  The experience of connecting a stub network to an
+	  infrastructure should be as straightforward as connecting a new host to the same infrastructure network.
+
+	</t>
+      </section>
+      <section><name>State of the Art</name>
+	<t>
+
+	  Currently there is one known way to accomplish what we are describing here [[Michael, does ANIMA have a second way?]]. The
+	  Homenet working group produced a protocol, HomeNet Configuration Protocol (HNCP), the purpose of which is to allow a
+	  collection of routers to self-configure. HNCP is not technically constrained to home environments; in principle, it can
+	  work in any environment.
+
+	</t>
+	<t>
+
+	  The problem with HNCP is twofold.  First, it only works if it is deployed on all routers within the network infrastructure
+	  for a site. Secondly, it attempts to do too much, and invents too much that is new.  Let's look at these in order.
+
+	</t>
+	<t>
+
+	  First, HNCP only works when deployed on all routers within the network infrastructure. To be clear, this does not mean
+	  that it is impossible to use HNCP on a network where, for instance, the edge router(s) do not support HNCP. What it does
+	  mean is that if this configuration works, the reason it works is that the network supports prefix delegation to routers
+	  inside the network. So a router doing HNCP can get a prefix using prefix delegation from, for example, an edge router, and
+	  this will work.
+
+	</t>
+	<t>
+
+	  Unfortunately, the way that such an HNCP server should behave is not documented, and it's not actually clear how it should
+	  behave. What if the DHCP server allocates it a /64?  HNCP is designed to get a larger prefix and subdivide it&mdash;there
+	  is no provision for requesting multiple delegations. So if we wanted to use HNCP to solve this problem, we would need to
+	  do additional work.
+
+	</t>
+	<t>
+
+	  Secondly, HNCP tries to do too much, and invents too much that is new. HNCP is a complicated protocol for propagating
+	  network configuration information in a mesh. It does not assume that any network is a stub network, and because of that,
+	  using it to support stub networks is needlessly complicated.
+
+	</t>
+	<t>
+
+	  Despite having been an IETF proposed standard since 2016, and having been worked on for quite some time before that, it is
+	  not possible to purchase a router that implements HNCP.  There exists a prototype implementation in OpenWRT, but getting
+	  it to actually work is problematic, and many problems have been left unsolved, and would be quite difficult to solve without
+	  additional standards work.
+
+	</t>
+	<t>
+
+	  Because of the first point&mdash;the utter lack of commercial implementations of HNCP&mdash;any stub network solution that
+	  is intended to be deployed to arbitrary networks can't rely on the availability of HNCP. This may come in the future, but
+	  is not available now, and may never be.  Therefore, whatever approach is taken MAY use HNCP if available, but MUST work
+	  without HNCP. Therefore, using HNCP represents additional implementation complexity; whether this is worth doing is
+	  something that should be considered, but because using HNCP is necessarily optional, it probably makes the most sense to
+	  assume that any functionality provided by HNCP will be external to the stub network router, and that the stub network
+	  router itself need not participate in the HNCP mesh.
+
+	</t>
+      </section>
+    </section>
+
+    <section><name>Possible Approaches</name>
+      <section><name>Proxy ND</name>
+	<section><name>Reachability</name>
+	  <t>
+
+	    Proxy Neighbor Discovery provides reachability to hosts on the stub network by simply pretending that they are on the
+	    infrastructure network. This reachability can be local or global depending on what IPv6 service (if any) is available on
+	    the infrastructure link.  The use of Proxy ND for providing connectivity to stub networks is described in
+	    <xref target="RFC8929"/>.
+
+	  </t>
+	</section>
+	<section><name>Addressability</name>
+	  <t>
+
+	    If IPv6 service is available on the infrastructure link, this service can be used to provide addressability on
+	    the stub network, and also provides addressability on the infrastructure link.
+
+	  </t>
+	  <t>
+
+	    If IPv6 service is not available on the infrastructure link, addressability for proxy ND can be provided by
+	    advertising an on-link autoconfigurable prefix in a Router Advertisement offered by the stub router.
+
+	  </t>
+	</section>
+	<section><name>Discoverability</name>
+	  <t>
+
+	    Discoverability for stub network hosts can be provided using DNS-SD service registration protocol on the stub
+	    network, in combination with an Advertising Proxy on the stub router which would advertise registered services
+	    to the infrastructure link.
+
+	  </t>
+	  <t>
+
+	    Discoverability of infrastructure link hosts by stub network hosts can be provided using a DNS-SD discovery proxy and/or
+	    regular DNS. As long as the stub network requires that each stub router provide a DNS-SD Discovery Proxy and
+	    also provide name resolution, this will work even in the multiple stub router case.
+
+	  </t>
+
+	</section>
+	<section><name>Requirements</name>
+	    <ul>
+	      <li>
+
+		The infrastructure must either provide IPv6 service, or not block the provision of IPv6 service by the stub router.
+
+	      </li>
+	      <li>
+
+		Hosts on the infrastructure link must support IPv6 and must support IPv6 neighbor discovery.
+
+	      </li>
+	      <li>
+
+		Every stub host must register with at least one stub router that will do proxy ND for it.
+
+	      </li>
+
+	      <li>
+
+		Routers must share proxy ND information, or else each router is a single point of failure for the set of hosts that
+		have registered with it.
+
+	      </li>
+
+	      <li>
+
+		Sharing proxy ND information requires new protocol work
+
+	      </li>
+	    </ul>
+	</section>
+	<section><name>Observations</name>
+	  <t>
+
+	    Can definitely work in specific circumstances, but probably doesn't lend itself to full automation.
+
+	  </t>
+	</section>
+      </section>
+      <section><name>Stub reachability using RA</name>
+	<section><name>Reachability</name>
+	  <t>
+
+	    Reachability to the stub network is provided using the Route Information Option <xref target="RFC4191"/> in a router
+	    advertisement <xref target="RFC4861"/> issued by the stub router. Since the stub router does not provide IPv6
+	    connectivity, it must not advertise itself as a default router.  Each stub router can provide a default route to the
+	    stub network.
+
+	  </t>
+	</section>
+	<section><name>Addressability</name>
+	  <t>
+
+	    Addressability on the stub network is provided using a ULA prefix generated by the stub router. Addressibility on the
+	    infrastructure link is either provided by the infrastructure, or else must be provided by the stub router.
+
+	  </t>
+	</section>
+	<section><name>Discoverability</name>
+
+	  <t>
+
+	    Discoverability for this approach is the same as for the Proxy ND approach.
+
+	  </t>
+	</section>
+	<section><name>Requirements</name>
+	    <ul>
+	      <li>
+
+		Infrastructure network must not block router advertisements.
+
+	      </li>
+	      <li>
+
+		Hosts on the infrastructure network must support IPv6, must support the use of non-default routes as described in
+		<xref target="RFC4191" />, and must support routing through non-default routers (routers with a router lifetime of
+		0).
+
+	      </li>
+	      <li>
+
+		Stub routers must cooperate with other stub routers in announcing an on-link prefix to the stub network.
+
+	      </li>
+	      <li>
+
+		Stub routers must cooperate with infrastructure routers in announcing an on-link prefix for the infrastructure
+		network. Stub routers must not advertise an on-link prefix when an on-link prefix is already present.
+
+	      </li>
+	    </ul>
+	</section>
+	<section><name>Observations</name>
+	  <t>
+	    This option has the advantage of relying primarily on ordinary IPv6 routing, as opposed to workarounds like
+	    proxy neighbor discovery or NAT64.  The cooperation that is required between stub routers is minimal: they
+	    need simply minimize the advertising of redundant information. When redundant information is advertised,
+	    this is an aesthetic issue rather than an operational issue, and can be allowed to heal gradually.
+	  </t>
+	  <t>
+
+	    Additionally, this option does not require any new behavior on the part of existing hosts or routers. It does assume
+	    that infrastructure hosts actually implement <xref target="RFC4191"/>, but it is not unreasonable to expect that this
+	    either is already the case, or can easily be accomplished. It also assumes that the infrastructure does not
+	    enforce <xref target="RFC6105">RA Guard</xref>. This is compatible with the recommendations in RFC6105, which
+	    indicates that RA guard needs to be configured before it is enabled.
+
+	  </t>
+
+	  <t>
+	    The approach described in this section only makes it possible for stub network hosts to interoperate with
+	    hosts on the link to which the stub router is directly attached. The "Global Reachability" approach talks
+	    about how to establish interoperability between stub network hosts and hosts on links to which the stub
+	    network is not directly attached.
+	  </t>
+	</section>
+      </section>
+
+      <section><name>Global reachability</name>
+	<t>
+
+	  Global reachability for stub networks requires either the use of NAT64, or else the presence of global
+	  IPv6 service on the link.  As such it is more of an add-on approach than a different approach.  This section
+	  talks about a specific example of global reachability: how to make global reachability work for the
+	  "Stub Reachability using RA" approach mentioned earlier.
+
+	</t>
+	<t>
+
+	  The "global reachability" approach has applicability both in the literal sense, and also in the sense of
+	  "reachability beyond the link to which the stub router is directly attached."  The behavior of the stub
+	  router is the same in both cases: it is up to the network infrastructure what prefix is delegated to the
+	  stub router, and what reachability is provided.
+
+	</t>
+	<section><name>Reachability</name>
+	  <t>
+
+	    Reachability in this case requires integration into the routing infrastructure. This is most easily accomplished
+	    by having the DHCPv6 prefix delegation server add an entry in the routing table pointing to the stub router
+	    to which the prefix has been delegated. Stub routers can also advertise reachability to the stub network using
+	    router advertisements, but these will only work on the local link.
+
+	  </t>
+	</section>
+	<section><name>Addressability</name>
+	  <t>
+
+	    Addressability in this case for hosts on the infrastructure link is assumed to be provided by the infrastructure,
+	    since we are relying on the infrastructure to provide DHCPv6 prefix delegation.  Addressibility on the stub
+	    network is provided using the prefix acquired with prefix delegation.
+
+	  </t>
+	</section>
+	<section><name>Discoverability</name>
+	  <t>
+	    Discoverability for devices on the link to which the stub network is attached can be done as described earlier under
+	    the "Proxy ND" approach.
+	  </t>
+	</section>
+	<section><name>Requirements</name>
+	  <ul>
+	      <li>
+
+		Infrastructure network must support prefix allocation using DHCPv6 prefix delegation.
+
+	      </li>
+	      <li>
+
+		Infrastructure network must install routes to prefixes provided using DHCPv6 prefix delegation.
+
+	      </li>
+	      <li>
+
+		In the case of multiple stub routers, stub routers must cooperate both in acquiring and renewing prefixes
+		acquired using prefix delegation. Stub routers must communicate complete routing information to the DHCPv6
+		prefix delegation server so that it can install routes.
+
+	      </li>
+	    </ul>
+	</section>
+	<section><name>Observations</name>
+	  <t>
+
+	    This approach should be a proper superset of the "Stub Reachability using RA" approach. The primary technical
+	    challenge here is specifying how multiple stub routers cooperate in doing prefix delegation.
+
+	  </t>
+	</section>
+      </section>
+
+      <section><name>Support for IPv4</name>
+	<t>
+
+	  This document generally assumes that stub networks only support IPv6. Bidirectional reachability for IPv4 can be provided
+	  using a combination of NAT44 and <xref target="RFC6887">Port Control Protocol</xref>. The use of NAT44 and PCP in this way
+	  has already been solved and need not be discussed here.
+
+	</t>
+	<section><name>Reachability</name>
+	  <t>
+
+	    Reachability is complicated for NAT64.  Typical NAT64 deployments provide reachability from the stub network to
+	    the rest of the Internet, but do not provide reachability from the rest of the internet to the stub network.
+	    As with NAT44 and PCP, this type of reachability is a solved problem and need not be discussed here.  To provide
+	    complete reachability to the IPv4 internet, a stub router must not only provide reachability to the cloud, but also
+	    reachability from the cloud. That additional work is discussed here.
+
+	  </t>
+	  <t>
+
+	    To provide reachability from the cloud to devices on the network, devices on the network will need to obtain
+	    static mappings from the external IPv4 address and a port to the internal IPv6 address and a port.  There are
+	    three ways to do this:
+	  </t>
+	    <ul>
+	      <li>The stub host can use Port Control Protocol to register a port, and then advertise that using SRP.</li>
+	      <li>The stub host can simply register using SRP, and then SRP can establish a port mapping.</li>
+	    </ul>
+
+	  <t>
+
+	    The first option has the advantage that the stub host is in complete control over what is advertised.
+	    However, it places an additional burden on the stub host which may not be desirable: the host has to
+	    implement PCP and link the PCP port allocation to the SRP registration.
+
+	  </t>
+	  <t>
+
+	    For a constrained network device, it is most likely preferable to combine the two transactions: the SRP server can
+	    receive the registration from the stub host and acquire a PCP mapping for it, and then register an AAAA and A record for
+	    the host along with an SRV record for the IPv4 and IPv6 mappings. The hostname mapping would need to be different for
+	    the A record and the AAAA record in order to avoid spurious connections to the IPv4 port on the IPv6 address and vice
+	    versa.
+
+	  </t>
+	</section>
+	<section><name>Addressability</name>
+	  <t>
+
+	    Addressability on the stub network can be provided using a ULA prefix specific to the stub network or, if NAT64 is
+	    being used in addition to one of the other solutions discussed here, the prefix allocated on the stub network
+	    for that purpose can also be used for NAT64.
+
+	  </t>
+	  <t>
+
+	    IPv4 addressability on the infrastructure network is provided by the infrastructure network.  It is also possible
+	    that the infrastructure network is an IPv6 network. In that case, the NAT64 edge router may be provided by the
+	    infrastructure as well.
+
+	  </t>
+	</section>
+	<section><name>Discoverability</name>
+	  <t>
+	    The discoverability described for the "ND Proxy" approach should work here as well, except for the
+	    caveat mentioned above under "reachability".
+	  </t>
+	</section>
+	<section><name>Requirements</name>
+	  <ul>
+	      <li>
+		TBD
+	      </li>
+	    </ul>
+	</section>
+	<section><name>Observations</name>
+	  <t>
+
+	    Support for NAT64 may be required for some deployments. NAT64 support requires either close cooperation between stub
+	    routers, or else requires that the NAT64 translation be done externally.  The latter choice is likely quite a bit
+	    easier; solutions that provide load balancing and high availability are already available on the market, and hence do
+	    not require that the stub routers perform this function. This is expected to be the best approach to serve the needs
+	    of consumers of this capability.
+
+	  </t>
+	</section>
+      </section>
+    </section>
+
+    <section><name>Discoverability Options</name>
+      <t>
+
+	We can divide the set of hosts needing to be discovered and the set of hosts needing to discover them into
+	four categories:
+      </t>
+	<ul>
+	  <li>Stub network hosts (stub hosts)</li>
+	  <li>Hosts that are on the link to which the stub network is directly connected (direct hosts)</li>
+	  <li>Hosts that are on other links within the same infrastructure (infrastructure hosts)</li>
+	  <li>Hosts that are on other links not within the same infrastructure (cloud hosts)</li>
+	</ul>
+      <t>
+
+	To enable stub hosts to discover direct hosts, a <xref target="RFC8766">Discovery Proxy</xref> can be used.
+	This must be resident on any stub network router that is seen by the stub host as a resolver.
+
+      </t>
+      <t>
+
+	To enable stub hosts to discover infrastructure hosts using DNS-SD <xref target="RFC6763"/>, the infrastructure
+	must provide support for RFC6763 service discover using DNS.
+
+      </t>
+      <t>
+
+	To enable stub hosts to discover infrastructure hosts and cloud hosts using DNS, DNS resolution must be provided by the stub
+	router, and the infrastructure must additionally provide the stub router with the ability to resolve names.
+
+      </t>
+
+      <t>
+
+	To enable direct hosts to discover stub hosts, stub routers must implement a DNS-SD Advertising Proxy. Stub hosts must
+	register with the advertising proxy using SRP.
+
+      </t>
+      <t>
+
+	To enable infrastructure hosts to discover stub hosts, stub routers must provide authoritative DNS service for the
+	stub network link so that it can be integrated into the infrastructure DNS-SD service. To do this automatically will
+	require additional protocol work.
+
+      </t>
+      <t>
+
+	To enable cloud hosts to discover stub hosts, stub hosts would need to register with the DNS, and the infrastructure
+	would need to make those registrations available globally, perhaps with whitelisting.  This is probably not a very
+	widely applicable use case, and we do not consider specifying how this works to be part of the work of this document.
+
+      </t>
+    </section>
+    <section><name>Multiple Egress, Multiple Link</name>
+      <t>
+
+	In the case of a stub network that has multiple stub routers, it is possible that, either when the stub network is initially
+	set up, or subsequently, one or more stub routers might be connected to a different infrastructure link than one or more
+	other stub routers.  There are two viable approaches to this problem:
+
+      </t>
+	<ul>
+	  <li>declare it out of scope and have the stub routers prevent such configurations</li>
+	  <li>make sure that stub routers attached to each infrastructure link provide complete service on that link</li>
+	</ul>
+
+      <t>
+	Explain further.
+      </t>
+
+    </section>
+  </back>
+</rfc>
+
+<!-- Keep this comment at the end of the file
+     Local variables:
+     mode: sgml
+     fill-column:132
+     sgml-omittag:t
+     sgml-shorttag:t
+     sgml-namecase-general:t
+     sgml-general-insert-case:lower
+     sgml-minimize-attributes:nil
+     sgml-always-quote-attributes:t
+     sgml-indent-step:2
+     sgml-indent-data:t
+     sgml-parent-document:nil
+     sgml-exposed-tags:nil
+     sgml-local-catalogs:nil
+     sgml-local-ecat-files:nil
+     End:
+  -->
