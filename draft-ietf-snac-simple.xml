@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE rfc SYSTEM "rfc2629-xhtml.ent">
-<rfc category="bcp" submissionType="IETF" docName="draft-lemon-stub-networks-05" ipr="trust200902"
+<rfc category="bcp" submissionType="IETF" docName="draft-lemon-stub-networks-06" ipr="trust200902"
      xmlns:xi="http://www.w3.org/2001/XInclude" version="3"
      scripts="Common,Latin" sortRefs="false" consensus="true"
      symRefs="true" tocDepth="3" tocInclude="true" xml:lang="en">
@@ -20,17 +20,15 @@
       </address>
     </author>
 
-    <date year='2022' month='October' day='14'/>
+    <date year='2022' month='October' day='21'/>
     <area>Internet</area>
     <workgroup>Internet Engineering Task Force</workgroup>
     <abstract>
       <t>
-
 	This document describes a set of practices for connecting stub networks to adjacent infrastructure networks. This is
 	applicable in cases such as constrained (Internet of Things) networks where there is a need to provide functional parity of
 	service discovery and reachability between devices on the stub network and devices on an adjacent infrastructure link (for
-	example, a home network).
-      </t>
+	example, a home network).</t>
     </abstract>
   </front>
 
@@ -42,20 +40,24 @@
 	There are several use cases for stub networks. Motivating factors include:
       </t>
       <ul>
-	  <li>
-	    Incompatible media: for example, a constrained 802.15.4 network connected as a stub network to a WiFi or ethernet
-	    infrastructure network.  In the case of an 802.15.4 network, it is quite possible that the devices used to link the
-	    infrastructure network to the stub network will not be conceived of by the end user as routers.  Consequently, we cannot
-	    assume that these devices will be on all the time. A solution for this use case will require some sort of commissioning
-	    process for stub routers, and can't assume that any particular stub router will always be available; rather, any stub
-	    router that is available must be able to adapt to current conditions to provide reachability.</li>
-	  <li>
-	    Convenience: end users often connect devices to each other in order to extend networks</li>
-	  <li>
-	    Transitory connectivity: a mobile device acting as a router for a set of co-located devices could connect to a network
-	    and gain access to services for itself and for the co-located devices.  Such a stub network is unlikely to have more
-	    than one stub router.</li>
-	</ul>
+	<li>
+	  Incompatible speed: for example, an 802.15.4 network could not be easily bridged to a WiFi network because the data rates
+	  are so dissimilar. So either it must be bridged in a very complicated and careful way to avoid overwhelming the 802.15.4
+	  network with irrelevant traffic, or the 802.15.4 network needs to be a separate subnet.</t>
+	<li>
+	  Incompatible media: for example, a constrained 802.15.4 network connected as a stub network to a WiFi or ethernet
+	  infrastructure network.  In the case of an 802.15.4 network, it is quite possible that the devices used to link the
+	  infrastructure network to the stub network will not be conceived of by the end user as routers.  Consequently, we cannot
+	  assume that these devices will be on all the time. A solution for this use case will require some sort of commissioning
+	  process for stub routers, and can't assume that any particular stub router will always be available; rather, any stub
+	  router that is available must be able to adapt to current conditions to provide reachability.</li>
+	<li>
+	  Convenience: end users often connect devices to each other in order to extend networks</li>
+	<li>
+	  Transitory connectivity: a mobile device acting as a router for a set of co-located devices could connect to a network
+	  and gain access to services for itself and for the co-located devices.  Such a stub network is unlikely to have more
+	  than one stub router.</li>
+      </ul>
       <t>
 	What makes stub networks a distinct type of network is simply that a stub network never provides transit between networks to
 	which it is connected. The term "stub" refers to the way the network is seen by the link to which it is connected: there is
