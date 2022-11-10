@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE rfc SYSTEM "rfc2629-xhtml.ent">
-<rfc category="bcp" submissionType="IETF" docName="draft-lemon-stub-networks-06" ipr="trust200902"
+<rfc category="bcp" submissionType="IETF" docName="draft-lemon-stub-networks-07" ipr="trust200902"
      xmlns:xi="http://www.w3.org/2001/XInclude" version="3"
      scripts="Common,Latin" sortRefs="false" consensus="true"
      symRefs="true" tocDepth="3" tocInclude="true" xml:lang="en">
@@ -20,7 +20,7 @@
       </address>
     </author>
 
-    <date year='2022' month='October' day='21'/>
+    <date year='2022' month='November' day='10'/>
     <area>Internet</area>
     <workgroup>Internet Engineering Task Force</workgroup>
     <abstract>
@@ -451,6 +451,14 @@
 	    than allocating one out of its ULA prefix.
 	  </t>
 	</section>
+	<section>
+	  <name>Using DHCPv6 Prefix Delegation to acquire a prefix to provide addressability</name>
+          <t>
+            If DHCPv6 PD is available on the link, it is preferable to acquire a prefix using DHCPv6 PD rather than generating a
+            ULA prefix, because the DHCPv6-PD-provided prefix is routable at least on the local infrastructure. Therefore, when
+            DHCPv6-PD is available, the BR MUST use DHCPv6 PD rather than its own prefix.
+          </t>
+        </section>
       </section>
       <section>
 	<name>Managing reachability on the adjacent infrastructure link</name>
