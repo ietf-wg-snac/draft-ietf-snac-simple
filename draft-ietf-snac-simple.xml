@@ -69,7 +69,7 @@
 	Stub networks may be globally reachable, or may be only locally reachable. This document addresses local reachability.  A
 	host on a locally reachable stub network can only interoperate with hosts on the network link(s) to which it is connected.</t>
       <t>
-	It may be noted that just as you can plug several home routers together in series to form multi-layer NATs, there is
+	It may be noted that just as you can plug several CPEs together in series to form multi-layer NATs, there is
 	nothing preventing the owner of a stub network router from plugging it into another stub network router. In the case of
 	an IoT wireless network, there may be no way to do this, nor would it be desirable, but a stub router that uses ethernet
 	on both the infrastructure and stub network sides could be connected this way. Nothing in this document is intended to
@@ -212,7 +212,7 @@
 	<xref target="RFC4861" section="6.2.2"/>.</t>
       <t>
 	Support for adjacent
-	infrastructure links on networks where Neighbor Discovery is not supported are out of scope for this document. Stub routers
+	infrastructure links on networks where Neighbor Discovery is not supported and is out of scope for this document. Stub routers
 	do not provide routing between adjacent infrastructure links when connected to more than one such link.</t>
       <section>
 	<name>Managing addressability on an adjacent infrastructure link</name>
@@ -230,7 +230,7 @@
 	  <t>
 	    A prefix is not considered a usable on-link prefix if it is advertised on the link as on-link, but the 'm' bit is set in
 	    the Router Advertisement message header (<xref target="RFC4861" section="4.2" sectionFormat="comma" />) that contains
-	    the Prefix option. This indicates that node addressibility is being managed using DHCPv6. Nodes are not required to
+	    the Prefix option. This indicates that node addressability is being managed using DHCPv6. Nodes are not required to
 	    use DHCPv6 to acquire addresses, so a prefix that requires the use of DHCPv6 can't be considered "usable"&mdash;not all
 	    hosts can actually use it.</t>
 	  <t>
@@ -633,7 +633,7 @@
 	router is connected to one partition, and another stub router is connected to the other partition. In this situation, in
 	order for all nodes to be reachable, it is necessary that each partition of the stub network have its own prefix. When
 	such a partition occurs, the stub routers must detect that it has occurred. If a stub router is currently providing a
-	prefix on the stub network, it need take no action. If a stub router had not been providing a prefix on the stub network,
+	prefix on the stub network, it needs to take no action. If a stub router had not been providing a prefix on the stub network,
 	and now discovers that there is no stub router providing a prefix on the network, it MUST begin to provide its own prefix
 	on the stub network. It MUST also advertise reachability to that new prefix on its adjacent infrastructure link(s).
       </t><t>
