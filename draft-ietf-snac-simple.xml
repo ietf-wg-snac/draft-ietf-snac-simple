@@ -190,33 +190,33 @@
       <t>
 	This section describes the meaning of and gives default values for various constants used in this document.</t>
       <dl>
-	<dt>STALE_RA_TIME</dt>
+	<dt>STALE_RA_TIME (default: 10 minutes)</dt>
 	<dd>
-	  Default: 10 minutes. The amount of time that can pass after the last time a router advertisement from a particular has
+	  The amount of time that can pass after the last time a router advertisement from a particular has
 	  been received before we assume the router is no longer present. This is a stopgap in case the router is reachable but has
 	  silently stopped advertising a prefix; this situation is unlikely, but if it does happen, new devices joining the
 	  infrastructure network will not be able to reach devices on the stub network until the stub router decides that the router
 	  that advertised the usable prefix is stale.</dd>
-	<dt>STUB_PROVIDED_PREFIX_LIFETIME</dt>
+	<dt>STUB_PROVIDED_PREFIX_LIFETIME (default: 30 minutes)</dt>
 	<dd>
-	  Default: 30 minutes. The valid and preferred lifetime the stub router will advertise. This should be long enough that a
+	  The valid and preferred lifetime the stub router will advertise. This should be long enough that a
 	  host is actually willing to use it, and obviously should also be long enough that a missed beacon will not cause the host
 	  to stop using it. The values suggested here allow ten beacons to be missed before the host will stop using the
 	  prefix.</dd>
-	<dt>BEACON_INTERVAL</dt>
+	<dt>BEACON_INTERVAL (default: 3 minutes)</dt>
 	<dd>
-	  Default: 3 minutes. How often the stub router will transmit an RA. This should be frequent enough that a missed Router
+	  How often the stub router will transmit an RA. This should be frequent enough that a missed Router
 	  Solicit (e.g. due to congestion on a WiFi link) will not result in an extremely long outage (assuming the congestion
 	  passes before the beacon is sent, of course).</dd>
-	<dt>PREFIX_DELEGATION_INTERVAL</dt>
+	<dt>PREFIX_DELEGATION_INTERVAL (default: 30 minutes)</dt>
 	<dd>
-	  Default: 30 minutes. The lifetime a stub router should request for a DHCPv6-delegated prefix. The longer this is, the more
+	  The lifetime a stub router should request for a DHCPv6-delegated prefix. The longer this is, the more
 	  prefixes will be consumed on a network where stub routers are not stable. The lifetime here is chosen to be long enough
 	  that a reboot of the DHCP server will not prevent the prefix being renewed. It happens to coincide with the value of
 	  STUB_PROVIDED_PREFIX_LIFETIME, but the two should not be considered to be equivalent.</dd>
-	<dt>MAX_USABLE_REACHABLE_TIME</dt>
+	<dt>MAX_USABLE_REACHABLE_TIME (default: 60 seconds)</dt>
 	<dd>
-	  Default: 60 seconds. The maximum ReachableTime value that a router can have in the Neighbor Table before any usable
+	  The maximum ReachableTime value that a router can have in the Neighbor Table before any usable
 	  prefixes it has advertised are no longer considered usable.</dd>
       </dl>
     </section>
