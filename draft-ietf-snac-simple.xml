@@ -702,6 +702,26 @@
 	coordinate in advance.
       </t>
     </section>
+    <section>
+      <name>Services Provided by Stub Routers</name>
+      <t>
+	In order to provide network access, stub routers must provide some network services to the stub network. We have previously
+	discussed the following services:</t>
+      <ul>
+	<li>DNS Resolver: The stub network MUST provide a DNS resolver. If RAs are in use on the stub network, the DNS resolver
+	  is advertised in the Router Advertisement Recursive DNS Server option. If RAs are not in use on the stub network, then
+	  the mechanism whereby the DNS resolver is advertised by the stub router is specific to that type of stub network.</li>
+	<li>DHCPv6 Server: The use of DHCPv6 on the stub network is NOT RECOMMENDED. In some cases it may necessary, but should be
+	  disabled by default if the stub router provides this capability at all.</li>
+	<li>Advertising Proxy: In order to discover services on the adjacent infrastructure link, stub routers MUST act as
+	  Discovery Proxies for any adjacent infrastructure links to which they are attached.</li>
+	<li>SRP Registrar: Stub routers MUST provide SRP registrar service. This service MUST be advertised using DNS-SD in
+	  a legacy browsing domain that is discoverable through the stub router's resolver.</li>
+	<li>Legacy Browsing Domains: the stub resolver must advertise legacy browsing domains for each adjacent infrastructure
+	  link, for the zone that is maintained by its SRP service, and in addition must list the legacy browsing domains provided
+	  by the infrastructure network, if any.</li>
+      </ul>
+    </section>
   </middle>
   <back>
     <references>
