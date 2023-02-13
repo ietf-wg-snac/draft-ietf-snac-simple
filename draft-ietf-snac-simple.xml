@@ -52,6 +52,15 @@
 	  process for stub routers, and can't assume that any particular stub router will always be available; rather, any stub
 	  router that is available must be able to adapt to current conditions to provide reachability.</li>
 	<li>
+	  Incompatible mechanisms: the medium of the stub network may not, for example, use neighbor discovery to populate a
+	  neighbor table. If the infrastructure network (as is typical) does use neighbor discovery, then bridging the two networks
+	  together would require some way of translating between neighbor discovery and whatever mechanism is used on the stub
+	  network, and hence complicates rather than simplifying the problem of connecting the two networks.</li>
+	<li>
+	  Incompatible framing: if the stub network is a 6lowpan <xref target="RFC4944"/> network, packets on the stub network are
+	  expected to use 6lowpan header compression <xref target="RFC6282"/>. Making this work through a bridge would be very
+	  difficult.</li>
+	<li>
 	  Convenience: end users often connect devices to each other in order to extend networks</li>
 	<li>
 	  Transitory connectivity: a mobile device acting as a router for a set of co-located devices could connect to a network
@@ -147,7 +156,7 @@
 	<dt>Infrastructure network:</dt>
 	<dd>
 	  the network infrastructure to which a stub router connects. This network can be a single link, or a network of links. The
-	  network is typically formed by a Home Gateway, which may also provide some services, such as a DNS resolver, a DHCPv4 
+	  network is typically formed by a Home Gateway, which may also provide some services, such as a DNS resolver, a DHCPv4
     server, and a DHCPv6 prefix delegation server, for example.</dd>
 	<dt>Adjacent Infrastructure Link (AIL):</dt>
 	<dd>any link to which a stub network router is directly attached, that is part of an infrastructure network and is not the
@@ -670,6 +679,11 @@
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml3/reference.I-D.ietf-dnssd-srp.xml" />
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml3/reference.I-D.ietf-dnssd-advertising-proxy.xml" />
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml3/reference.I-D.hui-stub-router-ra-flag.xml" />
+    </references>
+    <references>
+      <name>Informative References</name>
+      <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.4944.xml" />
+      <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.6282.xml" />
     </references>
   </back>
 </rfc>
