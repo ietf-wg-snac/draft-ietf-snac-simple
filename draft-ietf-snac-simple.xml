@@ -69,7 +69,7 @@
 	Stub networks may be globally reachable, or may be only locally reachable. This document addresses local reachability.  A
 	host on a locally reachable stub network can only interoperate with hosts on the network link(s) to which it is connected.</t>
       <t>
-	It may be noted that just as you can plug several CPEs together in series to form multi-layer NATs, there is
+	It may be noted that just as you can plug several Home Gateway devices together in series to form multi-layer NATs, there is
 	nothing preventing the owner of a stub network router from plugging it into another stub network router. In the case of
 	an IoT wireless network, there may be no way to do this, nor would it be desirable, but a stub router that uses ethernet
 	on both the infrastructure and stub network sides could be connected this way. Nothing in this document is intended to
@@ -154,6 +154,11 @@
 	  stub network.</dd>
 	<dt>Off-Stub-Network-Routable (OSNR) Prefix:</dt>
 	<dd>a prefix advertised on the stub network that can be used for communication with hosts not on the stub network.</dd>
+        <dt>Home Gateway</t>
+        <dd>A device, such as a CE Router <xref target=RFC7084/>, that is intended to connect a single uplink network to a
+          Local-Area Network. A CE router may be provided by an ISP and only capable of connecting directly to the ISP's
+          means of service delivery, e.g. Cable or DSL, or it may have an ethernet port on the WAN side and one or more ethernet
+          ports, plus WiFi, on the LAN side.</dd>
       </dl>
     </section>
 
@@ -633,7 +638,7 @@
 	router is connected to one partition, and another stub router is connected to the other partition. In this situation, in
 	order for all nodes to be reachable, it is necessary that each partition of the stub network have its own prefix. When
 	such a partition occurs, the stub routers must detect that it has occurred. If a stub router is currently providing a
-	prefix on the stub network, it needs to take no action. If a stub router had not been providing a prefix on the stub network,
+	prefix on the stub network, it does not need to take action. If a stub router had not been providing a prefix on the stub network,
 	and now discovers that there is no stub router providing a prefix on the network, it MUST begin to provide its own prefix
 	on the stub network. It MUST also advertise reachability to that new prefix on its adjacent infrastructure link(s).
       </t><t>
