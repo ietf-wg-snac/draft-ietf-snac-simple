@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE rfc SYSTEM "rfc2629-xhtml.ent">
-<rfc category="bcp" submissionType="IETF" docName="draft-lemon-stub-networks-07" ipr="trust200902"
+<rfc category="bcp" submissionType="IETF" docName="draft-ietf-snac-simple-00" ipr="trust200902"
      xmlns:xi="http://www.w3.org/2001/XInclude" version="3"
      scripts="Common,Latin" sortRefs="false" consensus="true"
      symRefs="true" tocDepth="3" tocInclude="true" xml:lang="en">
@@ -20,7 +20,7 @@
       </address>
     </author>
 
-    <date year='2022' month='November' day='10'/>
+    <date year='2023' month='February' day='10'/>
     <area>Internet</area>
     <workgroup>Internet Engineering Task Force</workgroup>
     <abstract>
@@ -156,8 +156,8 @@
 	<dt>Adjacent Infrastructure Link (AIL):</dt>
 	<dd>any link to which a stub network router is directly attached, that is part of an infrastructure network and is not the
 	  stub network.</dd>
-        <dt>Home Gateway:</t>
-        <dd>A device, such as a CE Router <xref target=RFC7084/>, that is intended to connect a single uplink network to a
+        <dt>Home Gateway:</dt>
+        <dd>A device, such as a CE Router <xref target="RFC7084"/>, that is intended to connect a single uplink network to a
           Local-Area Network. A CE router may be provided by an ISP and only capable of connecting directly to the ISP's
           means of service delivery, e.g. Cable or DSL, or it may have an ethernet port on the WAN side and one or more ethernet
           ports, plus WiFi, on the LAN side.</dd>
@@ -169,19 +169,19 @@
 	<dt>Off-Stub-Network-Routable (OSNR) Prefix:</dt>
 	<dd>a prefix advertised on the stub network that can be used for communication with hosts not on the stub network.</dd>
 	<dt>Stub Network:</dt>
-	<dl>A network link that is connected by one or more Stub Routers to a single (adjacent) link an infrastructure network, but
+	<dd>A network link that is connected by one or more Stub Routers to a single (adjacent) link an infrastructure network, but
 	  is not used for transit between that link and any other link. <xref target="RFC2328" section="2.1" sectionFormat="of"/>
 	  describes the distinction between stub networks and transit networks from a topological perspective: a stub network is
 	  simply any network that does not provide transit within a routing fabric. There is reachability through a stub network
 	  router to hosts on the stub network, but there is no reachability through the stub network to any link beyond the
-	  stub network link.</dt>
+	  stub network link.</dd>
 	<dt>Stub Router:</dt>
-	<dl>A router that provides connectivity between a stub network and an infrastructure network. A stub router may also provide
+	<dd>A router that provides connectivity between a stub network and an infrastructure network. A stub router may also provide
 	  connectivity between other networks: the term "stub router" refers specifically to its role in providing connectivity to
 	  a stub network. For example, a Home Gateway may provide connectivity between a provider network (WAN) and a home network
 	  (LAN), while at the same time providing connectivity between the LAN and a stub network. What distinguishes the LAN from
 	  the stub network in this case is that the LAN is potentially a candidate to act as a transit network to reach other routers,
-	  whereas the stub network is not.</t>
+	  whereas the stub network is not.</dd>
       </dl>
     </section>
 
@@ -609,6 +609,68 @@
     </section>
     <section>
       <name>Providing reachability to IPv4 services to the stub network</name>
+      <t>Stub Network routers must be capable of providing NAT64 themselves, and must be capable of discovering the availability
+	of NAT64 service on the infrastructure network and providing it when it is available and usable.
+      </t>
+      <t>
+	Some network media may provide their own mechanisms for advertising NAT64 service to the stub network. If such a mechanism
+	is available, stub routers MUST use the mechanism provided by the network medium used on the stub network to advertise
+	NAT64 service. Otherwise, NAT64 service MUST be advertised using the PREF64 Router Advertisement option
+	<xref target="RFC8781"/>.
+      </t>
+      <t>There are four possible combinations of circumstances in which to consider how to provide NAT64 service:</t>
+      <ol>
+	<li>
+	  Infrastructure provides DHCPv6 PD support, and the infrastructure network provides NAT64
+	</li>
+	<li>
+	  Infrastructure provides no DHCPv6 PD support, Infrastructure is providing NAT64, and there is no IPv4 on infrastructure
+	</li>
+	<li>
+	  Infrastructure provides no DHCPv6 PD support, Infrastructure is providing NAT64, and there is IPv4 on
+	  infrastructure
+	</li>
+	<li>
+	  Infrastructure provides no DHCPv6 PD support, infrastructure is not providing NAT64 (and may also not be providing
+	  IPv6), and there is IPv4 on infrastructure
+	</li>
+      </ol>
+      <t>
+	In the first case, infrastructure-provided NAT64 is preferred, and the stub router MUST advertise this service
+	to the stub network.</t>
+      <t>
+	In the second case, there is no way to provide connectivity to the infrastructure: we don't have IPv6 routing, because
+	we don't have a routable prefix, we don't have NAT64 for the same reason, and we don't have IPv4, so the stub router
+	can't do NAT64 on its own. In this case, the stub router MUST NOT advertise NAT64 service.</t>
+      <t>
+	In the third case, despite the infrastructure providing NAT64, we can't use it, so the stub router MUST provide its own
+	NAT64 service.</t>
+      <t>
+	In the fourth case, the stub router MUST provide its own NAT64 service.</t>
+      <t>
+	An additional complication is that there may be more than one stub router connecting the stub network to infrastructure.
+	In this case, it may be desirable to limit the number of stub routers providing NAT64 service, or it may be acceptable
+	for all stub routers to provide it. In the latter case, this should not be a problem: since each stub router is using
+	its own ULA prefix to provide NAT64, any 5-tuple that goes through a stub router's NAT64 translator will necessarily
+	have as its destination an IPv6 address in a particular NAT64 prefix, and that address will select the correct stub
+	router through which to send the packet for translation.</t>
+      <t>
+	A further complication is that in some cases, some stub routers connected to the stub network may not be able to
+	advertise an infrastructure-provided NAT64 prefix, while others may. In this case, when the infrastructure-provided NAT64
+	service appears on the stub network, stub routers that are not able to advertise an infrastructure NAT64 service MUST
+	NOT do so.</t>
+      <t>
+	To differentiate between infrastructure-provided NAT64 service and stub router-provided NAT64 service, stub routers that
+	advertise infrastructure-provided NAT64 service MUST use a preference of medium for this service. Stub routers advertising
+	their own service MUST use a preference of low.</t>
+      <t>
+	In some cases a stub router may be administratively configured with a NAT64 prefix. In this situation, the stub router
+	MUST advertise the prefix with a preference of high.</t>
+      <t>
+	Stub routers must monitor the advertisement of other NAT64 prefixes on the stub network. If a stub router is advertising
+	a NAT64 prefix, and a NAT64 prefix is advertised on the stub network with a higher preference, the stub router SHOULD
+	deprecate the prefix it is advertising.</t>
+
       <section>
 	<name>NAT64 provided by infrastructure</name>
 	<t>
@@ -630,7 +692,7 @@
 	  In order for infrastructure-provided NAT64 to work, the stub network must have an OSNR prefix that is known to the
 	  infrastructure. Typically this means that the stub router must have acquired this prefix using DHCPv6 Prefix Delegation.
 	  Unless otherwise configured to do so, the stub router MUST NOT advertise infrastructure-provided NAT64 service on the
-	  stub network if it has not acquired the OSNR prefix through DHCPv6 Prefix Delegation.
+	  stub network if it has not acquired the OSNR prefix through DHCPv6 Prefix Delegation.</t>
       </section>
       <section>
 	<name>NAT64 provided by stub router(s)</name>
@@ -669,14 +731,6 @@
 	  ipv4only.arpa record in the Additional section.
 	</t>
       </section>
-      <section>
-	<name>Advertising NAT64 service on the stub network</name>
-	<t>
-	  Some network media may provide their own mechanisms for advertising NAT64 service to the stub network. If such a mechanism
-	  is available, stub routers MUST use the mechanism provided by the network medium used on the stub network to advertise
-	  NAT64 service. Otherwise, NAT64 service MUST be advertised using the PREF64 Router Advertisement option
-	  <xref target="RFC8781"/>.
-	</t>
     </section>
     <section>
       <name>Handling partitioning events on a stub network</name>
@@ -730,8 +784,10 @@
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.4191.xml" />
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.4193.xml" />
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.4861.xml" />
+      <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.5175.xml" />
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.6762.xml" />
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.6763.xml" />
+      <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.7084.xml" />
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.8174.xml" />
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.8766.xml" />
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.8781.xml" />
@@ -741,6 +797,7 @@
     </references>
     <references>
       <name>Informative References</name>
+      <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.2328.xml" />
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.4944.xml" />
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.6282.xml" />
     </references>
