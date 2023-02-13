@@ -176,7 +176,7 @@
 	  that advertised the usable prefix is stale.</dd>
 	<dt>STUB_PROVIDED_PREFIX_LIFETIME</dt>
 	<dd>
-	  Default: 30 minutes. The valid and preferred lifetime the stub router will advertise. This needs to be long enough that a
+	  Default: 30 minutes. The valid and preferred lifetime the stub router will advertise. This should be long enough that a
 	  host is actually willing to use it, and obviously should also be long enough that a missed beacon will not cause the host
 	  to stop using it. The values suggested here allow ten beacons to be missed before the host will stop using the
 	  prefix.</dd>
@@ -314,7 +314,8 @@
 	      In this state, the stub router generates its own on-link prefix for the interface. This prefix has a valid and
 	      preferred lifetime of STUB_PROVIDED_PREFIX_LIFETIME seconds. The stub router sends a router advertisement containing
 	      this prefix. The 'A' (autonomous configuration), 'L' (on-link) <xref target="RFC4861" section="4.6.2"/> and the Stub
-	      Router bit (<xref target="I-D.hui-stub-router-ra-flag"/>) MUST be set in the prefix header.</t>
+              Router bit (<xref target="I-D.hui-stub-router-ra-flag"/>) MUST be set in the Router Advertisement header flags
+              field <xref target="RFC5175"/>.</t>
 	    <t>
 	      This router advertisement MUST also include a Route Information Option (<xref target="RFC4191" section="2.3"/>) for
 	      each routable prefix advertised on the stub network. If the stub router is also a normal router (e.g. a home WiFi
