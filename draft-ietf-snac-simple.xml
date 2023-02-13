@@ -256,8 +256,8 @@
 	    infrastructure link. A usable on-link prefix is a prefix advertised on the link that has a preferred time of 30 minutes
 	    or more, is marked on-link and allows autonomous configuration.</t>
 	  <t>
-	    A prefix is not considered a usable on-link prefix if it is advertised on the link as on-link, but the 'm' bit is set in
-	    the Router Advertisement message header (<xref target="RFC4861" section="4.2" sectionFormat="comma" />) that contains
+	    A prefix is not considered a usable on-link prefix if it is advertised on the link as on-link, but the 'a' bit is not set in
+	    the Prefix Information option header (<xref target="RFC4861" section="4.6.2" sectionFormat="comma" />) that contains
 	    the Prefix option. This indicates that node addressability is being managed using DHCPv6. Nodes are not required to
 	    use DHCPv6 to acquire addresses, so a prefix that requires the use of DHCPv6 can't be considered "usable"&mdash;not all
 	    hosts can actually use it.</t>
@@ -340,7 +340,7 @@
               Router bit (<xref target="I-D.hui-stub-router-ra-flag"/>) MUST be set in the Router Advertisement header flags
               field <xref target="RFC5175"/>.</t>
 	    <t>
-	      This router advertisement MUST also include a Route Information Option (<xref target="RFC4191" section="2.3"/>) for
+	      This router advertisement MUST also include a Route Information option (<xref target="RFC4191" section="2.3"/>) for
 	      each routable prefix advertised on the stub network. If the stub router is also a normal router (e.g. a home WiFi
 	      router), it SHOULD include all other routes that it is advertising in the RA, if there is space.</t>
 	    <t>
@@ -524,7 +524,7 @@
 	</t>
 	<t>
 	  It is also possible that stub routers for more than one stub network may be connected to the same adjacent infrastructure
-	  link. In this case, the stub routers will be advertising Router Information Options in their router advertisements for
+	  link. In this case, the stub routers will be advertising Router Information options in their router advertisements for
 	  their OSNR prefixes. Stub routers MUST track the presence of such routes, and MUST advertise reachability to them on
 	  interfaces connected to stub networks.</t>
       </section>
