@@ -153,21 +153,35 @@
 	  Reachability:</dt><dd>Given an IPv6 destination address that is not on-link for any link to which a node is attached, the
 	  information required that allows the node to send packets to a router that can forward those packets towards a link where
 	  the destination address is on-link.</dd>
-	<dt>Infrastructure network:</dt>
-	<dd>
-	  the network infrastructure to which a stub router connects. This network can be a single link, or a network of links. The
-	  network is typically formed by a Home Gateway, which may also provide some services, such as a DNS resolver, a DHCPv4
-    server, and a DHCPv6 prefix delegation server, for example.</dd>
 	<dt>Adjacent Infrastructure Link (AIL):</dt>
 	<dd>any link to which a stub network router is directly attached, that is part of an infrastructure network and is not the
 	  stub network.</dd>
-	<dt>Off-Stub-Network-Routable (OSNR) Prefix:</dt>
-	<dd>a prefix advertised on the stub network that can be used for communication with hosts not on the stub network.</dd>
-        <dt>Home Gateway</t>
+        <dt>Home Gateway:</t>
         <dd>A device, such as a CE Router <xref target=RFC7084/>, that is intended to connect a single uplink network to a
           Local-Area Network. A CE router may be provided by an ISP and only capable of connecting directly to the ISP's
           means of service delivery, e.g. Cable or DSL, or it may have an ethernet port on the WAN side and one or more ethernet
           ports, plus WiFi, on the LAN side.</dd>
+	<dt>Infrastructure network:</dt>
+	<dd>
+	  the network infrastructure to which a stub router connects. This network can be a single link, or a network of links. The
+	  network is typically formed by a Home Gateway, which may also provide some services, such as a DNS resolver, a DHCPv4
+	  server, and a DHCPv6 prefix delegation server, for example.</dd>
+	<dt>Off-Stub-Network-Routable (OSNR) Prefix:</dt>
+	<dd>a prefix advertised on the stub network that can be used for communication with hosts not on the stub network.</dd>
+	<dt>Stub Network:</dt>
+	<dl>A network link that is connected by one or more Stub Routers to a single (adjacent) link an infrastructure network, but
+	  is not used for transit between that link and any other link. <xref target="RFC2328" section="2.1" sectionFormat="of"/>
+	  describes the distinction between stub networks and transit networks from a topological perspective: a stub network is
+	  simply any network that does not provide transit within a routing fabric. There is reachability through a stub network
+	  router to hosts on the stub network, but there is no reachability through the stub network to any link beyond the
+	  stub network link.</dt>
+	<dt>Stub Router:</dt>
+	<dl>A router that provides connectivity between a stub network and an infrastructure network. A stub router may also provide
+	  connectivity between other networks: the term "stub router" refers specifically to its role in providing connectivity to
+	  a stub network. For example, a Home Gateway may provide connectivity between a provider network (WAN) and a home network
+	  (LAN), while at the same time providing connectivity between the LAN and a stub network. What distinguishes the LAN from
+	  the stub network in this case is that the LAN is potentially a candidate to act as a transit network to reach other routers,
+	  whereas the stub network is not.</t>
       </dl>
     </section>
 
