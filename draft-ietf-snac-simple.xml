@@ -141,9 +141,9 @@
 	  Ability to acquire an IP address that can be used to communicate means that the IP address a host on the stub network
 	  acquires can be used to communicate with it by hosts on adjacent infrastructure links, for locally reachable stub networks.</t>
 	<t>
-	  Reachability to hosts on adjacent infrastructure links means that when a host (A) on the stub network has the IP address of such a host
-	  (B), with which it intends to communicate, host (A) knows of a next-hop router to which it can send datagrams, so that
-	  they will ultimately reach host (B).</t>
+	  Reachability to hosts on adjacent links means that when a host (A) on the stub network has a datagram destined for the IP
+	  address of a host (B) on the AIL, host (A) knows of a next-hop router to which it can send the
+	  datagram, so that it will ultimately reach host (B) on the infrastructure network.</t>
 	<t>
 	  Reachability from hosts on adjacent infrastructure links means that when host (A) on an adjacent infrastructure link has a datagram destined for the IP
 	  address of a host (B) on the stub network, a next-hop router is known by host (A) such that, when the datagram is sent to
@@ -204,31 +204,31 @@
       <t>
 	This section describes the meaning of and gives default values for various constants used in this document.</t>
       <dl>
-	<dt>STALE_RA_TIME (default: 10 minutes)</dt>
+	<dt>STALE_RA_TIME (default: 10 minutes):</dt>
 	<dd>
 	  The amount of time that can pass after the last time a router advertisement from a particular router has
 	  been received before we assume the router is no longer present. This is a stopgap in case the router is reachable but has
 	  silently stopped advertising a prefix; this situation is unlikely, but if it does happen, new devices joining the
 	  infrastructure network will not be able to reach devices on the stub network until the stub router decides that the router
 	  that advertised the usable prefix is stale.</dd>
-	<dt>STUB_PROVIDED_PREFIX_LIFETIME (default: 30 minutes)</dt>
+	<dt>STUB_PROVIDED_PREFIX_LIFETIME (default: 30 minutes):</dt>
 	<dd>
 	  The valid and preferred lifetime the stub router will advertise. This should be long enough that a
 	  host is actually willing to use it, and obviously should also be long enough that a missed beacon will not cause the host
 	  to stop using it. The values suggested here allow ten beacons to be missed before the host will stop using the
 	  prefix.</dd>
-	<dt>BEACON_INTERVAL (default: 3 minutes)</dt>
+	<dt>BEACON_INTERVAL (default: 3 minutes):</dt>
 	<dd>
 	  How often the stub router will transmit an RA. This should be frequent enough that a missed Router
 	  Solicit (e.g. due to congestion on a WiFi link) will not result in an extremely long outage (assuming the congestion
 	  passes before the beacon is sent, of course).</dd>
-	<dt>PREFIX_DELEGATION_INTERVAL (default: 30 minutes)</dt>
+	<dt>PREFIX_DELEGATION_INTERVAL (default: 30 minutes):</dt>
 	<dd>
 	  The lifetime a stub router should request for a DHCPv6-delegated prefix. The longer this is, the more
 	  prefixes will be consumed on a network where stub routers are not stable. The lifetime here is chosen to be long enough
 	  that a reboot of the DHCP server will not prevent the prefix being renewed. It happens to coincide with the value of
 	  STUB_PROVIDED_PREFIX_LIFETIME, but the two should not be considered to be equivalent.</dd>
-	<dt>MAX_USABLE_REACHABLE_TIME (default: 60 seconds)</dt>
+	<dt>MAX_USABLE_REACHABLE_TIME (default: 60 seconds):</dt>
 	<dd>
 	  The maximum ReachableTime value that a router can have in the Neighbor Table before any usable
 	  prefixes it has advertised are no longer considered usable.</dd>
@@ -652,9 +652,10 @@
 	In the first case, infrastructure-provided NAT64 is preferred, and the stub router MUST advertise this service
 	to the stub network.</t>
       <t>
-	In the second case, there is no way to provide connectivity to the infrastructure: we don't have IPv6 routing, because
-	we don't have a routable prefix, we don't have NAT64 for the same reason, and we don't have IPv4, so the stub router
-	can't do NAT64 on its own. In this case, the stub router MUST NOT advertise NAT64 service.</t>
+	In the second case, there is no way to provide connectivity to the infrastructure: we don't have IPv6 routing other than to
+	the adjacent infrastructure link, because we don't have a routable prefix, we don't have NAT64 for the same reason, and we
+	don't have IPv4, so the stub router can't do NAT64 on its own. In this case, the stub router MUST NOT advertise NAT64
+	service.</t>
       <t>
 	In the third case, despite the infrastructure providing NAT64, we can't use it, so the stub router MUST provide its own
 	NAT64 service.</t>
@@ -774,20 +775,20 @@
       <t>
 	In order to provide network access, stub routers must provide some network services to the stub network. We have previously
 	discussed the following services:</t>
-      <ul>
-	<li>DNS Resolver: The stub network MUST provide a DNS resolver. If RAs are in use on the stub network, the DNS resolver
+      <dl>
+	<dt>DNS Resolver:</dt><dd>The stub network MUST provide a DNS resolver. If RAs are in use on the stub network, the DNS resolver
 	  is advertised in the Router Advertisement Recursive DNS Server option. If RAs are not in use on the stub network, then
-	  the mechanism whereby the DNS resolver is advertised by the stub router is specific to that type of stub network.</li>
-	<li>DHCPv6 Server: The use of DHCPv6 on the stub network is NOT RECOMMENDED. In some cases it may necessary, but should be
-	  disabled by default if the stub router provides this capability at all.</li>
-	<li>Advertising Proxy: In order to discover services on the AIL, stub routers MUST act as
-	  Discovery Proxies for any AILs to which they are attached.</li>
-	<li>SRP Registrar: Stub routers MUST provide SRP registrar service. This service MUST be advertised using DNS-SD in
-	  a legacy browsing domain that is discoverable through the stub router's resolver.</li>
-	<li>Legacy Browsing Domains: the stub resolver must advertise legacy browsing domains for each AIL,
-            for the zone that is maintained by its SRP service, and in addition must list the legacy browsing domains provided
-	  by the infrastructure network, if any.</li>
-      </ul>
+	  the mechanism whereby the DNS resolver is advertised by the stub router is specific to that type of stub network.</dd>
+	<dt>DHCPv6 Server:</dt><dd>The use of DHCPv6 on the stub network is NOT RECOMMENDED. In some cases it may necessary, but should be
+	  disabled by default if the stub router provides this capability at all.</dd>
+	<dt>Discovery Proxy:</dt><dd>In order to discover services on the AIL, stub routers MUST act as
+	  Discovery Proxies for any AILs to which they are attached.</dd>
+	<dt>SRP Registrar:</dt><dd>Stub routers MUST provide SRP registrar service. This service MUST be advertised using DNS-SD in
+	  a legacy browsing domain that is discoverable through the stub router's resolver.</dd>
+	<dt>Legacy Browsing Domains:</dt><dd>The stub resolver must advertise legacy browsing domains for each AIL,
+	  for the zone that is maintained by its SRP service, and in addition must list the legacy browsing domains provided
+	  by the infrastructure network, if any.</dd>
+      </dl>
     </section>
   </middle>
   <back>
