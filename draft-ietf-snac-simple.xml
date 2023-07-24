@@ -141,14 +141,13 @@
 	  Ability to acquire an IP address that can be used to communicate means that the IP address a host on the stub network
 	  acquires can be used to communicate with it by hosts on adjacent infrastructure links, for locally reachable stub networks.</t>
 	<t>
-	  Reachability to hosts on adjacent links means that when a host (A) on the stub network has a datagram destined for the IP
-	  address of a host (B) on the AIL, host (A) knows of a next-hop router to which it can send the
+	  Reachability to hosts on adjacent infrastructure links means that when a host (A) on the stub network has a datagram destined for the IP
+	  address of a host (B) on an adjacent infrastructure link, host (A) knows of a next-hop router to which it can send the
 	  datagram, so that it will ultimately reach host (B) on the infrastructure network.</t>
 	<t>
 	  Reachability from hosts on adjacent infrastructure links means that when host (A) on an adjacent infrastructure link has a datagram destined for the IP
 	  address of a host (B) on the stub network, a next-hop router is known by host (A) such that, when the datagram is sent to
 	  that router, it will ultimately reach host (B) on the stub network.</t>
-
       </section>
       <section anchor="usability-goals"><name>Usability Goals</name>
 	<t>
@@ -183,7 +182,7 @@
 	<dt>Off-Stub-Network-Routable (OSNR) Prefix:</dt>
 	<dd>a prefix advertised on the stub network that can be used for communication with hosts not on the stub network.</dd>
 	<dt>Stub Network:</dt>
-	<dd>A network link that is connected by one or more Stub Routers to a single AIL of an infrastructure network, but
+	<dd>A network link that is connected by one or more Stub Routers to an AIL an infrastructure network, but
 	  is not used for transit between that link and any other link. <xref target="RFC2328" section="2.1" sectionFormat="of"/>
 	  describes the distinction between stub networks and transit networks from a topological perspective: a stub network is
 	  simply any network that does not provide transit within a routing fabric. There is reachability through a stub network
@@ -253,20 +252,20 @@
 	on-link prefix for such links is managed. In this section we will use the term "Advertising Interface" as described in
 	<xref target="RFC4861" section="6.2.2"/>.</t>
       <t>
-	Support for AILs on networks where Neighbor Discovery is not supported and is out of scope for this document. Stub routers
+	Support for AILS on networks where Neighbor Discovery is not supported is out of scope for this document. Stub routers
 	do not provide routing between AILs when connected to more than one such link.</t>
       <section>
 	<name>Managing addressability on an adjacent infrastructure link</name>
 	<t>
 	  In order to provide IPv6 routing to the stub network, IPv6 addressing must be available on each AIL.
-          Ideally such addressing is already present on these links, and need not be provided. However, if it is not present,
+	  Ideally such addressing is already present on these links, and need not be provided. However, if it is not present,
 	  the stub router must provide it.
 	</t>
 	<section>
 	  <name>Usable On-Link Prefixes</name>
 	  <t>
 	    IPv6 addressing is considered to be present on the link if a usable on-link prefix is advertised on the AIL.
-            A usable on-link prefix is a prefix advertised on the link that has a preferred time of 30 minutes
+	    A usable on-link prefix is a prefix advertised on the link that has a preferred lifetime of 30 minutes
 	    or more, is marked on-link and allows autonomous configuration.</t>
 	  <t>
 	    A prefix is not considered a usable on-link prefix if it is advertised on the link as on-link, but the 'a' bit is not set in
@@ -329,7 +328,7 @@
 		For each usable route, the stub router MUST monitor the state of reachability to the router(s) that
 		advertised it as described in (<xref target="RFC4861" section="7.3.1" sectionFormat="comma"/>) using a ReachableTime
 		value of no more than MAX_USABLE_REACHABLE_TIME. The reason for this is that if no router providing the on-link
-		prefix on the infrastructure link is reachable, then when a new host joins the network, it will have no usable on-link
+		prefix on the AIL is reachable, then when a new host joins the network, it will have no usable on-link
 		prefix to use for autoconfiguration, and thus will be unable to communicate with hosts on the stub network.</t>
 	      <t>
 		Whenever the ReachableTime for a router advertising a usable prefix exceeds MAX_USABLE_REACHABLE_TIME, the stub router
@@ -370,7 +369,7 @@
 	      BEACON_INTERVAL seconds.</t>
 	    <t>
 	      The stub router may receive a router advertisement containing a usable on-link prefix on the AIL.
-              If the advertised prefix is different than the prefix the stub router is advertising as the on-link usable
+	      If the advertised prefix is different than the prefix the stub router is advertising as the on-link usable
 	      prefix, and the Stub Router bit is not set in the prefix option for the prefix, the stub router moves the interface to
 	      STATE-DEPRECATING (<xref target="state-deprecating"/>).</t>
 	    <t>
@@ -544,7 +543,7 @@
 	</t>
 	<t>
 	  It is also possible that stub routers for more than one stub network may be connected to the same AIL.
-          In this case, the stub routers will be advertising Router Information options in their router advertisements for
+	  In this case, the stub routers will be advertising Router Information options in their router advertisements for
 	  their OSNR prefixes. Stub routers MUST track the presence of such routes, and MUST advertise reachability to them on
 	  interfaces connected to stub networks.</t>
       </section>
@@ -597,9 +596,9 @@
 	<section>
 	  <name>Providing discoverability of adjacent infrastructure hosts on the stub network</name>
 	  <t>
-	    Hosts on the stub network may need to discover hosts on the adjacent infrastructure network, or on the stub network.  In
+	    Hosts on the stub network may need to discover hosts on the AIL, or on the stub network.  In
 	    the IoT network example we've been using, there might be a light switch on the stub network which needs to be able to
-	    actuate a light bulb connected to the adjacent infrastructure network. In order to know where to send the actuation
+	    actuate a light bulb connected to the AIL. In order to know where to send the actuation
 	    messages, the light switch will need to be able to discover the light bulb's address somehow.</t>
 	  <t>
 	    Because the stub network is managed by stub routers, any DNS resolver that's available on the stub network will
