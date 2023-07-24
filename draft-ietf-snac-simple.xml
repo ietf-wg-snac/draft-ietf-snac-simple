@@ -139,13 +139,13 @@
 	  stub network connectivity to be useful.</t>
 	<t>
 	  Ability to acquire an IP address that can be used to communicate means that the IP address a host on the stub network
-	  acquires can be used to communicate with it by hosts on adjacent links, for locally reachable stub networks.</t>
+	  acquires can be used to communicate with it by hosts on adjacent infrastructure links, for locally reachable stub networks.</t>
 	<t>
 	  Reachability to hosts on adjacent links means that when a host (A) on the stub network has a datagram destined for the IP
-	  address of a host (B) on the adjacent infrastructure link, host (A) knows of a next-hop router to which it can send the
+	  address of a host (B) on the AIL, host (A) knows of a next-hop router to which it can send the
 	  datagram, so that it will ultimately reach host (B) on the infrastructure network.</t>
 	<t>
-	  Reachability from hosts on adjacent links means that when host (A) on an adjacent link has a datagram destined for the IP
+	  Reachability from hosts on adjacent infrastructure links means that when host (A) on an adjacent infrastructure link has a datagram destined for the IP
 	  address of a host (B) on the stub network, a next-hop router is known by host (A) such that, when the datagram is sent to
 	  that router, it will ultimately reach host (B) on the stub network.</t>
 
@@ -183,7 +183,7 @@
 	<dt>Off-Stub-Network-Routable (OSNR) Prefix:</dt>
 	<dd>a prefix advertised on the stub network that can be used for communication with hosts not on the stub network.</dd>
 	<dt>Stub Network:</dt>
-	<dd>A network link that is connected by one or more Stub Routers to a single (adjacent) link an infrastructure network, but
+	<dd>A network link that is connected by one or more Stub Routers to a single AIL of an infrastructure network, but
 	  is not used for transit between that link and any other link. <xref target="RFC2328" section="2.1" sectionFormat="of"/>
 	  describes the distinction between stub networks and transit networks from a topological perspective: a stub network is
 	  simply any network that does not provide transit within a routing fabric. There is reachability through a stub network
@@ -206,7 +206,7 @@
       <dl>
 	<dt>STALE_RA_TIME (default: 10 minutes):</dt>
 	<dd>
-	  The amount of time that can pass after the last time a router advertisement from a particular has
+	  The amount of time that can pass after the last time a router advertisement from a particular router has
 	  been received before we assume the router is no longer present. This is a stopgap in case the router is reachable but has
 	  silently stopped advertising a prefix; this situation is unlikely, but if it does happen, new devices joining the
 	  infrastructure network will not be able to reach devices on the stub network until the stub router decides that the router
@@ -247,27 +247,26 @@
     <section>
       <name>Support for adjacent infrastructure links</name>
       <t>
-	We assume that the adjacent infrastructure link supports Neighbor Discovery <xref target="RFC4861"/>, and specifically that
+	We assume that the AIL supports Neighbor Discovery <xref target="RFC4861"/>, and specifically that
 	routers and on-link prefixes can be advertised using router advertisements and discovered using neighbor solicits. The stub
 	network link may also support this, or may use some different mechanism. This section specifies how advertisement of the
 	on-link prefix for such links is managed. In this section we will use the term "Advertising Interface" as described in
 	<xref target="RFC4861" section="6.2.2"/>.</t>
       <t>
-	Support for adjacent
-	infrastructure links on networks where Neighbor Discovery is not supported and is out of scope for this document. Stub routers
-	do not provide routing between adjacent infrastructure links when connected to more than one such link.</t>
+	Support for AILs on networks where Neighbor Discovery is not supported and is out of scope for this document. Stub routers
+	do not provide routing between AILs when connected to more than one such link.</t>
       <section>
 	<name>Managing addressability on an adjacent infrastructure link</name>
 	<t>
-	  In order to provide IPv6 routing to the stub network, IPv6 addressing must be available on each adjacent infrastructure
-	  link. Ideally such addressing is already present on these links, and need not be provided. However, if it is not present,
+	  In order to provide IPv6 routing to the stub network, IPv6 addressing must be available on each AIL.
+          Ideally such addressing is already present on these links, and need not be provided. However, if it is not present,
 	  the stub router must provide it.
 	</t>
 	<section>
 	  <name>Usable On-Link Prefixes</name>
 	  <t>
-	    IPv6 addressing is considered to be present on the link if a usable on-link prefix is advertised on the adjacent
-	    infrastructure link. A usable on-link prefix is a prefix advertised on the link that has a preferred time of 30 minutes
+	    IPv6 addressing is considered to be present on the link if a usable on-link prefix is advertised on the AIL.
+            A usable on-link prefix is a prefix advertised on the link that has a preferred time of 30 minutes
 	    or more, is marked on-link and allows autonomous configuration.</t>
 	  <t>
 	    A prefix is not considered a usable on-link prefix if it is advertised on the link as on-link, but the 'a' bit is not set in
@@ -289,14 +288,14 @@
 	<section anchor="usable-prefix-state-machine">
 	  <name>State Machine for maintaining a usable on-link prefix on an infrastructure link</name>
 	  <t>
-	    The possible states of an interface connected to an adjacent infrastructure link are described here, along with actions
+	    The possible states of an interface connected to an AIL are described here, along with actions
 	    required to be taken to monitor the state. The purpose of the state machine described here is to ensure that at all
-	    times, when a new host arrives on the adjacent infrastructure link, it is able to acquire an IPv6 address on that
+	    times, when a new host arrives on the AIL, it is able to acquire an IPv6 address on that
 	    link.</t>
 	  <section anchor="state-unknown">
 	    <name>Status of IP addressability on adjacent infrastructure link unknown (STATE-UNKNOWN)</name>
 	    <t>
-	      When the stub router interface first connects to the adjacent infrastructure link, it MUST begin router discovery.</t>
+	      When the stub router interface first connects to the AIL, it MUST begin router discovery.</t>
 	    <t>
 	      If, after router discovery has completed, no usable on-link prefix has been found, the router moves this interface to
 	      STATE-BEGIN-ADVERTISING (<xref target="state-begin-advertising"/>).</t>
@@ -313,14 +312,14 @@
 	      When entering this state, if the router MUST discontinue treating the interface as an Advertising Interface as
 	      described in <xref target="RFC4861" section="6.2.2"/>, if it has been doing so.</t>
 	    <t>
-	      When a new host appears on the adjacent infrastructure link and sends an initial router solicit, if it does not
+	      When a new host appears on the AIL and sends an initial router solicit, if it does not
 	      receive a usable on-link prefix, it will not be able to communicate. Consequently, the stub router MUST monitor router
 	      solicits and advertisements on the interface in order to determine whether a prefix that has been advertised on the
 	      link is still being advertised. To accomplish this we have two complementary methods: router staleness detection and
 	      neighbor unreachability detection.</t>
 	    <section anchor="staleness"><name>Router staleness detection</name>
 	      <t>
-		The stub router MUST listen for router advertisements on the adjacent infrastructure link to which the interface is
+		The stub router MUST listen for router advertisements on the AIL to which the interface is
 		attached, and record the time at which each router advertisement was received. The router MUST NOT consider any router
 		advertisement that is older than STALE_RA_TIME to be usable.  When the last non-stale router advertisement containing
 		a usable prefixes on the link is marked stale, the stub router MUST move the interface to STATE-BEGIN-ADVERTISING.</t>
@@ -337,8 +336,8 @@
 		MUST send unicast neighbor solicits as described in <xref target="RFC4861" section="7.2.2"/> until either a response
 		is received, which resets ReachableTime to zero, or the maximum number of retransmissions has been sent.</t>
 	      <t>
-		The stub router MUST listen for router solicits on the adjacent infrastructure link. When a router solicit is
-		received, if none of the on-link routers on the adjacent infrastructure link are marked reachable, the stub router
+		The stub router MUST listen for router solicits on the AIL. When a router solicit is
+		received, if none of the on-link routers on the AIL are marked reachable, the stub router
 		MUST move this interface to the STATE-BEGIN-ADVERTISING state (<xref target="state-begin-advertising"/>).</t>
 	      <t>
 		If a beacon interval arrives, and there are no routers advertising usable prefixes that have a ReachableTime that is
@@ -370,8 +369,8 @@
 	      The stub router sends a router advertisement message, as described in <xref target="state-begin-advertising"/>, every
 	      BEACON_INTERVAL seconds.</t>
 	    <t>
-	      The stub router may receive a router advertisement containing a usable on-link prefix on the adjacent infrastructure
-	      link. If the advertised prefix is different than the prefix the stub router is advertising as the on-link usable
+	      The stub router may receive a router advertisement containing a usable on-link prefix on the AIL.
+              If the advertised prefix is different than the prefix the stub router is advertising as the on-link usable
 	      prefix, and the Stub Router bit is not set in the prefix option for the prefix, the stub router moves the interface to
 	      STATE-DEPRECATING (<xref target="state-deprecating"/>).</t>
 	    <t>
@@ -394,7 +393,7 @@
 	    <t>
 	      On entry to this state, the stub router has been treating the interface as an Advertising Interface as described in
 	      <xref target="RFC4861" section="6.2.2"/>, and MUST continue to do so.</t>
-	    <t>When the stub router has detected the availability of usable on-link prefix on the adjacent infrastructure link to
+	    <t>When the stub router has detected the availability of usable on-link prefix on the AIL to
 	      which the interface is attached, and that prefix is preferable to the one it is advertising, it continues to advertise
 	      its own prefix, but deprecates it:
 	    </t>
@@ -498,7 +497,7 @@
             network links and all links on the infrastructure network, and possibly to the general internet.
 	  </t><t>
 	    By contrast, if the prefix generated by the stub router is used, reachability is only possible between the stub network
-	    and the adjacent infrastructure link, because the OSNR prefix in this case is not known to the infrastructure network
+	    and the AIL, because the OSNR prefix in this case is not known to the infrastructure network
 	    routing fabric. So when the only prefix that is available is the one provided by the stub router, cloud services will
 	    not be reachable via IPv6, and infrastructure-provided NAT64 will not work. Therefore, when the stub router is able to
 	    successfully acquire a prefix using DHCPv6 PD, it MUST use DHCPv6 PD rather than its own self-generated ULA prefix.
@@ -544,8 +543,8 @@
 	  default router. The mechanisms by which such configuration can be accomplished are out of scope for this document.
 	</t>
 	<t>
-	  It is also possible that stub routers for more than one stub network may be connected to the same adjacent infrastructure
-	  link. In this case, the stub routers will be advertising Router Information options in their router advertisements for
+	  It is also possible that stub routers for more than one stub network may be connected to the same AIL.
+          In this case, the stub routers will be advertising Router Information options in their router advertisements for
 	  their OSNR prefixes. Stub routers MUST track the presence of such routes, and MUST advertise reachability to them on
 	  interfaces connected to stub networks.</t>
       </section>
@@ -563,9 +562,9 @@
 	    the infrastructure network, and can be assumed to provide a local DNS resolver. Therefore, we do not need to
 	    define a stub-network-specific mechanism for providing these services on the infrastructure network.</t>
 	  <t>
-	    In some cases it will be necessary for hosts on the adjacent infrastructure link to be able to discover devices on the
+	    In some cases it will be necessary for hosts on the AIL to be able to discover devices on the
 	    stub network. In other cases, this will be unnecessary or even undesirable. For example, it may be undesirable for
-	    devices on an adjacent infrastructure link to be able to discover devices on a Wi-Fi tether, for example provided by a
+	    devices on an AIL to be able to discover devices on a Wi-Fi tether provided by a
 	    mobile phone.</t>
 	  <t>
 	    One example of a use case for stub networks where such discovery is desirable is the constrained network use case. In this
@@ -610,7 +609,7 @@
 	    provided on the stub network, as described in <xref target="RFC6763" section="11"/>.</t>
 	  <t>
 	    By implication, this means that stub routers MUST provide a DNS resolver. In addition, stub routers MUST provide
-	    DNS zones for each adjacent infrastructure link, and MUST list these zones in the list of default browsing zones
+	    DNS zones for each AIL, and MUST list these zones in the list of default browsing zones
 	    as defined in RFC6763. [[WG: we need to say how these zones are named. Or refer to the Advertising Proxy doc and
 	    have that doc say how they are named.]]</t>
 	  <t>
@@ -691,14 +690,14 @@
 	<t>
 	  Stub networks are defined to be IPv6-only because it would be difficult to implement a stub network using IPv4
 	  technology. However, stub network devices may need to be able to communicate with IPv4-only services either on the
-	  adjacent infrastructure, or on the global internet. Ideally, the infrastructure network fully supports IPv6, and all
+	  infrastructure network, or on the global internet. Ideally, the infrastructure network fully supports IPv6, and all
 	  services on the infrastructure network are IPv6-capable. In this case, perhaps the infrastructure network provides NAT64
 	  service to IPv4-only hosts on the internet. In this ideal setting, the stub router need do nothing—the infrastructure
 	  network is doing it all.
 	</t><t>
-	  In this situation, if there are multiple stub routers, each connected to the same adjacent infrastructure link, there is
-	  no need for special behavior—each stub router can advertise a default route, and any stub router will do to route NAT64
-	  traffic. If some stub routers are connected to different adjacent infrastructure links than others, some of which support
+	  In this situation, if there are multiple stub routers, each connected to the same AIL, there is
+	  no need for special behavior—each stub router can advertise a default route, and any stub router may be used to route NAT64
+	  traffic. If some stub routers are connected to different AILs than others, some of which support
 	  NAT64 and some of which do not, then the default route may not carry traffic to the correct link for NAT64 service. In
 	  this case, a more specific address to the infrastructure NAT64 prefix(es) MUST be advertised by those stub routers that
 	  are able to discover it.
@@ -757,7 +756,7 @@
 	such a partition occurs, the stub routers must detect that it has occurred. If a stub router is currently providing a
 	prefix on the stub network, it does not need to take action. If a stub router had not been providing a prefix on the stub network,
 	and now discovers that there is no stub router providing a prefix on the network, it MUST begin to provide its own prefix
-	on the stub network. It MUST also advertise reachability to that new prefix on its adjacent infrastructure link(s).
+	on the stub network. It MUST also advertise reachability to that new prefix on its AIL(s).
       </t><t>
 
 	When partitions of this type occur, they may also heal. When a partition heals in a situation where two stub routers have
@@ -782,12 +781,12 @@
 	  the mechanism whereby the DNS resolver is advertised by the stub router is specific to that type of stub network.</dd>
 	<dt>DHCPv6 Server:</dt><dd>The use of DHCPv6 on the stub network is NOT RECOMMENDED. In some cases it may necessary, but should be
 	  disabled by default if the stub router provides this capability at all.</dd>
-	<dt>Discovery Proxy:</dt><dd>In order to discover services on the adjacent infrastructure link, stub routers MUST act as
-	  Discovery Proxies for any adjacent infrastructure links to which they are attached.</dd>
+	<dt>Discovery Proxy:</dt><dd>In order to discover services on the AIL, stub routers MUST act as
+	  Discovery Proxies for any AILs to which they are attached.</dd>
 	<dt>SRP Registrar:</dt><dd>Stub routers MUST provide SRP registrar service. This service MUST be advertised using DNS-SD in
 	  a legacy browsing domain that is discoverable through the stub router's resolver.</dd>
-	<dt>Legacy Browsing Domains:</dt><dd>The stub resolver must advertise legacy browsing domains for each adjacent infrastructure
-	  link, for the zone that is maintained by its SRP service, and in addition must list the legacy browsing domains provided
+	<dt>Legacy Browsing Domains:</dt><dd>The stub resolver must advertise legacy browsing domains for each AIL,
+	  for the zone that is maintained by its SRP service, and in addition must list the legacy browsing domains provided
 	  by the infrastructure network, if any.</dd>
       </dl>
     </section>
