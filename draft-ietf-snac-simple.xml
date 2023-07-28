@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE rfc SYSTEM "rfc2629-xhtml.ent">
-<rfc category="bcp" submissionType="IETF" docName="draft-ietf-snac-simple-01" ipr="trust200902"
+<rfc category="bcp" submissionType="IETF" docName="draft-ietf-snac-simple-02" ipr="trust200902"
      xmlns:xi="http://www.w3.org/2001/XInclude" version="3"
      scripts="Common,Latin" sortRefs="false" consensus="true"
      symRefs="true" tocDepth="3" tocInclude="true" xml:lang="en">
@@ -34,7 +34,7 @@
       </address>
     </author>
 
-    <date year='2023' month='March' day='8'/>
+    <date year='2023' month='July' day='28'/>
     <area>Internet</area>
     <workgroup>Internet Engineering Task Force</workgroup>
     <abstract>
