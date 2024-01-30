@@ -89,22 +89,25 @@
       <t>
 	Eliminating transit routing is not intended to be seen as a virtue in itself, but rather as a simplifying assumption that
 	makes it possible to solve a subset of the general problem of automating multi-link networks.
-	Stub networks may be globally reachable, or may be only locally reachable. This document addresses local reachability.  A
-	host on a locally reachable stub network can only interoperate with hosts on the network link(s) to which it is connected.</t>
+	Stub networks may be globally reachable, or may be only locally reachable. A
+	host on a locally reachable stub network can only interoperate with hosts on the network link(s) to which it is connected.
+	A host on a globally reachable stub network should be able to interoperate with hosts on other network links in the same
+	infrastructure as well as hosts on the global internet.</t>
       <t>
 	It may be noted that just as you can plug several Home Gateway devices together in series to form multi-layer NATs, there is
-	nothing preventing the owner of a stub network router from plugging it into another stub network router. In the case of
-	an IoT wireless network, there may be no way to do this, nor would it be desirable, but a stub router that uses ethernet
-	on both the infrastructure and stub network sides could be connected this way. Nothing in this document is intended to
-	prevent this from being done, but neither do we attempt to solve the problems that this could create.</t>
+	nothing preventing the owner of a stub network router from attaching it to a stub network as if that network were its
+	infrastructure network. In the case of an IoT wireless network, there may be no way to do this, nor would it be desirable,
+	but a stub router that uses ethernet on both the infrastructure and stub network sides could be connected this way. Nothing
+	in this document is intended to prevent this from being done, but neither do we attempt to solve the problems that this
+	could create.</t>
       <t>
 	The goal of this document is to describe the minimal set of changes or behaviors required to use existing IETF
 	specifications to support the stub network use case. The result is intended to be deployable on existing networks without
 	requiring changes to those networks.</t>
       <section anchor="interop-goals"><name>Interoperability Goals</name>
 	<t>
-	  The goal here is for hosts on the stub network to be able to interoperate with hosts on the adjacent infrastructure link
-	  or links. What we mean by "interoperate" is that a host on a stub network:
+	  The specific goal is for hosts on the stub network to be able to interoperate with hosts on the adjacent infrastructure
+	  link or links. What we mean by "interoperate" is that a host on a stub network:
 	</t>
 	<ul>
 	  <li>
@@ -129,7 +132,7 @@
 	  a specific WiFi network wishes to discover services on hosts connected to that same WiFi network, it can do so using
 	  multicast DNS.  Similarly, when a host on some other network
 	  wishes to discover the same service, it must use DNS-based DNS Service Discovery <xref target="RFC6763"/>.  In both cases,
-	  "discoverable using DNS" means that the host has an entry in the DNS.</t>
+	  "discoverable using DNS" means that the host has one or more entries in the DNS that serve to make it discoverable.</t>
 	<t>
 	  We lump discoverability in with reachability and addressability, both of which are essentially Layer 3 issues. The reason
 	  for this is that it does us no good to automatically set up connectivity between stub network hosts and infrastructure
@@ -139,7 +142,7 @@
 	  stub network connectivity to be useful.</t>
 	<t>
 	  Ability to acquire an IP address that can be used to communicate means that the IP address a host on the stub network
-	  acquires can be used to communicate with it by hosts on adjacent infrastructure links, for locally reachable stub networks.</t>
+	  acquires can be used to communicate with it by hosts not on the stub network.</t>
 	<t>
 	  Reachability to hosts on adjacent infrastructure links means that when a host (A) on the stub network has a datagram destined for the IP
 	  address of a host (B) on an adjacent infrastructure link, host (A) knows of a next-hop router to which it can send the
@@ -500,8 +503,8 @@
 	<section>
 	  <name>Using DHCPv6 Prefix Delegation to acquire a prefix to provide addressability</name>
           <t>
-            If IPv6 prefix delegation and IPv6 service is both available on the infrastructure link, then the stub router MUST
-            attempt to acquire a prefix using DCHPv6 prefix delegation. Using a prefix provided by the infrastructure DHCPv6 prefix
+            If DHCPv6 prefix delegation and IPv6 service are both available on the infrastructure link, then the stub router MUST
+            attempt to acquire a prefix using DHCPv6 prefix delegation. Using a prefix provided by the infrastructure DHCPv6 prefix
             delegation service means (assuming the infrastructure is configured correctly) that routing is possible between the stub
             network links and all links on the infrastructure network, and possibly to the general internet.
 	  </t><t>
@@ -524,10 +527,10 @@
 	<t>
 	  Stub routers MUST advertise reachability to stub network OSNR prefixes on any AIL to which they are connected. If the stub
 	  router is advertising a usable prefix on any interface, any such prefixes MUST be advertised on that interface in the same
-	  beacon that is advertising the usable prefix, to avoid unnecessary multicast traffic.
+	  router advertisement that is advertising the usable prefix, to avoid unnecessary multicast traffic.
 	</t><t>
 	  Each stub network will have some set of prefixes that are advertised as on-link for that network. A stub router connected
-	  to that network SHOULD advertise reachability to all such prefixes on any AIL to which it is attached using router
+	  to that stub network SHOULD advertise reachability to all such prefixes on any AIL to which it is attached using router
 	  advertisements
 	</t>
       </section>
@@ -760,13 +763,13 @@
       <name>Handling partitioning events on a stub network</name>
       <t>
 
-	If a stub network is constructed using mesh technology, it may become partitioned. In such a situation, it may be one stub
-	router is connected to one partition, and another stub router is connected to the other partition. In this situation, in
-	order for all nodes to be reachable, it is necessary that each partition of the stub network have its own prefix. When
-	such a partition occurs, the stub routers must detect that it has occurred. If a stub router is currently providing a
-	prefix on the stub network, it does not need to take action. If a stub router had not been providing a prefix on the stub network,
-	and now discovers that there is no stub router providing a prefix on the network, it MUST begin to provide its own prefix
-	on the stub network. It MUST also advertise reachability to that new prefix on its AIL(s).
+	If a stub network is constructed using mesh technology, it may become partitioned. In such a situation, it may be that one
+	stub router is connected to one partition, and another stub router is connected to the other partition. In this situation,
+	in order for all nodes to be reachable, it is necessary that each partition of the stub network have its own prefix. When
+	such a partition occurs, the stub routers must detect that it has occurred. If a stub router is currently providing a prefix
+	on the stub network, it does not need to take action. If a stub router had not been providing a prefix on the stub network,
+	and now discovers that there is no stub router providing a prefix on the network, it MUST begin to provide its own prefix on
+	the stub network. It MUST also advertise reachability to that new prefix on its AIL(s).
       </t><t>
 
 	When partitions of this type occur, they may also heal. When a partition heals in a situation where two stub routers have
