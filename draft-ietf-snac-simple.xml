@@ -501,16 +501,31 @@
 	    isn't worth doing.]</t>
 	</section>
 	<section>
-	  <name>Generating a ULA prefix to provide addressability</name>
+	  <name>Generating a per-stub-router ULA site prefix</name>
 	  <t>
-	    In order to be able to provide addressability either on the stub network or on an adjacent infrastructure network, a stub
-	    router must allocate its own ULA prefix. ULA prefixes, described in Unique Local IPv6 Unicast Addresses
-	    (<xref target="RFC4193"/>) are randomly allocated prefixes. A stub router MUST allocate a single ULA prefix for use in
-	    providing on-link prefixes to the stub network and the infrastructure network, as needed.
+	    Some technologies used for stub networks, for example Thread or 6LoWPAN mesh networks, can produce partitioned networks,
+            where what is notionally the same stub network winds up looking like two or more discrete links. For mesh networks, such
+            partitions can form and rejoin over time as a result of either changes in radio propagation or the addition of, or
+            removal of, devices on the mesh.
 	  </t><t>
-	    The ULA prefix allocated by a stub router SHOULD be maintained across reboots, and SHOULD remain stable over
-	    time. For privacy reasons, a stub router that roams from network to network may wish to allocate a different ULA prefix
-	    each time it connects to a different infrastructure network.
+	    On stub networks that can partition, one way of detecting that a partition has occurred is to notice that the stub
+	    router that has advertised the on-link prefix for the stub network is no longer reachable. When this occurs, stub
+	    routers that notice this loss of reachability MUST advertise a ULA link prefix derived from their ULA site prefix on the
+	    stub network.
+	  </t><t>
+	    An implication of this is that when such a partition forms, the same ULA link (?) prefix can’t be advertised on both
+	    partitions, since this will result in ambiguous routing. We address this problem by requiring that each stub router
+	    generate its own ULA site prefix. This prefix is then available for two purposes: providing addressing on the AIL, if
+	    needed, and providing addressing on the stub network, if needed.
+	  </t><t>
+	    A stub router must therefore allocate its own ULA site prefix. ULA prefixes, described in Unique Local IPv6 Unicast
+            Addresses (<xref target="RFC4193"/>), are randomly allocated prefixes.  A stub router MUST allocate a single ULA site
+            prefix for use in providing on-link prefixes to the stub network and the infrastructure network, as needed.
+	  </t><t>
+	    The ULA prefix allocated by a stub router SHOULD be maintained across reboots, and SHOULD remain stable over time. (TBD:
+            mention the SHOULD exception cases) However, for privacy reasons, a stub router that roams from network to network
+            SHOULD allocate a different ULA prefix each time it connects to a different infrastructure network, unless configured to
+            behave otherwise.
 	  </t>
 	</section>
 	<section>
