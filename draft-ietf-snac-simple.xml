@@ -215,7 +215,7 @@
 	  been received before we assume the router is no longer present. This is a stopgap in case the router is reachable but has
 	  silently stopped advertising a prefix; this situation is unlikely, but if it does happen, new devices joining the
 	  infrastructure network will not be able to reach devices on the stub network until the stub router decides that the router
-	  that advertised the usable prefix is stale.</dd>
+	  that advertised the suitable prefix is stale.</dd>
 	<dt>STUB_PROVIDED_PREFIX_LIFETIME (default: 30 minutes):</dt>
 	<dd>
 	  The valid and preferred lifetime the stub router will advertise. This should be long enough that a
@@ -233,10 +233,10 @@
 	  prefixes will be consumed on a network where stub routers are not stable. The lifetime here is chosen to be long enough
 	  that a reboot of the DHCP server will not prevent the prefix being renewed. It happens to coincide with the value of
 	  STUB_PROVIDED_PREFIX_LIFETIME, but the two should not be considered to be equivalent.</dd>
-	<dt>MAX_USABLE_REACHABLE_TIME (default: 60 seconds):</dt>
+	<dt>MAX_SUITABLE_REACHABLE_TIME (default: 60 seconds):</dt>
 	<dd>
-	  The maximum ReachableTime value that a router can have in the Neighbor Table before any usable
-	  prefixes it has advertised are no longer considered usable.</dd>
+	  The maximum ReachableTime value that a router can have in the Neighbor Table before any suitable
+	  prefixes it has advertised are no longer considered suitable.</dd>
       </dl>
     </section>
 
@@ -268,30 +268,38 @@
 	  the stub router must provide it.
 	</t>
 	<section>
-	  <name>Usable On-Link Prefixes</name>
+	  <name>Suitable On-Link Prefixes</name>
 	  <t>
-	    IPv6 addressing is considered to be present on the link if a usable on-link prefix is advertised on the AIL.
-	    A usable on-link prefix is a prefix advertised on the link that has a preferred lifetime of 30 minutes
-	    or more, is marked on-link and allows autonomous configuration.</t>
+	    Stub routers must evaluate prefixes that are advertised on-link as to their suitability for use in communicating with
+	    devices on the stub network. If no suitable prefix is found, a stub router MUST advertise one.
+	  </t><t>
+	    An on-link prefix is considered suitable if it is advertised on the link in an RA and has:
+	  </t>
+	  <ul>
+	    <li>a preferred lifetime of 30 minutes or more</li>
+            <li>is marked on-link</li>
+	    <li>has a width of 64 bits (<xref target="RFC7421" section="1" sectionFormat="comma" />), and</li>
+	    <li>allows autonomous configuration.</li>
+	  </ul>
 	  <t>
-	    A prefix is not considered a usable on-link prefix if it is advertised on the link as on-link, but the 'a' bit is not set in
+	    A prefix is not considered a suitable on-link prefix if it is advertised on the link as on-link, but the 'a' bit is not set in
 	    the Prefix Information option header (<xref target="RFC4861" section="4.6.2" sectionFormat="comma" />) that contains
 	    the Prefix option. This indicates that node addressability is being managed using DHCPv6. Nodes are not required to
-	    use DHCPv6 to acquire addresses, so a prefix that requires the use of DHCPv6 can't be considered "usable"&mdash;not all
-	    hosts can actually use it.</t>
-	  <t>
+	    use DHCPv6 to acquire addresses, so a prefix that requires the use of DHCPv6 can't be considered "suitable"&mdash;not all
+	    hosts can actually use it.
+	  </t><t>
 	    A prefix is considered to be advertised on the link if, when a Router Solicit message
 	    (<xref target="RFC4861" section="4.1" sectionFormat="comma"/>) is sent, a Router Advertisement message is received in
 	    response which contains a prefix information option (<xref target="RFC4861" section="4.6.2" sectionFormat="comma"/>)
-	    for that prefix.</t>
+	    for that prefix.
 	  <t>
-	    After an RA message containing a usable prefix has been received, it can be assumed for some period of time thereafter that that prefix
+	    After an RA message containing a suitable prefix has been received, it can be assumed for some period of time thereafter that that prefix
 	    is still valid on the link. However, prefix lifetimes and router lifetimes are often quite long. In addition to knowing that
 	    a prefix has been advertised on the link in the past, and is still valid, we must therefore ensure
 	    that at least one router that has advertised this prefix is still alive to respond to router advertisements.</t>
 	</section>
-	<section anchor="usable-prefix-state-machine">
-	  <name>State Machine for maintaining a usable on-link prefix on an infrastructure link</name>
+	<section anchor="suitable-prefix-state-machine">
+	  <name>State Machine for maintaining a suitable on-link prefix on an infrastructure link</name>
 	  <t>
 	    The possible states of an interface connected to an AIL are described here, along with actions
 	    required to be taken to monitor the state. The purpose of the state machine described here is to ensure that at all
@@ -302,23 +310,23 @@
 	    <t>
 	      When the stub router interface first connects to the AIL, it MUST begin router discovery.</t>
 	    <t>
-	      If, after router discovery has completed, no usable on-link prefix has been found, the router moves this interface to
+	      If, after router discovery has completed, no suitable on-link prefix has been found, the router moves this interface to
 	      STATE-BEGIN-ADVERTISING (<xref target="state-begin-advertising"/>).</t>
 	    <t>
-	      If, during router discovery, a usable on-link prefix is found, the router moves the interface to
-	      STATE-USABLE (<xref target="state-usable"/>).</t>
+	      If, during router discovery, a suitable on-link prefix is found, the router moves the interface to
+	      STATE-SUITABLE (<xref target="state-suitable"/>).</t>
 	    <t>
 	      In this state, the stub router MUST NOT treat this interface as an advertising interface as described in
 	      <xref target="RFC4861" section="6.2.2"/>.</t>
 	  </section>
-	  <section anchor="state-usable">
-	    <name>IP addressability already present on adjacent infrastructure link (STATE-USABLE)</name>
+	  <section anchor="state-suitable">
+	    <name>IP addressability already present on adjacent infrastructure link (STATE-SUITABLE)</name>
 	    <t>
 	      When entering this state, if the router MUST discontinue treating the interface as an Advertising Interface as
 	      described in <xref target="RFC4861" section="6.2.2"/>, if it has been doing so.</t>
 	    <t>
 	      When a new host appears on the AIL and sends an initial router solicit, if it does not
-	      receive a usable on-link prefix, it will not be able to communicate. Consequently, the stub router MUST monitor router
+	      receive a suitable on-link prefix, it will not be able to communicate. Consequently, the stub router MUST monitor router
 	      solicits and advertisements on the interface in order to determine whether a prefix that has been advertised on the
 	      link is still being advertised. To accomplish this we have two complementary methods: router staleness detection and
 	      neighbor unreachability detection.</t>
@@ -326,18 +334,18 @@
 	      <t>
 		The stub router MUST listen for router advertisements on the AIL to which the interface is
 		attached, and record the time at which each router advertisement was received. The router MUST NOT consider any router
-		advertisement that is older than STALE_RA_TIME to be usable.  When the last non-stale router advertisement containing
-		a usable prefixes on the link is marked stale, the stub router MUST move the interface to STATE-BEGIN-ADVERTISING.</t>
+		advertisement that is older than STALE_RA_TIME to be suitable.  When the last non-stale router advertisement containing
+		a suitable prefixes on the link is marked stale, the stub router MUST move the interface to STATE-BEGIN-ADVERTISING.</t>
 	    </section>
 	    <section anchor="nud"><name>Router Unreachability Detection</name>
 	      <t>
-		For each usable route, the stub router MUST monitor the state of reachability to the router(s) that
+		For each suitable route, the stub router MUST monitor the state of reachability to the router(s) that
 		advertised it as described in (<xref target="RFC4861" section="7.3.1" sectionFormat="comma"/>) using a ReachableTime
-		value of no more than MAX_USABLE_REACHABLE_TIME. The reason for this is that if no router providing the on-link
-		prefix on the AIL is reachable, then when a new host joins the network, it will have no usable on-link
+		value of no more than MAX_SUITABLE_REACHABLE_TIME. The reason for this is that if no router providing the on-link
+		prefix on the AIL is reachable, then when a new host joins the network, it will have no suitable on-link
 		prefix to use for autoconfiguration, and thus will be unable to communicate with hosts on the stub network.</t>
 	      <t>
-		Whenever the ReachableTime for a router advertising a usable prefix exceeds MAX_USABLE_REACHABLE_TIME, the stub router
+		Whenever the ReachableTime for a router advertising a suitable prefix exceeds MAX_SUITABLE_REACHABLE_TIME, the stub router
 		MUST send unicast neighbor solicits as described in <xref target="RFC4861" section="7.2.2"/> until either a response
 		is received, which resets ReachableTime to zero, or the maximum number of retransmissions has been sent.</t>
 	      <t>
@@ -345,8 +353,8 @@
 		received, if none of the on-link routers on the AIL are marked reachable, the stub router
 		MUST move this interface to the STATE-BEGIN-ADVERTISING state (<xref target="state-begin-advertising"/>).</t>
 	      <t>
-		If a RA beacon interval arrives, and there are no routers advertising usable prefixes that have a ReachableTime that is
-		less than MAX_USABLE_REACHABLE_TIME, then the router MUST move this interface to the STATE-BEGIN-ADVERTISING state.</t>
+		If a RA beacon interval arrives, and there are no routers advertising suitable prefixes that have a ReachableTime that is
+		less than MAX_SUITABLE_REACHABLE_TIME, then the router MUST move this interface to the STATE-BEGIN-ADVERTISING state.</t>
 	    </section>
 	  </section>
 	  <section anchor="state-begin-advertising">
@@ -362,11 +370,11 @@
 	      each routable prefix advertised on the stub network. If the stub router is also a normal router (e.g. a home WiFi
 	      router), it SHOULD include all other routes that it is advertising in the RA, if there is space.</t>
 	    <t>
-	      After having sent the initial router advertisement, the stub router moves the interface into the STATE-ADVERTISING-USABLE
-	      state (<xref target="state-advertising-usable"/>).</t>
+	      After having sent the initial router advertisement, the stub router moves the interface into the STATE-ADVERTISING-SUITABLE
+	      state (<xref target="state-advertising-suitable"/>).</t>
 	  </section>
-	  <section anchor="state-advertising-usable">
-	    <name>IP addressability not present on adjacent infrastructure link (STATE-ADVERTISING-USABLE)</name>
+	  <section anchor="state-advertising-suitable">
+	    <name>IP addressability not present on adjacent infrastructure link (STATE-ADVERTISING-SUITABLE)</name>
 	    <t>
 	      When entering this state, if the router MUST begin treating the interface as an Advertising Interface as
 	      described in <xref target="RFC4861" section="6.2.2"/> if it is not already doing so.</t>
@@ -374,16 +382,16 @@
 	      The stub router sends a router advertisement message, as described in <xref target="state-begin-advertising"/>, every
 	      RA_BEACON_INTERVAL seconds.</t>
 	    <t>
-	      The stub router may receive a router advertisement containing one or more usable on-link prefixes on the AIL.
-	      If any of these prefixes are different than the prefix the stub router is advertising as the on-link usable
+	      The stub router may receive a router advertisement containing one or more suitable on-link prefixes on the AIL.
+	      If any of these prefixes are different than the prefix the stub router is advertising as the on-link suitable
 	      prefix, and the Stub Router bit is not set in the prefix option for that prefix, the stub router moves the interface to
 	      STATE-DEPRECATING (<xref target="state-deprecating"/>).</t>
 	    <t>
 	      If the stub router bit is set in a received prefix, then one of the following must be true in order for that prefix to
-	      be considered usable:</t>
+	      be considered suitable:</t>
 	    <ul>
 	      <li>
-		The prefixes are equal. In this case, the interface remains in STATE-ADVERTISING-USABLE.</li>
+		The prefixes are equal. In this case, the interface remains in STATE-ADVERTISING-SUITABLE.</li>
 	      <li>
 		The prefix the stub router is advertising is a ULA <xref target="RFC4193"/>, and the received prefix is a non-ULA
 		prefix. In this case, the interface moves into the STATE-DEPRECATING (<xref target="state-deprecating"/>) state.</li>
@@ -391,7 +399,7 @@
 		Both prefixes are ULA prefixes, and the received prefix, considered as a 128-bit big-endian unsigned integer,
 		is numerically lower, then the interface moves to STATE-DEPRECATING (<xref target="state-deprecating"/>.</li>
 	      <li>
-		Otherwise the interface remains in STATE-ADVERTISING-USABLE.</li>
+		Otherwise the interface remains in STATE-ADVERTISING-SUITABLE.</li>
 	    </ul>
 	  </section>
 	  <section anchor="state-deprecating">
@@ -399,7 +407,7 @@
 	    <t>
 	      On entry to this state, the stub router has been treating the interface as an Advertising Interface as described in
 	      <xref target="RFC4861" section="6.2.2"/>, and MUST continue to do so.</t>
-	    <t>When the stub router has detected the availability of usable on-link prefix on the AIL to
+	    <t>When the stub router has detected the availability of suitable on-link prefix on the AIL to
 	      which the interface is attached, and that prefix is preferable to the one it is advertising, it continues to advertise
 	      its own prefix, but deprecates it:
 	    </t>
@@ -409,15 +417,15 @@
 	      <li>
 		the valid lifetime for its prefix should be reduced with each subsequent router advertisement messages.</li>
 	      <li>
-		the usability of the infrastructure-provided on-link prefix should be monitored as in the STATE-USABLE state; if
-		during the deprecation period, the stub router detects that there are no longer any usable prefixes on the link, as
+		the usability of the infrastructure-provided on-link prefix should be monitored as in the STATE-SUITABLE state; if
+		during the deprecation period, the stub router detects that there are no longer any suitable prefixes on the link, as
 		described in <xref target="staleness"/> or in <xref target="nud"/>, it MUST return the interface to the
-		STATE-BEGIN-ADVERTISING (<xref target="state-advertising-usable"/>) state and resume advertising its prefix with the
+		STATE-BEGIN-ADVERTISING (<xref target="state-advertising-suitable"/>) state and resume advertising its prefix with the
 		valid and preferred lifetimes described there.</li>
 	    </ul>
 	    <t>
 	      In this state, the valid lifetime (VALID) is computed based on three values: the current time when a router
-	      advertisement is being generated (NOW), the time at which the new usable on-link prefix advertisement was received
+	      advertisement is being generated (NOW), the time at which the new suitable on-link prefix advertisement was received
 	      (DEPRECATE_TIME), and STUB_PROVIDED_PREFIX_LIFETIME. All of these values are in seconds. VALID is computed as follows:
 	    </t>
 	    <t>
@@ -442,9 +450,9 @@
 	  However, some stub networks are more cooperative in nature, for example IP mesh networks. On such networks, multiple stub
 	  routers may be present and be providing addressability and reachability.
 	</t><t>
-	  In either case, some stub router connected to the stub network MUST provide a usable on-link prefix (the OSNR prefix) for
+	  In either case, some stub router connected to the stub network MUST provide a suitable on-link prefix (the OSNR prefix) for
 	  the stub network.  If the stub network is a multicast-capable medium where Router Advertisements are used for router
-	  discovery, the same mechanism described in <xref target="usable-prefix-state-machine"/> is used.
+	  discovery, the same mechanism described in <xref target="suitable-prefix-state-machine"/> is used.
 	</t><t>
 	  Stub networks that do not support the use of Router Advertisements for router discovery must use some similar
 	  mechanism that is compatible with that type of network. Describing the process of establishing a common OSNR prefix on
@@ -517,7 +525,7 @@
           </t><t>
             A stub router SHOULD request stub network prefixes with length 64. If the stub router obtains a prefix with length less
             than 64, it SHOULD generate a /64 from the obtained prefix by padding with zeros. If the stub router obtains a prefix
-            with length greater than 64, the stub router MUST treat the prefix as unusable and allocate a prefix out of its ULA
+            with length greater than 64, the stub router MUST treat the prefix as unsuitable and allocate a prefix out of its ULA
             prefix instead.
           </t>
         </section>
@@ -526,8 +534,8 @@
 	<name>Managing reachability on the adjacent infrastructure link</name>
 	<t>
 	  Stub routers MUST advertise reachability to stub network OSNR prefixes on any AIL to which they are connected. If the stub
-	  router is advertising a usable prefix on any interface, any such prefixes MUST be advertised on that interface in the same
-	  router advertisement that is advertising the usable prefix, to avoid unnecessary multicast traffic.
+	  router is advertising a suitable prefix on any interface, any such prefixes MUST be advertised on that interface in the same
+	  router advertisement that is advertising the suitable prefix, to avoid unnecessary multicast traffic.
 	</t><t>
 	  Each stub network will have some set of prefixes that are advertised as on-link for that network. A stub router connected
 	  to that stub network SHOULD advertise reachability to all such prefixes on any AIL to which it is attached using router
@@ -636,7 +644,7 @@
     <section>
       <name>Providing reachability to IPv4 services to the stub network</name>
       <t>Stub Network routers must be capable of providing NAT64 themselves, and must be capable of discovering the availability
-	of NAT64 service on the infrastructure network and providing it when it is available and usable.
+	of NAT64 service on the infrastructure network and providing it when it is available and suitable.
       </t>
       <t>
 	Some network media may provide their own mechanisms for advertising NAT64 service to the stub network. If such a mechanism
