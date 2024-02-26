@@ -531,7 +531,11 @@
 	</t><t>
 	  Each stub network will have some set of prefixes that are advertised as on-link for that network. A stub router connected
 	  to that stub network SHOULD advertise reachability to all such prefixes on any AIL to which it is attached using router
-	  advertisements
+	  advertisements.
+	</t><t>
+	  A stub router SHOULD NOT advertise itself as a default router on an AIL by setting a non-zero Router Lifetime value in the
+	  header of its Router Advertisements. The exception to this rule is the case where the stub router itself is the default router
+	  for a particular AIL: for example, it may be the home router providing connecitivity to an ISP.
 	</t>
       </section>
       <section>
