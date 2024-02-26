@@ -273,20 +273,20 @@
 	    Stub routers must evaluate prefixes that are advertised on-link as to their suitability for use in communicating with
 	    devices on the stub network. If no suitable prefix is found, a stub router MUST advertise one.
 	  </t><t>
-	    An on-link prefix is considered suitable if it is advertised on the link in an RA and has:
+	    An on-link prefix is considered suitable if it is advertised on the link in a Prefix Information option
+	    (<xref target="RFC4861" section="4.6.2" sectionFormat="comma" />) with the following Prefix Information option header
+	    values:
 	  </t>
 	  <ul>
-	    <li>a preferred lifetime of 30 minutes or more</li>
-            <li>is marked on-link</li>
-	    <li>has a width of 64 bits (<xref target="RFC7421" section="1" sectionFormat="comma" />), and</li>
-	    <li>allows autonomous configuration.</li>
+	    <li>Prefix Length value is 64,</li>
+            <li>'L' bit is set,</li>
+	    <li>'A' bit is set, and</li>
+	    <li>Preferred Lifetime of 30 minutes or more.</li>
 	  </ul>
 	  <t>
-	    A prefix is not considered a suitable on-link prefix if it is advertised on the link as on-link, but the 'a' bit is not set in
-	    the Prefix Information option header (<xref target="RFC4861" section="4.6.2" sectionFormat="comma" />) that contains
-	    the Prefix option. This indicates that node addressability is being managed using DHCPv6. Nodes are not required to
-	    use DHCPv6 to acquire addresses, so a prefix that requires the use of DHCPv6 can't be considered "suitable"&mdash;not all
-	    hosts can actually use it.
+	    A prefix is not considered a suitable on-link prefix if the 'L' bit is set, but the 'A' bit is not set. This indicates
+	    that node addressability is being managed using DHCPv6. Nodes are not required to use DHCPv6 to acquire addresses, so a
+	    prefix that requires the use of DHCPv6 can't be considered "suitable"&mdash;not all hosts can actually use it.
 	  </t><t>
 	    A prefix is considered to be advertised on the link if, when a Router Solicit message
 	    (<xref target="RFC4861" section="4.1" sectionFormat="comma"/>) is sent, a Router Advertisement message is received in
