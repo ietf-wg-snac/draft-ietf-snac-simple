@@ -475,10 +475,10 @@
 	    have been advertised on infrastructure and the maximum valid lifetime that was advertised. On restart, the router should
 	    assume that hosts on the infrastructure link have received advertisements for any such prefixes.
 	  </t><t>
-            When possible, it is best if all stub routers serving a particular stub network use the same prefix on the AIL. For
-            example, Thread stub routers use the 40 most-significant bits of the Thread Extended PAN ID to generate the ULA
-            prefix. This conforms to RFC4193 because the Extended PAN ID is generated randomly using the same mechanism that is
-            specified in RFC 4193 for the ULA prefix bits.
+            When possible, it is best if all stub routers serving a particular stub network use the same 64-bit prefix on the
+            AIL. For example, Thread stub routers use bits from the Thread Extended PAN ID to generate the ULA prefix's Global ID
+            and Subnet ID. The Global ID generation conforms to <xref target="RFC4193"/> because the Extended PAN ID is generated
+            randomly using the same mechanism that is specified in RFC 4193 for the ULA prefix bits.
           </t>
 	</section>
 	<section>
