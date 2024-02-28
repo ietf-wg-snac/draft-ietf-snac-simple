@@ -151,6 +151,11 @@
 	  Reachability from hosts on adjacent infrastructure links means that when host (A) on an adjacent infrastructure link has a datagram destined for the IP
 	  address of a host (B) on the stub network, a next-hop router is known by host (A) such that, when the datagram is sent to
 	  that router, it will ultimately reach host (B) on the stub network.</t>
+	<t>
+	  To achieve the reachability goal described above, this document assumes hosts attempting to reach destinations on the stub
+	  network maintain a routing table - Type C hosts as defined in <xref target="RFC4191" section="3.1"/>). Type A and Type B
+	  hosts are out-of-scope for this document.
+	</t>
       </section>
       <section anchor="usability-goals"><name>Usability Goals</name>
 	<t>
