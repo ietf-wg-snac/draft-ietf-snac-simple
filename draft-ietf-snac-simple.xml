@@ -535,7 +535,7 @@
 	</t><t>
 	  A stub router SHOULD NOT advertise itself as a default router on an AIL by setting a non-zero Router Lifetime value in the
 	  header of its Router Advertisements. The exception to this rule is the case where the stub router itself is the default router
-	  for a particular AIL: for example, it may be the home router providing connecitivity to an ISP.
+	  for a particular AIL: for example, it may be the home router providing connectivity to an ISP.
 	</t>
       </section>
       <section>
