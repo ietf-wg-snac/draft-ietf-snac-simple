@@ -238,7 +238,7 @@
 	  prefixes will be consumed on a network where stub routers are not stable. The lifetime here is chosen to be long enough
 	  that a reboot of the DHCP server will not prevent the prefix being renewed. It happens to coincide with the value of
 	  STUB_PROVIDED_PREFIX_LIFETIME, but the two should not be considered to be equivalent.</dd>
-	<dt>MAX_FLAGS_COPY_TIME (default: 120 minutes):</dt>
+	<dt>MAX_FLAGS_COPY_TIME (default: 150 minutes):</dt>
     <dd>
       The maximum time period, after receiving an RA, that a stub router can copy flag values from the 
       header of this RA for use in its own transmitted RAs.</dd>
