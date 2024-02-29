@@ -301,7 +301,7 @@
 	    (<xref target="RFC4861" section="4.1" sectionFormat="comma"/>) is sent, a Router Advertisement message is received in
 	    response which contains a prefix information option (<xref target="RFC4861" section="4.6.2" sectionFormat="comma"/>)
 	    for that prefix.
-	  <t>
+	  </t><t>
 	    After an RA message containing a suitable prefix has been received, it can be assumed for some period of time thereafter that that prefix
 	    is still valid on the link. However, prefix lifetimes and router lifetimes are often quite long. In addition to knowing that
 	    a prefix has been advertised on the link in the past, and is still valid, we must therefore ensure
