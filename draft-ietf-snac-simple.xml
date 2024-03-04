@@ -245,6 +245,10 @@
 	  prefixes will be consumed on a network where stub routers are not stable. The lifetime here is chosen to be long enough
 	  that a reboot of the DHCP server will not prevent the prefix being renewed. It happens to coincide with the value of
 	  STUB_PROVIDED_PREFIX_LIFETIME, but the two should not be considered to be equivalent.</dd>
+	<dt>MAX_FLAGS_COPY_TIME (default: 150 minutes):</dt>
+    <dd>
+      The maximum time period, after receiving an RA, that a stub router can copy flag values from the 
+      header of this RA for use in its own transmitted RAs.</dd>
 	<dt>MAX_SUITABLE_REACHABLE_TIME (default: 60 seconds):</dt>
 	<dd>
 	  The maximum ReachableTime value that a router can have in the Neighbor Table before any suitable
@@ -304,7 +308,7 @@
 	    (<xref target="RFC4861" section="4.1" sectionFormat="comma"/>) is sent, a Router Advertisement message is received in
 	    response which contains a prefix information option (<xref target="RFC4861" section="4.6.2" sectionFormat="comma"/>)
 	    for that prefix.
-	  <t>
+	  </t><t>
 	    After an RA message containing a suitable prefix has been received, it can be assumed for some period of time thereafter that that prefix
 	    is still valid on the link. However, prefix lifetimes and router lifetimes are often quite long. In addition to knowing that
 	    a prefix has been advertised on the link in the past, and is still valid, we must therefore ensure
@@ -372,13 +376,32 @@
 	  <section anchor="state-begin-advertising">
 	    <name>IP addressability not present on adjacent infrastructure link (STATE-BEGIN-ADVERTISING)</name>
 	    <t>
-	      In this state, the stub router generates its own ULA Link Prefix for the interface. This prefix has a valid and
-	      preferred lifetime of STUB_PROVIDED_PREFIX_LIFETIME seconds. The stub router sends a router advertisement containing
-	      this prefix. The 'A' (autonomous configuration), 'L' (on-link) <xref target="RFC4861" section="4.6.2"/> and the Stub
-              Router bit (<xref target="I-D.hui-stub-router-ra-flag"/>) MUST be set in the Router Advertisement header flags
-              field <xref target="RFC5175"/>.</t>
+	      In this state, the stub router generates its own on-link prefix for the interface. This prefix has a valid and
+	      preferred lifetime of STUB_PROVIDED_PREFIX_LIFETIME seconds. The stub router sends a router advertisement (RA) containing
+	      this prefix in a Prefix Information Option (PIO). In the PIO, the A (autonomous configuration) 
+	      flag <xref target="RFC4861" section="4.6.2"/> MUST be set and the L (on-link) flag SHOULD be set. 
+          The exception cases where the L flag can be cleared is where the specific link-layer technology and/or configuration 
+          requires clearing the L flag.</t>
+        <t>
+          The Stub Router flag (<xref target="I-D.hui-stub-router-ra-flag"/>) MUST be set in the RA flags field.
+	      The values of the M and O flags MUST be copied from the respective M/O flag values seen in the 
+          most recent (unicast or multicast) RA received from a non-stub-router.
+          For the selection of the most recent RA, the following RAs MUST be excluded:
+        </t>
+        <ul>
+            <li>An RA received from a router longer ago than the Router Lifetime period indicated in the RA header. This only 
+            applies for a non-zero Router Lifetime value.</li>
+            <li>An RA received more than MAX_FLAGS_COPY_TIME ago.</li>
+        </ul>
+        <t>
+	      If there is no recent RA from a non-stub-router, both M and O flags MUST be cleared, unless the stub router rebooted
+          recently. After a reboot, if no recent RA is received from a non-stub router, but a recent RA has been 
+          received from a stub router, the values for the M and O flags provided by that stub router MUST be copied. After 
+          MAX_FLAGS_COPY_TIME after reboot, the stub router MUST go back to the regular behavior defined above. This avoids 
+          a situation where a stub router that has rebooted starts to advertise different M/O flag values 
+          than other stub routers present on the same link.</t>
 	    <t>
-	      This router advertisement MUST also include a Route Information option (<xref target="RFC4191" section="2.3"/>) for
+	      The sent router advertisement MUST also include a Route Information option (<xref target="RFC4191" section="2.3"/>) for
 	      each routable prefix advertised on the stub network. If the stub router is also a normal router (e.g. a home WiFi
 	      router), it SHOULD include all other routes that it is advertising in the RA, if there is space.</t>
 	    <t>
@@ -394,20 +417,19 @@
 	      The stub router sends a router advertisement message, as described in <xref target="state-begin-advertising"/>, every
 	      RA_BEACON_INTERVAL seconds.</t>
 	    <t>
-	      The stub router may receive a router advertisement containing one or more suitable on-link prefixes on the AIL.  If
-	      any of these prefixes are different than the ULA Link Prefix the stub router is advertising, and the Stub Router bit
-	      is not set in the prefix option for that prefix, the stub router moves the interface to STATE-DEPRECATING
-	      (<xref target="state-deprecating"/>).</t>
+	      The stub router may receive a router advertisement containing one or more suitable on-link prefixes on the AIL.
+	      If any of these prefixes are different than the prefix the stub router is advertising as the on-link suitable
+	      prefix, and the Stub Router flag is not set in in the Router Advertisement flags field, the stub router moves 
+	      the interface to STATE-DEPRECATING (<xref target="state-deprecating"/>).</t>
 	    <t>
-	      If the stub router bit is set in a received prefix, then one of the following must be true in order for that prefix to
+	      If the stub router bit is set in the RA header flags field, then one of the following must be true in order for that prefix to
 	      be considered suitable:</t>
 	    <ul>
 	      <li>
 		The prefixes are equal. In this case, the interface remains in STATE-ADVERTISING-SUITABLE.</li>
 	      <li>
-		The prefix the stub router is advertising is a ULA <xref target="RFC4193"/> prefix, and the received prefix is a
-		non-ULA prefix. In this case, the interface moves into the STATE-DEPRECATING (<xref target="state-deprecating"/>)
-		state.</li>
+		The prefix the stub router is advertising is a ULA prefix <xref target="RFC4193"/>, and the received prefix is a non-ULA
+		prefix. In this case, the interface moves into the STATE-DEPRECATING (<xref target="state-deprecating"/>) state.</li>
 	      <li>
 		Both prefixes are ULA prefixes, and the received prefix, considered as a 128-bit big-endian unsigned integer,
 		is numerically lower, then the interface moves to STATE-DEPRECATING (<xref target="state-deprecating"/>.</li>
