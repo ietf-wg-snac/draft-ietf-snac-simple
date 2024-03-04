@@ -479,26 +479,20 @@
 	    and will drop the packet.
 	  </t><t>
 	    To address this problem, stub routers SHOULD remember the last time a prefix was advertised across restarts. On restart,
-	    the router can immediately begin deprecating the prefix, and can stop after the prefix valid lifetime goes to zero, based
-	    on the recorded time that the last advertisement was sent.
+	    the router configures the prefix on its interface but does not advertise it in Router Advertisements. Devices that are
+	    still using that prefix will be seen as on-link to the router, and so packets will be delivered using ND on-link rather
+	    than forwarded to the default router.
 	  </t><t>
 	    When a stub router has only flash memory with limited write lifetime, it may be inappropriate to do a write to flash
-	    every time an RA beacon containing a prefix is sent. In this case, the router SHOULD record the set of prefixes that have been advertised
-	    on infrastructure and the maximum valid lifetime that was advertised. On restart, the router should assume that hosts on
-	    the infrastructure link have received advertisements for any such prefixes, and should immediately deprecate them, and
-	    continue to do so until the maximum valid lifetime has elapsed after restart.
-	  </t>
-	  <t>
-	    [WG: we could actually just not advertise the prefix, rather than deprecating it. In this case, the host should wind
-	    up preferring some other prefix for new connections anyway, because it will have a later preferred lifetime expiry.
-	    As long as we remember the route and resume forwarding for it, existing connections can continue until the prefix
-	    becomes invalid.</t>
-	  <t>
-	    Further experience with this shows that this solution doesn't work well at all. Ideally the stub routers would all use
-	    some identifier specific to the stub network to construct the prefix advertised on the AIL. At present Thread uses the
-	    Thread "extended PAN ID", which is a 64-bit quantity. Perhaps something like the SSID could be used for a WiFi stub
-	    network. I don't think there's a way to specify this generally. But it seems as if the solution proposed here probably
-	    isn't worth doing.]</t>
+	    every time an RA beacon containing a prefix is sent. In this case, the router SHOULD record the set of prefixes that
+	    have been advertised on infrastructure and the maximum valid lifetime that was advertised. On restart, the router should
+	    assume that hosts on the infrastructure link have received advertisements for any such prefixes.
+	  </t><t>
+            When possible, it is best if all stub routers serving a particular stub network use the same 64-bit prefix on the
+            AIL. For example, Thread stub routers use bits from the Thread Extended PAN ID to generate the ULA prefix's Global ID
+            and Subnet ID. The Global ID generation conforms to <xref target="RFC4193"/> because the Extended PAN ID is generated
+            randomly using the same mechanism that is specified in RFC 4193 for the ULA prefix bits.
+          </t>
 	</section>
 	<section>
 	  <name>Generating a ULA prefix to provide addressability</name>
