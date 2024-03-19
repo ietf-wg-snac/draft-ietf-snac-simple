@@ -247,7 +247,7 @@
 	  STUB_PROVIDED_PREFIX_LIFETIME, but the two should not be considered to be equivalent.</dd>
 	<dt>MAX_FLAGS_COPY_TIME (default: 150 minutes):</dt>
     <dd>
-      The maximum time period, after receiving an RA, that a stub router can copy flag values from the 
+      The maximum time period, after receiving an RA, that a stub router can copy flag values from the
       header of this RA for use in its own transmitted RAs.</dd>
 	<dt>MAX_SUITABLE_REACHABLE_TIME (default: 60 seconds):</dt>
 	<dd>
@@ -378,27 +378,27 @@
 	    <t>
 	      In this state, the stub router generates its own on-link prefix for the interface. This prefix has a valid and
 	      preferred lifetime of STUB_PROVIDED_PREFIX_LIFETIME seconds. The stub router sends a router advertisement (RA) containing
-	      this prefix in a Prefix Information Option (PIO). In the PIO, the A (autonomous configuration) 
-	      flag <xref target="RFC4861" section="4.6.2"/> MUST be set and the L (on-link) flag SHOULD be set. 
-          The exception cases where the L flag can be cleared is where the specific link-layer technology and/or configuration 
+	      this prefix in a Prefix Information Option (PIO). In the PIO, the A (autonomous configuration)
+	      flag <xref target="RFC4861" section="4.6.2"/> MUST be set and the L (on-link) flag SHOULD be set.
+          The exception cases where the L flag can be cleared is where the specific link-layer technology and/or configuration
           requires clearing the L flag.</t>
         <t>
           The Stub Router flag (<xref target="I-D.hui-stub-router-ra-flag"/>) MUST be set in the RA flags field.
-	      The values of the M and O flags MUST be copied from the respective M/O flag values seen in the 
+	      The values of the M and O flags MUST be copied from the respective M/O flag values seen in the
           most recent (unicast or multicast) RA received from a non-stub-router.
           For the selection of the most recent RA, the following RAs MUST be excluded:
         </t>
         <ul>
-            <li>An RA received from a router longer ago than the Router Lifetime period indicated in the RA header. This only 
+            <li>An RA received from a router longer ago than the Router Lifetime period indicated in the RA header. This only
             applies for a non-zero Router Lifetime value.</li>
             <li>An RA received more than MAX_FLAGS_COPY_TIME ago.</li>
         </ul>
         <t>
 	      If there is no recent RA from a non-stub-router, both M and O flags MUST be cleared, unless the stub router rebooted
-          recently. After a reboot, if no recent RA is received from a non-stub router, but a recent RA has been 
-          received from a stub router, the values for the M and O flags provided by that stub router MUST be copied. After 
-          MAX_FLAGS_COPY_TIME after reboot, the stub router MUST go back to the regular behavior defined above. This avoids 
-          a situation where a stub router that has rebooted starts to advertise different M/O flag values 
+          recently. After a reboot, if no recent RA is received from a non-stub router, but a recent RA has been
+          received from a stub router, the values for the M and O flags provided by that stub router MUST be copied. After
+          MAX_FLAGS_COPY_TIME after reboot, the stub router MUST go back to the regular behavior defined above. This avoids
+          a situation where a stub router that has rebooted starts to advertise different M/O flag values
           than other stub routers present on the same link.</t>
 	    <t>
 	      The sent router advertisement MUST also include a Route Information option (<xref target="RFC4191" section="2.3"/>) for
@@ -419,7 +419,7 @@
 	    <t>
 	      The stub router may receive a router advertisement containing one or more suitable on-link prefixes on the AIL.
 	      If any of these prefixes are different than the prefix the stub router is advertising as the on-link suitable
-	      prefix, and the Stub Router flag is not set in in the Router Advertisement flags field, the stub router moves 
+	      prefix, and the Stub Router flag is not set in in the Router Advertisement flags field, the stub router moves
 	      the interface to STATE-DEPRECATING (<xref target="state-deprecating"/>).</t>
 	    <t>
 	      If the stub router bit is set in the RA header flags field, then one of the following must be true in order for that prefix to
@@ -859,6 +859,66 @@
     </section>
   </middle>
   <back>
+    <section>
+      <name>Analysis of deployment scenarios in which a stub router could cause problems</name>
+      <section>
+	<name>Unmanaged home network</name>
+	<t>
+	  In this scenario, a non-expert home user connects stub router to own unmanaged home network. This is the key intended use case for stub networks.
+	  This document describes how to implement a stub router such that it operates correctly in this situation, whether the ISP is providing IPv6
+	  reachability to the Internet or not.
+	</t>
+      </section>
+      <section>
+	<name>Use on properly managed network</name>
+	<t>
+	  In this scenario, a non-expert user attaches a stub router to an infrastructure network that's managed. This network has correctly deployed
+	  RA Guard and/or port-based access control. As a result, the stub router won't succeed in advertising a prefix on the managed network.
+	</t>
+	<t>
+	  In the managed network case, it's possible that the network operator is willing to permit stub routers to be attached to the network by
+	  users. In this case, they might either not deploy RA guard, or they might deploy working DHCPv6 prefix delegation. This could be
+	  PD-per-host (where hoses are encouraged to use prefix delegation) or just ordinary prefix delegation (where hosts are given prefix
+	  delegation if they ask for it, but not encouraged to ask for it).
+	</t>
+	<t>
+	  In such a situation, if mDNS works on the infrastructure link, the stub router will function correctly, because the delegated prefix
+	  will be correctly routed.
+	</t>
+	<t>
+	  It's worth noting that IPv4 devices that act similarly to stub routers, using NAT64, already exist and may indeed use the stub network
+	  functionality to support internal connections that aren't even apparent to the user. So it's not implausible that it might be desirable
+	  to enable such a use case for IPv6, and the current stub network document does in fact enable this use case.
+	</t>
+      </section>
+      <section>
+	<name>Use on a managed network without IPv6</name>
+	<t>
+	  A managed network without IPv6 is not expected to implement RA guard (although it probably should). On such a network, a stub router
+	  will connect and advertise services if they are not blocked by the infrastructure. A properly-behaved stub router should cause no
+	  operational problems, just as connecting an IPv4 NAT gateway in the same scenario would not cause operational problems.
+	</t>
+      </section>
+      <section>
+	<name>Use on an unmanaged (non-home) IPv6 network</name>
+	<t>
+	  If a stub router is connected to an unmanaged IPv6 network that does not implement RA guard, and the network provides only DHCPv6 numbering,
+	  the stub router will advertise an on-link prefix that permits autonomous configuration. Because the stub router is not advertising a
+	  default route, this should not cause any operational issues.
+	</t>
+	<t>
+	  It might be surprising to the network operator to see the stub router's prefix advertised on the link. However, a network
+	  operated by a knowledgable operator that does not implement RA guard can always find itself in this situation. This does
+	  not create any actual operational problem.
+	</t>
+	<t>
+	  We need to address the case where the network operator is not knowledgable and did not knowingly configure a unsuitable
+	  prefix, so we have to advertise a suitable prefix in this situation. If the network operator considers such an
+	  advertisement to be problematic, they can deploy RA guard to prevent it. So there's no need for us to propose any
+	  additional mechanism to mitigate this problem.
+	</t>
+      </section>
+    </section>
     <references>
       <name>Normative References</name>
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.2119.xml" />
