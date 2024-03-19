@@ -169,7 +169,7 @@
     </section>
 
     <section>
-      <name>Terminology</name>
+      <name>Glossary</name>
       <dl>
 	<dt>Node:</dt>
 	<dd>A device that implements IPv6.</dd>
@@ -618,7 +618,6 @@
 	  In this case, the stub routers will be advertising Router Information options in their router advertisements for
 	  their OSNR prefixes. Stub routers MUST track the presence of such routes, and MUST advertise reachability to them on
 	  interfaces connected to stub networks.</t>
-      </section>
       <section>
 	<name>Providing discoverability between stub network links and infrastructure network links</name>
 	<t>
@@ -1004,6 +1003,80 @@
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.4944.xml" />
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.6282.xml" />
     </references>
+    <section>
+        <name>Appendix</name>
+        <section>
+          <name>Router Advertisments on the stub network</name>
+          <t>
+                A stub router sends periodic as well as solicited Router Advertisements
+                out its advertising interfaces on the stub network.  Outgoing Router Advertisements are
+                filled with the following values consistent with the message format
+                given in Section 4.2 of <xref target="RFC4861"/>:
+                </t>
+          <t><ul>
+            <li> In the Router Lifetime field: the interface's configured
+                 AdvDefaultLifetime.</li>
+            <li> In the M and O flags: set to:
+                 <ul>
+                 <li> The values received in an RA within STALE_RA_TIME from a non-stub router.</li>
+                 <li> Else the values received in an RA within STALE_RA_TIME from a stub router.</li>
+                 <li> Else zero. </li>
+                 </ul>
+            <li> In the Cur Hop Limit field: the interface's configured
+                 CurHopLimit.</li>
+                <li> In the Reachable Time field: the interface's configured
+                        AdvReachableTime.</li>
+                <li> In the Retrans Timer field: the interface's configured AdvRetransTimer.</li>
+                <li> In the options:
+                <ul>
+                    <li> Source Link-Layer Address option: link-layer address of the
+                         sending interface.  This option MAY be omitted to
+                         facilitate in-bound load balancing over replicated
+                         interfaces.</li>
+                    <li> MTU option: the interface's configured AdvLinkMTU value if
+                     the value is non-zero.  If AdvLinkMTU is zero, the MTU
+                     option is not sent.</li>
+                     <li> Prefix Information options: one Prefix Information option for
+                          each prefix listed in AdvPrefixList with the option
+                          fields set from the information in the AdvPrefixList entry
+                          as follows:
+                        <ul>
+                            <li> In the "on-link" flag: the entry's AdvOnLinkFlag.</li>
+                            <li> In the Valid Lifetime field: the entry's
+                                 AdvValidLifetime.</li>
+                            <li> In the "Autonomous address configuration" flag: the
+                                 entry's AdvAutonomousFlag.</li>
+                            <li> In the Preferred Lifetime field: the entry's
+                                 AdvPreferredLifetime.</li>
+                        </ul>
+                        </li>
+                </ul>
+                </li>
+          </ul></t>
+          <t>
+                A router might want to send Router Advertisements without advertising
+                itself as a default router.  For instance, a router might advertise
+                prefixes for stateless address autoconfiguration while not wishing to
+                forward packets.  Such a router sets the Router Lifetime field in
+                outgoing advertisements to zero.
+                </t>
+          <t> 
+              A router MAY choose not to include some or all options when sending
+              unsolicited Router Advertisements.  For example, if prefix lifetimes
+              are much longer than AdvDefaultLifetime, including them every few
+              advertisements may be sufficient.  However, when responding to a
+              Router Solicitation or while sending the first few initial
+              unsolicited advertisements, a router SHOULD include all options so
+              that all information (e.g., prefixes) is propagated quickly during
+              system initialization.
+              </t>
+          <t>
+              If including all options causes the size of an advertisement to
+              exceed the link MTU, multiple advertisements can be sent, each
+              containing a subset of the options. </t>
+        </section>
+        <t>
+    </section>
   </back>
 </rfc>
 
