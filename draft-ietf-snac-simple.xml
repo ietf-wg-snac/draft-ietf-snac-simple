@@ -161,7 +161,7 @@
     </section>
 
     <section>
-      <name>Terminology</name>
+      <name>Glossary</name>
       <dl>
 	<dt>Addressability:</dt>
 	<dd>The ability to associate each node on a link with its own IPv6 address.</dd>
