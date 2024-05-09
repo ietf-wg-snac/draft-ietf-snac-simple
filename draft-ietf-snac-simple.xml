@@ -306,7 +306,12 @@
 	    A prefix is not considered a suitable on-link prefix if the 'L' bit is set, but the 'A' bit is not set. This indicates
 	    that node addressability is being managed using DHCPv6. Nodes are not required to use DHCPv6 to acquire addresses, so a
 	    prefix that requires the use of DHCPv6 can't be considered "suitable"&mdash;not all hosts can actually use it.
-	  </t><t>
+	  </t>
+	  <t>
+	    Note: there can be layer two networks where neighbor discovery is not supported and therefore we cannot set the 'L' bit,
+	    but could set the 'A' bit. The behavior of stub networks when connecting to such networks is out of scope for this document.
+	  </t>
+	  <t>
 	    A prefix is considered to be advertised on the link if, when a Router Solicit message
 	    (<xref target="RFC4861" section="4.1" sectionFormat="comma"/>) is sent, a Router Advertisement message is received in
 	    response which contains a prefix information option (<xref target="RFC4861" section="4.6.2" sectionFormat="comma"/>)
@@ -871,6 +876,33 @@
 	  This document describes how to implement a stub router such that it operates correctly in this situation, whether the ISP is providing IPv6
 	  reachability to the Internet or not.
 	</t>
+	<t>
+	  In some unmanaged network settings, there is a "guest" network in addition to the main network. In this configuration, if
+	  a stub router is added to the guest infrastructure network, no communication will be possible. The general intended
+	  behavior of the guest network is to isolate untrusted hosts. Since this would be the intended behavior on the part of the
+	  owner of the network, it won't be a surprise to them, since they had to explicitly give the stub router's owner the guest
+	  network credentials and not the main network credentials. This should also mean that the owner of the stub router will not
+	  expect it to function in this scenario.
+	</t>
+	<t>
+	  An additional feature of some unmanaged networks is that the owner of the network can choose to isolate all devices on the
+	  network, so that devices on the network are able to use the Internet, but not communicate with each other. This is essentially
+	  the same as being connected to the guest network, except that there is no other network. In this case we would expect that the
+	  owner of the network doesn't expect any devices attached to the network to be able to communicate with any other device, so
+	  the failure of devices connected to infrastructure to communicate with devices on the stub network would not be a surprise.
+	  The owner of the stub router might be surprised in this case, but ultimately the owner of the infrastructure network gets
+	  to make this decision, and there isn't anything we can or should do on behalf of the stub router's owner in this case.
+	</t>
+	<section>
+	  <name>Use on an unmanaged (non-home) IPv6 network</name>
+	  <t>
+	    In this scenario we have a site that is not a home, so perhaps a restaurant or business, where there is no network
+	    operator per se, and the network is deployed similarly to a home network. There is little difference between this
+	    scenario and an unmanaged home network, but expectations may be different. In particular, it is very common in such
+	    settings for there to be a guest network for visitors, or for the network to enforce isolation between all nodes
+	    connected to it.
+	  </t>
+	</section>
       </section>
       <section>
 	<name>Use on a managed network</name>
@@ -925,40 +957,21 @@
 	    still be able to communicate, and a host that could not communicate would not become able to communicate.
 	  </t>
 	  <t>
-	    The one scenario where we could actually see a communication problem is when there is a GUA prefix advertised by infrastructure but
-	    no ULA prefix, but there is a ULA destination to reach. In this case, the longest-match algorithm could choose the stub-router-provided
-	    ULA prefix as a source address to reach the site-provided ULA destination, and in this case communication would fail. Only happy
-	    eyeballs can correct this situation.
+	    The one scenario where we could actually see a communication problem is when there is a GUA prefix advertised by
+	    infrastructure but no ULA prefix, but there is a ULA destination to reach. In this case, the longest-matching-prefix
+	    algorithm could choose the stub-router-provided ULA prefix as a source address to reach the site-provided ULA
+	    destination, and in this case communication would fail. Only happy eyeballs can correct this situation.
 	  </t>
 	</section>
       </section>
       <section>
 	<name>Use on a managed network without IPv6</name>
 	<t>
-	  In this scenario, there is no IPv6 service being intentionally advertised on the
-	  A managed network without IPv6 is not expected to implement RA guard. On such a network, a stub router will connect and
-	  advertise services if they are not blocked by the infrastructure. A properly-behaved stub router will not advertise an
-	  IPv6 default route. Therefore it should not cause operational problems, just as connecting an IPv4 NAT gateway in the same
-	  scenario would not cause operational problems.
-	</t>
-      </section>
-      <section>
-	<name>Use on an unmanaged (non-home) IPv6 network</name>
-	<t>
-	  If a stub router is connected to an unmanaged IPv6 network that does not implement RA guard, and the network provides only DHCPv6 numbering,
-	  the stub router will advertise an on-link prefix that permits autonomous configuration. Because the stub router is not advertising a
-	  default route, this should not cause any operational issues.
-	</t>
-	<t>
-	  It might be surprising to the network operator to see the stub router's prefix advertised on the link. However, a network
-	  operated by a knowledgable operator that does not implement RA guard can always find itself in this situation. This does
-	  not create any actual operational problem.
-	</t>
-	<t>
-	  We need to address the case where the network operator is not knowledgable and did not knowingly configure a unsuitable
-	  prefix, so we have to advertise a suitable prefix in this situation. If the network operator considers such an
-	  advertisement to be problematic, they can deploy RA guard to prevent it. So there's no need for us to propose any
-	  additional mechanism to mitigate this problem.
+	  In this scenario, there is no IPv6 service being intentionally advertised on a managed network without IPv6 is not
+	  expected to implement RA guard. On such a network, a stub router will connect and advertise services if they are not
+	  blocked by the infrastructure. A stub router that conforms to this specification will not advertise an IPv6 default
+	  route. Therefore it should not cause operational problems, just as connecting an IPv4 NAT gateway in the same scenario
+	  would not cause operational problems.
 	</t>
       </section>
     </section>
