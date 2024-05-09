@@ -162,6 +162,9 @@
 	  In addition to the interoperability goals we've described above, the additional goal for stub networks is that they be
 	  able to be connected automatically, with no user intervention.  The experience of connecting a stub network to an
 	  infrastructure should be as straightforward as connecting a new host to the same infrastructure network.</t>
+	<t>
+	  Stub routers can be attached to any network. However, there are network configurations where a stub router will not work.
+	  An analysis of networks where stub routers could be attached is provided in <xref target="net-analysis"/>.</t>
       </section>
     </section>
 
@@ -253,7 +256,7 @@
 	  STUB_PROVIDED_PREFIX_LIFETIME, but the two should not be considered to be equivalent.</dd>
 	<dt>MAX_FLAGS_COPY_TIME (default: 150 minutes):</dt>
     <dd>
-      The maximum time period, after receiving an RA, that a stub router can copy flag values from the 
+      The maximum time period, after receiving an RA, that a stub router can copy flag values from the
       header of this RA for use in its own transmitted RAs.</dd>
 	<dt>MAX_SUITABLE_REACHABLE_TIME (default: 60 seconds):</dt>
 	<dd>
@@ -309,7 +312,12 @@
 	    A prefix is not considered a suitable on-link prefix if the 'L' bit is set, but the 'A' bit is not set. This indicates
 	    that node addressability is being managed using DHCPv6. Nodes are not required to use DHCPv6 to acquire addresses, so a
 	    prefix that requires the use of DHCPv6 can't be considered "suitable"&mdash;not all hosts can actually use it.
-	  </t><t>
+	  </t>
+	  <t>
+	    Note: there can be layer two networks where neighbor discovery is not supported and therefore we cannot set the 'L' bit,
+	    but could set the 'A' bit. The behavior of stub networks when connecting to such networks is out of scope for this document.
+	  </t>
+	  <t>
 	    A prefix is considered to be advertised on the link if, when a Router Solicit message
 	    (<xref target="RFC4861" section="4.1" sectionFormat="comma"/>) is sent, a Router Advertisement message is received in
 	    response which contains a prefix information option (<xref target="RFC4861" section="4.6.2" sectionFormat="comma"/>)
@@ -384,27 +392,27 @@
 	    <t>
 	      In this state, the stub router generates its own on-link prefix for the interface. This prefix has a valid and
 	      preferred lifetime of STUB_PROVIDED_PREFIX_LIFETIME seconds. The stub router sends a router advertisement (RA) containing
-	      this prefix in a Prefix Information Option (PIO). In the PIO, the A (autonomous configuration) 
-	      flag <xref target="RFC4861" section="4.6.2"/> MUST be set and the L (on-link) flag SHOULD be set. 
-          The exception cases where the L flag can be cleared is where the specific link-layer technology and/or configuration 
+	      this prefix in a Prefix Information Option (PIO). In the PIO, the A (autonomous configuration)
+	      flag <xref target="RFC4861" section="4.6.2"/> MUST be set and the L (on-link) flag SHOULD be set.
+          The exception cases where the L flag can be cleared is where the specific link-layer technology and/or configuration
           requires clearing the L flag.</t>
         <t>
           The Stub Router flag (<xref target="I-D.hui-stub-router-ra-flag"/>) MUST be set in the RA flags field.
-	      The values of the M and O flags MUST be copied from the respective M/O flag values seen in the 
+	      The values of the M and O flags MUST be copied from the respective M/O flag values seen in the
           most recent (unicast or multicast) RA received from a non-stub-router.
           For the selection of the most recent RA, the following RAs MUST be excluded:
         </t>
         <ul>
-            <li>An RA received from a router longer ago than the Router Lifetime period indicated in the RA header. This only 
+            <li>An RA received from a router longer ago than the Router Lifetime period indicated in the RA header. This only
             applies for a non-zero Router Lifetime value.</li>
             <li>An RA received more than MAX_FLAGS_COPY_TIME ago.</li>
         </ul>
         <t>
 	      If there is no recent RA from a non-stub-router, both M and O flags MUST be cleared, unless the stub router rebooted
-          recently. After a reboot, if no recent RA is received from a non-stub router, but a recent RA has been 
-          received from a stub router, the values for the M and O flags provided by that stub router MUST be copied. After 
-          MAX_FLAGS_COPY_TIME after reboot, the stub router MUST go back to the regular behavior defined above. This avoids 
-          a situation where a stub router that has rebooted starts to advertise different M/O flag values 
+          recently. After a reboot, if no recent RA is received from a non-stub router, but a recent RA has been
+          received from a stub router, the values for the M and O flags provided by that stub router MUST be copied. After
+          MAX_FLAGS_COPY_TIME after reboot, the stub router MUST go back to the regular behavior defined above. This avoids
+          a situation where a stub router that has rebooted starts to advertise different M/O flag values
           than other stub routers present on the same link.</t>
 	    <t>
 	      The sent router advertisement MUST also include a Route Information option (<xref target="RFC4191" section="2.3"/>) for
@@ -425,7 +433,7 @@
 	    <t>
 	      The stub router may receive a router advertisement containing one or more suitable on-link prefixes on the AIL.
 	      If any of these prefixes are different than the prefix the stub router is advertising as the on-link suitable
-	      prefix, and the Stub Router flag is not set in in the Router Advertisement flags field, the stub router moves 
+	      prefix, and the Stub Router flag is not set in in the Router Advertisement flags field, the stub router moves
 	      the interface to STATE-DEPRECATING (<xref target="state-deprecating"/>).</t>
 	    <t>
 	      If the stub router bit is set in the RA header flags field, then one of the following must be true in order for that prefix to
@@ -865,6 +873,114 @@
     </section>
   </middle>
   <back>
+    <section anchor="net-analysis">
+      <name>Analysis of deployment scenarios in which a stub router could cause problems</name>
+      <section>
+	<name>Unmanaged home network</name>
+	<t>
+	  In this scenario, a non-expert home user connects stub router to own unmanaged home network. This is the key intended use case for stub networks.
+	  This document describes how to implement a stub router such that it operates correctly in this situation, whether the ISP is providing IPv6
+	  reachability to the Internet or not.
+	</t>
+	<t>
+	  In some unmanaged network settings, there is a "guest" network in addition to the main network. In this configuration, if
+	  a stub router is added to the guest infrastructure network, no communication will be possible. The general intended
+	  behavior of the guest network is to isolate untrusted hosts. Since this would be the intended behavior on the part of the
+	  owner of the network, it won't be a surprise to them, since they had to explicitly give the stub router's owner the guest
+	  network credentials and not the main network credentials. This should also mean that the owner of the stub router will not
+	  expect it to function in this scenario.
+	</t>
+	<t>
+	  An additional feature of some unmanaged networks is that the owner of the network can choose to isolate all devices on the
+	  network, so that devices on the network are able to use the Internet, but not communicate with each other. This is essentially
+	  the same as being connected to the guest network, except that there is no other network. In this case we would expect that the
+	  owner of the network doesn't expect any devices attached to the network to be able to communicate with any other device, so
+	  the failure of devices connected to infrastructure to communicate with devices on the stub network would not be a surprise.
+	  The owner of the stub router might be surprised in this case, but ultimately the owner of the infrastructure network gets
+	  to make this decision, and there isn't anything we can or should do on behalf of the stub router's owner in this case.
+	</t>
+	<section>
+	  <name>Use on an unmanaged (non-home) IPv6 network</name>
+	  <t>
+	    In this scenario we have a site that is not a home, so perhaps a restaurant or business, where there is no network
+	    operator per se, and the network is deployed similarly to a home network. There is little difference between this
+	    scenario and an unmanaged home network, but expectations may be different. In particular, it is very common in such
+	    settings for there to be a guest network for visitors, or for the network to enforce isolation between all nodes
+	    connected to it.
+	  </t>
+	</section>
+      </section>
+      <section>
+	<name>Use on a managed network</name>
+	<t>
+	  In this scenario, a non-expert user attaches a stub router to an infrastructure network that's managed. This network has correctly deployed
+	  RA Guard and/or port-based access control. As a result, the stub router won't succeed in advertising a prefix on the managed network.
+	  Communications originating on the stub network that are able to communicate using NAT64 will still work.
+	</t>
+	<t>
+	  In the managed network case, it's possible that the network operator is willing to permit stub routers to be attached to the network by
+	  users. In this case, they might either not deploy RA guard, or they might deploy working DHCPv6 prefix delegation. This could be
+	  PD-per-host (where hosts are encouraged to use prefix delegation) or just ordinary prefix delegation (where hosts are given prefix
+	  delegation if they ask for it, but not encouraged to ask for it).
+	</t>
+	<t>
+	  In such a situation, if DHCPv6 PD works on the infrastructure link, the stub router will function correctly, because the delegated prefix
+	  will be correctly routed.
+	</t>
+	<t>
+	  It's worth noting that IPv4 devices that act similarly to stub routers, using NAT64, already exist and may indeed use the stub network
+	  functionality to support internal connections that aren't even apparent to the user. In this case the stub router is not relying on
+	  RA to function because it's using its IPv4 address and NAT64 to provide connectivity, so there is no management issue even if RA is
+	  blocked. This is a reasonable use case for IPv6, and the current stub network document does in fact enable this use case.
+	</t>
+	<t>
+	  When a stub router is attached to an infrastructure network that has deployed RA guard and does not support DHCPv6 prefix delegation, and
+	  where that infrastructure network does allow the use of multicast DNS, services advertised on the stub network will be discoverable on the
+	  infrastructure network, but will not be reachable.
+	</t>
+	<section>
+	  <name>Managed networks where DHCPv6 is required but RA guard is not present</name>
+	  <t>
+	    There can be a case where an infrastructure does not implement RA guard, does not advertise what this document considers
+	    to be an "acceptable" prefix, and does provide addressing using DHCPv6 IA_NA. In this situation, it could be the case that
+	    two ULA prefixes are being advertised as on-link and one is being advertised as permitting autonomous configuration.
+	  </t>
+	  <t>
+	    In the case a host that is attempting to communicate with a device using a site ULA prefix on a different link may
+	    choose a ULA address as a source address.  If it were to choose the autonomously-configured ULA address as its source
+	    address, this would fail, because there is no route back to the stub-network-provided ULA prefix.
+	  </t>
+	  <t>
+	    However, this can only happen in practice if the host did not receive an address from DHCPv6.  In this case, the host
+	    would not be able to communicate anyway. So the behavior we might see here is that a series of IP packets with an
+	    unexpected source address might be sent to a device on another link, and the device would be unable to send a
+	    response.
+	  </t>
+	  <t>
+	    In such scenarios we have no way to actually know based on the network configuration what the operator's intention was. An operator
+	    that sees a problem with this can react by implementing RA guard or by blocking unknown source addresses at the router, and in so
+	    doing they would be expressing their intention. This configuration would not cause any new problem: a host that could communicate would
+	    still be able to communicate, and a host that could not communicate would not become able to communicate.
+	  </t>
+	  <t>
+	    The one scenario where we could actually see a communication problem is when there is a GUA prefix advertised by
+	    infrastructure but no ULA prefix, but there is a ULA destination to reach. In this case, the longest-matching-prefix
+	    algorithm could choose the stub-router-provided ULA prefix as a source address to reach the site-provided ULA
+	    destination, and in this case communication would fail. Only happy eyeballs can correct this situation.
+	  </t>
+	</section>
+      </section>
+      <section>
+	<name>Use on a managed network without IPv6</name>
+	<t>
+	  In this scenario, there is no IPv6 service being intentionally advertised on a managed network. Operators of such netowrks
+	  may not be aware of the possibility of configuring RA guard.  In this situation, a stub router will connect and advertise
+	  services, which will be reachable just as they would be in a similar unmanaged network. A stub router that conforms to
+	  this specification will not advertise an IPv6 default route. Therefore it should not cause operational problems, just as
+	  connecting an IPv4 NAT gateway in the same scenario would not cause operational problems.
+	</t>
+      </section>
+    </section>
     <references>
       <name>Normative References</name>
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.2119.xml" />
