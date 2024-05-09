@@ -162,6 +162,9 @@
 	  In addition to the interoperability goals we've described above, the additional goal for stub networks is that they be
 	  able to be connected automatically, with no user intervention.  The experience of connecting a stub network to an
 	  infrastructure should be as straightforward as connecting a new host to the same infrastructure network.</t>
+	<t>
+	  Stub routers can be attached to any network. However, there are network configurations where a stub router will not work.
+	  An analysis of networks where stub routers could be attached is provided in <xref target="net-analysis"/>.</t>
       </section>
     </section>
 
@@ -859,7 +862,7 @@
     </section>
   </middle>
   <back>
-    <section>
+    <section anchor="net-analysis">
       <name>Analysis of deployment scenarios in which a stub router could cause problems</name>
       <section>
 	<name>Unmanaged home network</name>
@@ -870,33 +873,73 @@
 	</t>
       </section>
       <section>
-	<name>Use on properly managed network</name>
+	<name>Use on a managed network</name>
 	<t>
 	  In this scenario, a non-expert user attaches a stub router to an infrastructure network that's managed. This network has correctly deployed
 	  RA Guard and/or port-based access control. As a result, the stub router won't succeed in advertising a prefix on the managed network.
+	  Communications originating on the stub network that are able to communicate using NAT64 will still work.
 	</t>
 	<t>
 	  In the managed network case, it's possible that the network operator is willing to permit stub routers to be attached to the network by
 	  users. In this case, they might either not deploy RA guard, or they might deploy working DHCPv6 prefix delegation. This could be
-	  PD-per-host (where hoses are encouraged to use prefix delegation) or just ordinary prefix delegation (where hosts are given prefix
+	  PD-per-host (where hosts are encouraged to use prefix delegation) or just ordinary prefix delegation (where hosts are given prefix
 	  delegation if they ask for it, but not encouraged to ask for it).
 	</t>
 	<t>
-	  In such a situation, if mDNS works on the infrastructure link, the stub router will function correctly, because the delegated prefix
+	  In such a situation, if DHCPv6 PD works on the infrastructure link, the stub router will function correctly, because the delegated prefix
 	  will be correctly routed.
 	</t>
 	<t>
 	  It's worth noting that IPv4 devices that act similarly to stub routers, using NAT64, already exist and may indeed use the stub network
-	  functionality to support internal connections that aren't even apparent to the user. So it's not implausible that it might be desirable
-	  to enable such a use case for IPv6, and the current stub network document does in fact enable this use case.
+	  functionality to support internal connections that aren't even apparent to the user. In this case the stub router is not relying on
+	  RA to function because it's using its IPv4 address and NAT64 to provide connectivity, so there is no management issue even if RA is
+	  blocked. This is a reasonable use case for IPv6, and the current stub network document does in fact enable this use case.
 	</t>
+	<t>
+	  When a stub router is attached to an infrastructure network that has deployed RA guard and does not support DHCPv6 prefix delegation, and
+	  where that infrastructure network does allow the use of multicast DNS, services advertised on the stub network will be discoverable on the
+	  infrastructure network, but will not be reachable.
+	</t>
+	<section>
+	  <name>Managed networks where DHCPv6 is required but RA guard is not present</name>
+	  <t>
+	    There can be a case where an infrastructure does not implement RA guard, does not advertise what this document considers
+	    to be an "acceptable" prefix, and does provide addressing using DHCPv6 IA_NA. In this situation, it could be the case that
+	    two ULA prefixes are being advertised as on-link and one is being advertised as permitting autonomous configuration.
+	  </t>
+	  <t>
+	    In the case a host that is attempting to communicate with a device using a site ULA prefix on a different link may
+	    choose a ULA address as a source address.  If it were to choose the autonomously-configured ULA address as its source
+	    address, this would fail, because there is no route back to the stub-network-provided ULA prefix.
+	  </t>
+	  <t>
+	    However, this can only happen in practice if the host did not receive an address from DHCPv6.  In this case, the host
+	    would not be able to communicate anyway. So the behavior we might see here is that a series of IP packets with an
+	    unexpected source address might be sent to a device on another link, and the device would be unable to send a
+	    response.
+	  </t>
+	  <t>
+	    In such scenarios we have no way to actually know based on the network configuration what the operator's intention was. An operator
+	    that sees a problem with this can react by implementing RA guard or by blocking unknown source addresses at the router, and in so
+	    doing they would be expressing their intention. This configuration would not cause any new problem: a host that could communicate would
+	    still be able to communicate, and a host that could not communicate would not become able to communicate.
+	  </t>
+	  <t>
+	    The one scenario where we could actually see a communication problem is when there is a GUA prefix advertised by infrastructure but
+	    no ULA prefix, but there is a ULA destination to reach. In this case, the longest-match algorithm could choose the stub-router-provided
+	    ULA prefix as a source address to reach the site-provided ULA destination, and in this case communication would fail. Only happy
+	    eyeballs can correct this situation.
+	  </t>
+	</section>
       </section>
       <section>
 	<name>Use on a managed network without IPv6</name>
 	<t>
-	  A managed network without IPv6 is not expected to implement RA guard (although it probably should). On such a network, a stub router
-	  will connect and advertise services if they are not blocked by the infrastructure. A properly-behaved stub router should cause no
-	  operational problems, just as connecting an IPv4 NAT gateway in the same scenario would not cause operational problems.
+	  In this scenario, there is no IPv6 service being intentionally advertised on the
+	  A managed network without IPv6 is not expected to implement RA guard. On such a network, a stub router will connect and
+	  advertise services if they are not blocked by the infrastructure. A properly-behaved stub router will not advertise an
+	  IPv6 default route. Therefore it should not cause operational problems, just as connecting an IPv4 NAT gateway in the same
+	  scenario would not cause operational problems.
 	</t>
       </section>
       <section>
