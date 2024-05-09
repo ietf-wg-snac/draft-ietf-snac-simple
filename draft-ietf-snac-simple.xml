@@ -967,11 +967,11 @@
       <section>
 	<name>Use on a managed network without IPv6</name>
 	<t>
-	  In this scenario, there is no IPv6 service being intentionally advertised on a managed network without IPv6 is not
-	  expected to implement RA guard. On such a network, a stub router will connect and advertise services if they are not
-	  blocked by the infrastructure. A stub router that conforms to this specification will not advertise an IPv6 default
-	  route. Therefore it should not cause operational problems, just as connecting an IPv4 NAT gateway in the same scenario
-	  would not cause operational problems.
+	  In this scenario, there is no IPv6 service being intentionally advertised on a managed network. Operators of such netowrks
+	  may not be aware of the possibility of configuring RA guard.  In this situation, a stub router will connect and advertise
+	  services, which will be reachable just as they would be in a similar unmanaged network. A stub router that conforms to
+	  this specification will not advertise an IPv6 default route. Therefore it should not cause operational problems, just as
+	  connecting an IPv4 NAT gateway in the same scenario would not cause operational problems.
 	</t>
       </section>
     </section>
