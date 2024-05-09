@@ -166,8 +166,14 @@
     </section>
 
     <section>
-      <name>Glossary</name>
+      <name>Terminology</name>
       <dl>
+	<dt>Node:</dt>
+	<dd>A device that implements IPv6.</dd>
+	<dt>Router:</dt>
+	<dd>A node that forwards IPv6 packets not explicitly addressed to itself.  (See Note in <xref target="RFC8200" section="2" sectionFormat="of"/>.)</dd>
+	<dt>Host:</dt>
+	<dd>Any node that is not a router.  (See Note in <xref target="RFC8200" section="2" sectionFormat="of"/>.)</dd>
 	<dt>Addressability:</dt>
 	<dd>The ability to associate each node on a link with its own IPv6 address.</dd>
 	<dt>
