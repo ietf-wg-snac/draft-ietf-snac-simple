@@ -531,7 +531,7 @@
 	    In order to be able to provide addressability either on the stub network or on an adjacent infrastructure network, a stub
 	    router MUST allocate its own ULA Site Pefix. ULA prefixes, described in Unique Local IPv6 Unicast Addresses
 	    (<xref target="RFC4193"/>) are randomly allocated prefixes. A stub router MUST allocate a single ULA Site Prefix for use in
-	    providing on-link prefixes to the stub network and the adjacent infrastructure link, as needed.
+	    providing on-link prefixes to the stub network and the adjacent infrastructure link as described in <xref target="state-begin-advertising"/>.
 	  </t><t>
 	    Any ULA Link Prefixes allocated by a stub router SHOULD be maintained across reboots, and SHOULD remain stable over time. (TBD:
             mention the SHOULD exception cases) However, for privacy reasons, a stub router that roams from network to network
