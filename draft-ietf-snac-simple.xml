@@ -225,7 +225,7 @@
       </dl>
     </section>
 
-    <section>
+    <section anchor="constants">
       <name>Constants</name>
       <t>
 	This section describes the meaning of and gives default values for various constants used in this document.</t>
@@ -255,13 +255,15 @@
 	  that a reboot of the DHCP server will not prevent the prefix being renewed. It happens to coincide with the value of
 	  STUB_PROVIDED_PREFIX_LIFETIME, but the two should not be considered to be equivalent.</dd>
 	<dt>MAX_FLAGS_COPY_TIME (default: 150 minutes):</dt>
-    <dd>
-      The maximum time period, after receiving an RA, that a stub router can copy flag values from the
-      header of this RA for use in its own transmitted RAs.</dd>
+	<dd>
+	  The maximum time period, after receiving an RA, that a stub router can copy flag values from the
+	  header of this RA for use in its own transmitted RAs.</dd>
 	<dt>MAX_SUITABLE_REACHABLE_TIME (default: 60 seconds):</dt>
 	<dd>
 	  The maximum ReachableTime value that a router can have in the Neighbor Table before any suitable
 	  prefixes it has advertised are no longer considered suitable.</dd>
+	<dt>STUB_NETWORK_REACHABLE_TIME (default: 30 minutes)</dt>
+	<dd>The reachable time that will be specified in Route Information Options sent by the stub router</dd>
       </dl>
     </section>
 
@@ -292,7 +294,7 @@
 	  Ideally such addressing is already present on these links, and need not be provided. However, if it is not present,
 	  the stub router must provide it.
 	</t>
-	<section>
+	<section anchor="suitable">
 	  <name>Suitable On-Link Prefixes</name>
 	  <t>
 	    Stub routers must evaluate prefixes that are advertised on-link as to their suitability for use in communicating with
@@ -1004,97 +1006,147 @@
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.6282.xml" />
     </references>
     <section>
-        <name>Appendix</name>
-        <section>
-          <name>Router Advertisments on the stub network</name>
-          <t>
-                A stub router sends periodic as well as solicited Router Advertisements
-                out its advertising interfaces on the stub network.  Outgoing Router Advertisements are
-                filled with the following values consistent with the message format
-                given in Section 4.2 of <xref target="RFC4861"/>:
-                </t>
-          <t><ul>
-            <li> In the Router Lifetime field: the interface's configured
-                 AdvDefaultLifetime.</li>
-            <li> In the M and O flags: set to:
-                 <ul>
-                 <li> The values received in an RA within STALE_RA_TIME from a non-stub router.</li>
-                 <li> Else the values received in an RA within STALE_RA_TIME from a stub router.</li>
-                 <li> Else zero. </li>
-                 </ul>
-            <li> In the Cur Hop Limit field: the interface's configured
-                 CurHopLimit.</li>
-                <li> In the Reachable Time field: the interface's configured
-                        AdvReachableTime.</li>
-                <li> In the Retrans Timer field: the interface's configured AdvRetransTimer.</li>
-                <li> In the options:
-                <ul>
-                    <li> Source Link-Layer Address option: link-layer address of the
-                         sending interface.  This option MAY be omitted to
-                         facilitate in-bound load balancing over replicated
-                         interfaces.</li>
-                    <li> MTU option: the interface's configured AdvLinkMTU value if
-                     the value is non-zero.  If AdvLinkMTU is zero, the MTU
-                     option is not sent.</li>
-                     <li> Prefix Information options: one Prefix Information option for
-                          each prefix listed in AdvPrefixList with the option
-                          fields set from the information in the AdvPrefixList entry
-                          as follows:
-                        <ul>
-                            <li> In the "on-link" flag: the entry's AdvOnLinkFlag.</li>
-                            <li> In the Valid Lifetime field: the entry's
-                                 AdvValidLifetime.</li>
-                            <li> In the "Autonomous address configuration" flag: the
-                                 entry's AdvAutonomousFlag.</li>
-                            <li> In the Preferred Lifetime field: the entry's
-                                 AdvPreferredLifetime.</li>
-                        </ul>
-                        </li>
-                </ul>
-                </li>
-          </ul></t>
-          <t>
-                A router might want to send Router Advertisements without advertising
-                itself as a default router.  For instance, a router might advertise
-                prefixes for stateless address autoconfiguration while not wishing to
-                forward packets.  Such a router sets the Router Lifetime field in
-                outgoing advertisements to zero.
-                </t>
-          <t> 
-              A router MAY choose not to include some or all options when sending
-              unsolicited Router Advertisements.  For example, if prefix lifetimes
-              are much longer than AdvDefaultLifetime, including them every few
-              advertisements may be sufficient.  However, when responding to a
-              Router Solicitation or while sending the first few initial
-              unsolicited advertisements, a router SHOULD include all options so
-              that all information (e.g., prefixes) is propagated quickly during
-              system initialization.
-              </t>
-          <t>
-              If including all options causes the size of an advertisement to
-              exceed the link MTU, multiple advertisements can be sent, each
-              containing a subset of the options. </t>
-        </section>
-        <t>
+      <name>Router Advertisements on the Infrastructure Network</name>
+      <t>
+        An active SNAC router sends periodic multicast Router Advertisements as well as unicast Router Advertisements
+        on the infrastructure network.  These Router Advertisements are filled with the following values consistent with the message format
+        given in Section 4.2 of <xref target="RFC4861"/>:
+      </t>
+      <t>
+	<ul>
+          <li> Router Lifetime: A SNAC router never advertises itself as a default router on infrastructure. Therefore, the router lifetime is always zero
+	    in SNAC router advertisements on infrastructure.</li>
+          <li> In the 'M' flag bit and 'O' flag bits, section <xref target="state-begin-advertising"/> specifies that they must be zero.</li>
+          <li> In the Cur Hop Limit field: 0</li>
+          <li> In the Reachable Time field: TBD.</li>
+          <li> In the Retrans Timer field: TBD.</li>
+          <li> In the options:
+            <ul>
+              <li>
+		Source Link-Layer Address option: Including this option avoids requiring the receiving host to do neighbor
+                discovery to get the link-layer address of the stub router that sent the RA. Sending this option is therefore
+                RECOMMENDED.</li>
+              <li>
+		MTU option: the stub router is not managing the link, and hence should not send this option.</li>
+              <li> Prefix Information options: when there is no suitable prefix (See <xref target="suitable"/>) on the infrastructure
+		link, some SNAC router will need to send a PIO. However, not all SNAC routers will send a PIO. How this decision is
+		made is described in <xref target="suitable-prefix-state-machine"/>. When a stub router sents this option, the following
+		settings apply:</li>
+              <ul>
+                <li> In the 'L' flag bit (on-link): 1.</li>
+                <li> In the 'A' flag bit (Autonomous address configuration): 1</li>
+                <li> In the Valid Lifetime field: normally STUB_PROVIDED_PREFIX_LIFETIME (see <xref target="constants"/>), but see
+		  <xref target="state-deprecating"/>.</li>
+                <li> In the Preferred Lifetime field: normally STUB_PROVIDED_PREFIX_LIFETIME (see <xref target="constants"/>), but see
+		  <xref target="state-deprecating"/>.</li>
+	      </ul>
+	      <li> Route Information Option: an active SNAC router always provides a Route Information Option for each prefix seen
+		on the stub network. This provides a route from the infrastructure network to the stub network. The following
+		settings apply:</li>
+	      <ul>
+		<li> Prefix Length: 64</li>
+		<li> Route Preference: low</li>
+		<li> Route Lifetime: STUB_NETWORK_REACHABLE_TIME (TBD: what about deprecated prefixes)</li>
+		<li> Prefix: the prefix advertised on the stub network</li>
+	      </ul>
+	    </ul>
+          </li>
+	</ul>
+      </t>
+      <t>
+	It is expected that all RA options for a SNAC router will fit in a single RA. Therefore, we do not expect SNAC routers to send multiple
+	RAs with different information other than to announce that some information previously advertised has changed.</t>
     </section>
-  </back>
-</rfc>
+    <section>
+      <name>Router Advertisments on the stub network</name>
+      <t>
+        A stub router sends periodic as well as solicited Router Advertisements
+        out its advertising interfaces on the stub network.  Outgoing Router Advertisements are
+        filled with the following values consistent with the message format
+        given in Section 4.2 of <xref target="RFC4861"/>:
+      </t>
+      <t><ul>
+          <li> In the Router Lifetime field: the interface's configured
+            AdvDefaultLifetime.</li>
+          <li> In the M and O flags: set to:
+            <ul>
+              <li> The values received in an RA within STALE_RA_TIME from a non-stub router.</li>
+              <li> Else the values received in an RA within STALE_RA_TIME from a stub router.</li>
+              <li> Else zero. </li>
+            </ul>
+            <li> In the Cur Hop Limit field: the interface's configured
+              CurHopLimit.</li>
+            <li> In the Reachable Time field: the interface's configured
+              AdvReachableTime.</li>
+            <li> In the Retrans Timer field: the interface's configured AdvRetransTimer.</li>
+            <li> In the options:
+              <ul>
+                <li> Source Link-Layer Address option: link-layer address of the
+                  sending interface.  This option MAY be omitted to
+                  facilitate in-bound load balancing over replicated
+                  interfaces.</li>
+                <li> MTU option: the interface's configured AdvLinkMTU value if
+                  the value is non-zero.  If AdvLinkMTU is zero, the MTU
+                  option is not sent.</li>
+                <li> Prefix Information options: one Prefix Information option for
+                  each prefix listed in AdvPrefixList with the option
+                  fields set from the information in the AdvPrefixList entry
+                  as follows:
+                  <ul>
+                    <li> In the "on-link" flag: the entry's AdvOnLinkFlag.</li>
+                    <li> In the Valid Lifetime field: the entry's
+                      AdvValidLifetime.</li>
+                    <li> In the "Autonomous address configuration" flag: the
+                      entry's AdvAutonomousFlag.</li>
+                    <li> In the Preferred Lifetime field: the entry's
+                      AdvPreferredLifetime.</li>
+                  </ul>
+                </li>
+              </ul>
+            </li>
+        </ul></t>
+        <t>
+          A router might want to send Router Advertisements without advertising
+          itself as a default router.  For instance, a router might advertise
+          prefixes for stateless address autoconfiguration while not wishing to
+          forward packets.  Such a router sets the Router Lifetime field in
+          outgoing advertisements to zero.
+        </t>
+        <t>
+          A router MAY choose not to include some or all options when sending
+          unsolicited Router Advertisements.  For example, if prefix lifetimes
+          are much longer than AdvDefaultLifetime, including them every few
+          advertisements may be sufficient.  However, when responding to a
+          Router Solicitation or while sending the first few initial
+          unsolicited advertisements, a router SHOULD include all options so
+          that all information (e.g., prefixes) is propagated quickly during
+          system initialization.
+        </t>
+        <t>
+          If including all options causes the size of an advertisement to
+          exceed the link MTU, multiple advertisements can be sent, each
+          containing a subset of the options. </t>
+      </section>
+      <t>
+      </section>
+    </back>
+  </rfc>
 
-<!-- Keep this comment at the end of the file
-     Local variables:
-     mode: sgml
-     fill-column:132
-     sgml-omittag:t
-     sgml-shorttag:t
-     sgml-namecase-general:t
-     sgml-general-insert-case:lower
-     sgml-minimize-attributes:nil
-     sgml-always-quote-attributes:t
-     sgml-indent-step:2
-     sgml-indent-data:t
-     sgml-parent-document:nil
-     sgml-exposed-tags:nil
-     sgml-local-catalogs:nil
-     sgml-local-ecat-files:nil
-     End:
-  -->
+  <!-- Keep this comment at the end of the file
+       Local variables:
+       mode: sgml
+       fill-column:132
+       sgml-omittag:t
+       sgml-shorttag:t
+       sgml-namecase-general:t
+       sgml-general-insert-case:lower
+       sgml-minimize-attributes:nil
+       sgml-always-quote-attributes:t
+       sgml-indent-step:2
+       sgml-indent-data:t
+       sgml-parent-document:nil
+       sgml-exposed-tags:nil
+       sgml-local-catalogs:nil
+       sgml-local-ecat-files:nil
+       End:
+    -->
