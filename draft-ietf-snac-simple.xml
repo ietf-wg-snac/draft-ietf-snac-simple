@@ -491,7 +491,7 @@
 	  </section>
 	</section>
       </section>
-      <section>
+      <section anchor="stub-addressability">
 	<name>Managing addressability on the stub network</name>
 	<t>
 	  How addressability is managed on stub networks depends on the nature of the stub network. For some stub networks, the stub
@@ -594,7 +594,7 @@
 	  for a particular AIL: for example, it may be the home router providing connectivity to an ISP.
 	</t>
       </section>
-      <section>
+      <section anchor="stub-reachability">
 	<name>Managing reachability on the stub network</name>
 	<t>
 	  The stub router MAY advertise itself as a default router on the stub network, if it itself has a default route on the
@@ -1017,21 +1017,27 @@
           <li> Router Lifetime: A SNAC router never advertises itself as a default router on infrastructure. Therefore, the router lifetime is always zero
 	    in SNAC router advertisements on infrastructure.</li>
           <li> In the 'M' flag bit and 'O' flag bits, section <xref target="state-begin-advertising"/> specifies that they must be zero.</li>
+	  <li> The 'SNAC router' flag bit <xref target="I-D.ietf-6man-snac-router-bit"/> MUST be 1.</li>
           <li> In the Cur Hop Limit field: 0</li>
-          <li> In the Reachable Time field: TBD.</li>
-          <li> In the Retrans Timer field: TBD.</li>
-          <li> In the options:
+          <li> In the Reachable Time field: 0</li>
+          <li> In the Retrans Timer field: 0</li>
+          <li>
+	    In the options, with the exception of the options listed below, stub routers MUST NOT send any RA options, since
+            these other options are for managing the network, and the stub network is not responsible for managing the infrastructure
+            network.
             <ul>
               <li>
-		Source Link-Layer Address option: Including this option avoids requiring the receiving host to do neighbor
-                discovery to get the link-layer address of the stub router that sent the RA. Sending this option is therefore
-                RECOMMENDED.</li>
+		Source Link-Layer Address option: Including this option whenever possible is RECOMMENDED. The load balancing use case
+		in <xref target="RFC4861" section="6.2.3" sectionFormat="of"/> is out of scope for this document and is not generally
+		expected to be applicable. The benefit of including this option is that it eliminates the need to do neighbor discovery
+		on the SNAC router's link-local address in order to get its link-layer address.</li>
               <li>
-		MTU option: the stub router is not managing the link, and hence should not send this option.</li>
-              <li> Prefix Information options: when there is no suitable prefix (See <xref target="suitable"/>) on the infrastructure
-		link, some SNAC router will need to send a PIO. However, not all SNAC routers will send a PIO. How this decision is
-		made is described in <xref target="suitable-prefix-state-machine"/>. When a stub router sents this option, the following
-		settings apply:</li>
+		MTU option: the stub router is not managing the link, and hence SHOULD NOT send this option.</li>
+              <li> Prefix Information options: when there is no suitable prefix (See <xref target="suitable"/>) on the
+		infrastructure link, some SNAC router will need to send a PIO. However, unless they are able to cooperate in
+		choosing a PIO, only one SNAC routers will send it PIO. How this decision is made is described in
+		<xref target="suitable-prefix-state-machine"/>. When a stub router sents this option, the following settings
+		apply:</li>
               <ul>
                 <li> In the 'L' flag bit (on-link): 1.</li>
                 <li> In the 'A' flag bit (Autonomous address configuration): 1</li>
@@ -1040,13 +1046,13 @@
                 <li> In the Preferred Lifetime field: normally STUB_PROVIDED_PREFIX_LIFETIME (see <xref target="constants"/>), but see
 		  <xref target="state-deprecating"/>.</li>
 	      </ul>
-	      <li> Route Information Option: an active SNAC router always provides a Route Information Option for each prefix seen
-		on the stub network. This provides a route from the infrastructure network to the stub network. The following
-		settings apply:</li>
+	      <li> Route Information Option: an active SNAC router always provides a Route Information Option for each prefix that
+		is valid on the stub network. This provides a route from the infrastructure network to the stub network. The
+		following settings apply:</li>
 	      <ul>
 		<li> Prefix Length: 64</li>
 		<li> Route Preference: low</li>
-		<li> Route Lifetime: STUB_NETWORK_REACHABLE_TIME (TBD: what about deprecated prefixes)</li>
+		<li> Route Lifetime: STUB_NETWORK_REACHABLE_TIME (TBD: what about deprecated prefixes? Add reference to new proposed text that addresses issue #67 on github)</li>
 		<li> Prefix: the prefix advertised on the stub network</li>
 	      </ul>
 	    </ul>
@@ -1065,70 +1071,48 @@
         filled with the following values consistent with the message format
         given in Section 4.2 of <xref target="RFC4861"/>:
       </t>
-      <t><ul>
-          <li> In the Router Lifetime field: the interface's configured
-            AdvDefaultLifetime.</li>
-          <li> In the M and O flags: set to:
+	<ul>
+          <li> Router Lifetime: The SNAC router can be a default router on the SNAC network (see <xref target="snac-reachability"/>.</li>
+          <li> SNAC routers do not provide DHCP service on the stub network. Therefore, the 'M' flag bit and 'O' flag bits MUST be zero.</li>
+	  <li> The 'SNAC router' flag bit <xref target="I-D.ietf-6man-snac-router-bit"/> MUST be 0.</li>
+          <li> In the Cur Hop Limit field: 0</li>
+          <li> In the Reachable Time field: 0</li>
+          <li> In the Retrans Timer field: 0</li>
+          <li>
+	    In the options, the stub router may send options as appropriate.
             <ul>
-              <li> The values received in an RA within STALE_RA_TIME from a non-stub router.</li>
-              <li> Else the values received in an RA within STALE_RA_TIME from a stub router.</li>
-              <li> Else zero. </li>
-            </ul>
-            <li> In the Cur Hop Limit field: the interface's configured
-              CurHopLimit.</li>
-            <li> In the Reachable Time field: the interface's configured
-              AdvReachableTime.</li>
-            <li> In the Retrans Timer field: the interface's configured AdvRetransTimer.</li>
-            <li> In the options:
+              <li>
+		Source Link-Layer Address option: Including this option whenever possible is RECOMMENDED. The load balancing use case
+		in <xref target="RFC4861" section="6.2.3" sectionFormat="of"/> is out of scope for this document and is not generally
+		expected to be applicable. The benefit of including this option is that it eliminates the need to do neighbor discovery
+		on the SNAC router's link-local address in order to get its link-layer address.</li>
+              <li>
+		MTU option: the stub router is managing the link, and hence MAY send this option.</li>
+              <li> Some SNAC router will need to send a PIO. Normally, only one SNAC router will send a PIO. How this decision is made is described in
+		<xref target="stub-addressability"/>. When a stub router sents this option, the following settings
+		apply:</li>
               <ul>
-                <li> Source Link-Layer Address option: link-layer address of the
-                  sending interface.  This option MAY be omitted to
-                  facilitate in-bound load balancing over replicated
-                  interfaces.</li>
-                <li> MTU option: the interface's configured AdvLinkMTU value if
-                  the value is non-zero.  If AdvLinkMTU is zero, the MTU
-                  option is not sent.</li>
-                <li> Prefix Information options: one Prefix Information option for
-                  each prefix listed in AdvPrefixList with the option
-                  fields set from the information in the AdvPrefixList entry
-                  as follows:
-                  <ul>
-                    <li> In the "on-link" flag: the entry's AdvOnLinkFlag.</li>
-                    <li> In the Valid Lifetime field: the entry's
-                      AdvValidLifetime.</li>
-                    <li> In the "Autonomous address configuration" flag: the
-                      entry's AdvAutonomousFlag.</li>
-                    <li> In the Preferred Lifetime field: the entry's
-                      AdvPreferredLifetime.</li>
-                  </ul>
-                </li>
-              </ul>
-            </li>
-        </ul></t>
-        <t>
-          A router might want to send Router Advertisements without advertising
-          itself as a default router.  For instance, a router might advertise
-          prefixes for stateless address autoconfiguration while not wishing to
-          forward packets.  Such a router sets the Router Lifetime field in
-          outgoing advertisements to zero.
-        </t>
-        <t>
-          A router MAY choose not to include some or all options when sending
-          unsolicited Router Advertisements.  For example, if prefix lifetimes
-          are much longer than AdvDefaultLifetime, including them every few
-          advertisements may be sufficient.  However, when responding to a
-          Router Solicitation or while sending the first few initial
-          unsolicited advertisements, a router SHOULD include all options so
-          that all information (e.g., prefixes) is propagated quickly during
-          system initialization.
-        </t>
-        <t>
-          If including all options causes the size of an advertisement to
-          exceed the link MTU, multiple advertisements can be sent, each
-          containing a subset of the options. </t>
-      </section>
+                <li> In the 'L' flag bit (on-link): 1.</li>
+                <li> In the 'A' flag bit (Autonomous address configuration): 1</li>
+                <li> In the Valid Lifetime field: normally STUB_PROVIDED_PREFIX_LIFETIME (see <xref target="constants"/>), but see
+		  <xref target="state-deprecating"/>.</li>
+                <li> In the Preferred Lifetime field: normally STUB_PROVIDED_PREFIX_LIFETIME (see <xref target="constants"/>), but see
+		  <xref target="state-deprecating"/>.</li>
+	      </ul>
+	      <li> Route Information Option: when a SNAC router is not advertising a default route, it MUST include one or more
+		RIO options in router advertisements on the stub network to provide reachability to infrastructure. This is discussed in
+		<xref target="stub-reachability"/>. The following settings apply:</li>
+	      <ul>
+		<li> Prefix Length: the length of the prefix covered by the route, not necessarily 64.</li>
+		<li> Route Preference: low</li>
+		<li> Route Lifetime: The lifetime of the prefix on the infrastructure link, but no more than STUB_NETWORK_REACHABLE_TIME</li>
+		<li> Prefix: the prefix that is known to be reachable on the infrastructure network</li>
+	      </ul>
+	    </ul>
+          </li>
+	</ul>
       <t>
-      </section>
+	</section>
     </back>
   </rfc>
 
