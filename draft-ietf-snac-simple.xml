@@ -591,6 +591,51 @@
             with length greater than 64, the stub router MUST treat the prefix as unsuitable and allocate a ULA Link Prefix out of
             its ULA Site Prefix instead.
           </t>
+	  <t>
+	    A DHCPv6-PD client can request a particular lease interval for the DHCPv6-delegated prefix. However, there is no
+	    particular reason for a SNAC router to specify this interval.
+	  </t>
+	  <section>
+	    <name>Lifetime of IPv6 prefixes acquired using DHCPv6 Prefix Delegation</name>
+	    <t>
+	      It is possible that a SNAC router might obtain a prefix from a DHCPv6 server using prefix delegation and then something
+	      about the infrastructure network attachment might change that affects the validity of that prefix for use on the stub
+	      network. The section of <xref target="I-D.ietf-dhc-rfc8415bis"/> titled "Refreshing Configuration Information"
+	      discusses the various scenarios that can occur. We assume that the DHCPv6 prefix delegation client being used by
+	      the SNAC router conforms to this specification.
+	    </t>
+	    <t>
+	      Situations that can occur include (but are not limited to):
+	    </t>
+	    <ul>
+	      <li>DHCPv6 server becomes unavailable</li>
+	      <li>Stub router is moved to a different link</li>
+	      <li>A renumnbering event results in the old prefix being replaced with a new one</li>
+	    </ul>
+	    <t>
+	      The SNAC router MUST NOT use a prefix once the DHCPv6-PD client has determined that it is no longer valid. If the
+	      DHCPv6-PD client provides a new prefix, and the old prefix is still valid, the SNAC router SHOULD explicitly deprecate
+	      the old prefix at the same time that it first advertises the new prefix.</t>
+	    <t>
+	      If the DHCPv6-PD client determines that the prefix it provided to use as the OSNR prefix is no longer valid, and no
+	      replacement prefix is provided by the DHCPv6 server, then the SNAC router MUST switch to the ULA link prefix that it
+	      has allocated for use on the SNAC network.  In the case that the DHCPv6-PD client is unable to renew its lease on the
+	      current OSNR prefix, and time between the T2 interval for the prefix assignment
+	      <xref target="draft-ietf-dhc-rfc8415bis" section="21.4" sectionFormat="of"/> and the end of the lease has been
+	      reached, then the SNAC router MUST deprecate the DHCPv6-PD-provided OSNR prefix and begin advertising the ULA link
+	      prefix.
+	    </t>
+	    <t>
+	      A failure to renew the DHCPv6-PD-provided OSNR prefix could be because the SNAC network has been disconnected from one
+	      AIL and moved to a different AIL. In this situation, if the new AIL also has IPv6 service and DHCPv6-PD service, the
+	      DHCPv6 client will get a clear indication that the old prefix is no longer valid. However, it may be that no DHCPv6-PD
+	      service is available on the new link, either because it is an IPv4-only link or because it's an IPv6-capable link that
+	      doesn't provide DHCPv6 service. In this situation, if the SNAC network remains connected to the link and no DHCPv6 service
+	      appears, the DHCPv6-PD-provided OSNR prefix will eventually time out and be replaced. The SNAC router SHOULD NOT attempt
+	      to replace it prior to this normal timeout process, because there is no benefit to changing the OSNR prefix on the
+	      SNAC network in such a situation, and it's possible that the SNAC router will return to the other link before the
+	      OSNR prefix expires.
+	    </t>
         </section>
       </section>
       <section>
