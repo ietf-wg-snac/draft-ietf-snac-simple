@@ -392,10 +392,10 @@
 	    <t>
 	      In this state, the stub router generates its own on-link prefix for the interface. This prefix has a valid and
 	      preferred lifetime of STUB_PROVIDED_PREFIX_LIFETIME seconds. The stub router sends a router advertisement (RA) containing
-	      this prefix in a Prefix Information Option (PIO). In the PIO, the A (autonomous configuration)
-	      flag <xref target="RFC4861" section="4.6.2"/> MUST be set and the L (on-link) flag SHOULD be set.
-          The exception cases where the L flag can be cleared is where the specific link-layer technology and/or configuration
-          requires clearing the L flag.</t>
+	      this prefix in a Prefix Information Option (PIO). In the PIO, the 'A' flag bit (autonomous configuration)
+	      flag <xref target="RFC4861" section="4.6.2"/> MUST be set and the 'L' flag bit (on-link prefix) MUST be set.
+	      Link-layer technologies that require the 'L' flag bit to be cleared are out of scope of this document.
+        </t>
         <t>
           The Stub Router flag (<xref target="I-D.hui-stub-router-ra-flag"/>) MUST be set in the RA flags field.
 	      The values of the M and O flags MUST be copied from the respective M/O flag values seen in the
