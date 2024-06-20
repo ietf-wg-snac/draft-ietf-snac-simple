@@ -871,6 +871,20 @@
 	  can communicate with IPv4 hosts on the infrastructure network and the global internet.</dd>
       </dl>
     </section>
+    <section>
+      <name>IANA Considerations</name>
+      <t>
+        This document has no IANA actions.
+      </t>
+    </section>
+    <section>
+      <name>Security Considerations</name>
+      <t>
+        Because a SNAC router operates as an IPv6 router that sends and receives IPv6 Neighbor Discovery protocol messages, 
+        the security considerations of Section 11 of <xref target="RFC4861"/> apply. No additional security considerations are 
+        identified.
+      </t>
+    </section>
   </middle>
   <back>
     <section anchor="net-analysis">
