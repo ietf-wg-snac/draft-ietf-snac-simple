@@ -335,6 +335,26 @@
 	    required to be taken to monitor the state. The purpose of the state machine described here is to ensure that at all
 	    times, when a new host arrives on the AIL, it is able to acquire an IPv6 address on that
 	    link.</t>
+	  <t>
+	    During all of the states mentioned here except for state-unknown, the SNAC router is expected to treat the
+	    infrastructure interface as an Advertising Interface as described in <xref target="RFC4861" section="6.2.2"/>.
+	    There are two sets of information that need to be sent in an RA; if neither is present, then the SNAC router
+	    SHOULD NOT send an RA even if it is treating the infrastructure interface as an advertising interface.
+	  </t>
+	  <t>
+	    These two sets of information are the on-link prefix, if any, that is to be advertised. Whether or not such a prefix is
+	    advertised, and what exactly is advertised regarding that prefix, is determined by the state machine. The other set of
+	    information is a set of routes to prefixes on the SNAC network. Whenever we know of a reachable (scope is not
+	    link-local) prefix on the SNAC network, we include an RIO option in the RA on the infrastructure network indicating that
+	    that prefix is reachable through the SNAC router.
+	  </t>
+	  <t>
+	    It is important to note that it is possible for an on-link, routable prefix to be advertised and then withdrawn on the
+	    SNAC network, but for it to still be valid, and for there to still be some communication occurring using that prefix.
+	    In order to avoid prematurely interrupting such communication, the SNAC router MUST maintain a list of prefixes known
+	    to be valid on the SNAC network, even if those prefixes have been deprecated, and MUST include RIO options for all
+	    such prefixes in the RAs that it sends on the adjacent infrastructure link.
+	  </t>
 	  <section anchor="state-unknown">
 	    <name>Status of IP addressability on adjacent infrastructure link unknown (STATE-UNKNOWN)</name>
 	    <t>
@@ -351,9 +371,6 @@
 	  </section>
 	  <section anchor="state-suitable">
 	    <name>IP addressability already present on adjacent infrastructure link (STATE-SUITABLE)</name>
-	    <t>
-	      When entering this state, if the router MUST discontinue treating the interface as an Advertising Interface as
-	      described in <xref target="RFC4861" section="6.2.2"/>, if it has been doing so.</t>
 	    <t>
 	      When a new host appears on the AIL and sends an initial router solicit, if it does not
 	      receive a suitable on-link prefix, it will not be able to communicate. Consequently, the stub router MUST monitor router
