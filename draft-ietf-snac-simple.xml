@@ -880,14 +880,9 @@
     <section>
       <name>Security Considerations</name>
       <t>
-        By design, a stub router starts operating as an IPv6 router if no existing (suitable) IPv6 configuration is found on the 
-        adjacent infrastructure link. In some network deployments, this default configuration of the stub router may be undesirable. 
-        In such cases it is expected that these networks have RA-guard (<xref target="RFC6105"/>) or a similar technology deployed to 
-        prevent the undesirable operation of ad-hoc IPv6 routers on the network.
-      </t>
-      <t>
-        If a stub router advertises a ULA Link Prefix on an adjacent infrastructure link using RA, its presence or absence becomes detectable 
-        to all other nodes on this link.
+        Because a SNAC router operates as an IPv6 router that sends and receives IPv6 Neighbor Discovery protocol messages, 
+        the security considerations of Section 11 of <xref target="RFC4861"/> apply. No additional security considerations are 
+        identified.
       </t>
     </section>
   </middle>
@@ -1021,7 +1016,6 @@
       <name>Informative References</name>
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.2328.xml" />
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.4944.xml" />
-      <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.6105.xml" />
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.6282.xml" />
     </references>
   </back>
