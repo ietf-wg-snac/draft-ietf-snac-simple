@@ -692,7 +692,29 @@
       </section>
     </section>
     <section>
-      <name>Providing reachability to IPv4 services to the stub network</name>
+      <name>Providing reachability to IPv4-only services to hosts on the stub network</name>
+      <t>
+	SNAC networks rely on IPv6 to enable routing between links, which would not be possible with IPv4 due to the lack of a
+	standard mechanism similar to router advertisements in IPv4. However, it can stll be useful for hosts on the SNAC network
+	to establish communications with IPv4-only hosts on the infrastructure network.
+      </t>
+      <t>
+	Although NAT64 provides IPv6-only hosts with a way to reach IPv4 hosts, there is no easy way for an IPv4 host to
+	use NAT64 to originate communication with an IPv6 host. Therefore, this document enables IPv6 hosts on the SNAC network
+	to discover and reach with IPv4 hosts on infrastructure, but does not provide a way for IPv4-only hosts
+	on infrastructure to communicate to IPv6 hosts on the SNAC network.
+      </t>
+      <t>
+	This should be acceptable because hosts on the infrastructure network should not be IPv4-only, since the SNAC router is
+	providing IPv6 service on the infrastructure network that is suitable for communicating using IPv6 to hosts on the SNAC
+	network--there should not be any hosts on the infrastructure network that can't communicate with hosts on the stub network
+	unless such hosts do not have an IPv6 stack at all.
+      </t>
+      <t>
+	So the purpose of providing IPv4 connectivity for SNAC hosts is to enable communication with arbitrary IPv4 hosts which
+	may not be on the AIL. This is accomplished by providing NAT64 address translation in the stub router, and by enabling
+	service discovery using a Discovery Proxy.
+      </t>
       <t>Stub Network routers must be capable of providing NAT64 themselves, and must be capable of discovering the availability
 	of NAT64 service on the infrastructure network and providing it when it is available and suitable.
       </t>
@@ -880,8 +902,8 @@
     <section>
       <name>Security Considerations</name>
       <t>
-        Because a SNAC router operates as an IPv6 router that sends and receives IPv6 Neighbor Discovery protocol messages, 
-        the security considerations of Section 11 of <xref target="RFC4861"/> apply. No additional security considerations are 
+        Because a SNAC router operates as an IPv6 router that sends and receives IPv6 Neighbor Discovery protocol messages,
+        the security considerations of Section 11 of <xref target="RFC4861"/> apply. No additional security considerations are
         identified.
       </t>
     </section>
