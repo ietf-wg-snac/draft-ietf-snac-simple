@@ -34,7 +34,7 @@
       </address>
     </author>
 
-    <date year='2024' month='May' day='23'/>
+    <date year='2024' month='June' day='21'/>
     <area>Internet</area>
     <workgroup>Internet Engineering Task Force</workgroup>
     <abstract>
@@ -621,7 +621,7 @@
 	      replacement prefix is provided by the DHCPv6 server, then the SNAC router MUST switch to the ULA link prefix that it
 	      has allocated for use on the SNAC network.  In the case that the DHCPv6-PD client is unable to renew its lease on the
 	      current OSNR prefix, and time between the T2 interval for the prefix assignment
-	      <xref target="draft-ietf-dhc-rfc8415bis" section="21.4" sectionFormat="of"/> and the end of the lease has been
+	      <xref target="I-D.ietf-dhc-rfc8415bis" section="21.4" sectionFormat="of"/> and the end of the lease has been
 	      reached, then the SNAC router MUST deprecate the DHCPv6-PD-provided OSNR prefix and begin advertising the ULA link
 	      prefix.
 	    </t>
@@ -637,6 +637,7 @@
 	      OSNR prefix expires.
 	    </t>
         </section>
+      </section>
       </section>
       <section>
 	<name>Managing reachability on the adjacent infrastructure link</name>
@@ -753,6 +754,7 @@
 	</section>
       </section>
     </section>
+  
     <section>
       <name>Providing reachability to IPv4-only services to hosts on the stub network</name>
       <t>
@@ -905,6 +907,7 @@
 	</t>
       </section>
     </section>
+    
     <section>
       <name>Handling partitioning events on a stub network</name>
       <t>
@@ -933,6 +936,7 @@
 	coordinate in advance.
       </t>
     </section>
+    
     <section>
       <name>Services Provided by Stub Routers</name>
       <t>
@@ -955,12 +959,14 @@
 	  can communicate with IPv4 hosts on the infrastructure network and the global internet.</dd>
       </dl>
     </section>
+    
     <section>
       <name>IANA Considerations</name>
       <t>
         This document has no IANA actions.
       </t>
     </section>
+    
     <section>
       <name>Security Considerations</name>
       <t>
@@ -978,7 +984,6 @@
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.4191.xml" />
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.4193.xml" />
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.4861.xml" />
-      <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.5175.xml" />
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.6762.xml" />
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.6763.xml" />
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.7084.xml" />
@@ -989,12 +994,13 @@
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml3/reference.I-D.ietf-dnssd-srp.xml" />
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml3/reference.I-D.ietf-dnssd-advertising-proxy.xml" />
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml3/reference.I-D.hui-stub-router-ra-flag.xml" />
+      <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml3/reference.I-D.ietf-dhc-rfc8415bis.xml" />
     </references>
     <references>
       <name>Informative References</name>
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.2328.xml" />
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.4944.xml" />
-      <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.6282.xml" />
+      <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.6282.xml" />      
     </references>
 
     <section anchor="net-analysis">
