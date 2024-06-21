@@ -34,7 +34,7 @@
       </address>
     </author>
 
-    <date year='2024' month='February' day='27'/>
+    <date year='2024' month='May' day='23'/>
     <area>Internet</area>
     <workgroup>Internet Engineering Task Force</workgroup>
     <abstract>
@@ -970,7 +970,33 @@
       </t>
     </section>
   </middle>
+
   <back>
+    <references>
+      <name>Normative References</name>
+      <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.2119.xml" />
+      <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.4191.xml" />
+      <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.4193.xml" />
+      <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.4861.xml" />
+      <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.5175.xml" />
+      <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.6762.xml" />
+      <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.6763.xml" />
+      <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.7084.xml" />
+      <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.8174.xml" />
+      <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.8200.xml" />
+      <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.8766.xml" />
+      <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.8781.xml" />
+      <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml3/reference.I-D.ietf-dnssd-srp.xml" />
+      <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml3/reference.I-D.ietf-dnssd-advertising-proxy.xml" />
+      <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml3/reference.I-D.hui-stub-router-ra-flag.xml" />
+    </references>
+    <references>
+      <name>Informative References</name>
+      <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.2328.xml" />
+      <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.4944.xml" />
+      <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.6282.xml" />
+    </references>
+
     <section anchor="net-analysis">
       <name>Analysis of deployment scenarios in which a stub router could cause problems</name>
       <section>
@@ -1079,29 +1105,6 @@
 	</t>
       </section>
     </section>
-    <references>
-      <name>Normative References</name>
-      <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.2119.xml" />
-      <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.4191.xml" />
-      <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.4193.xml" />
-      <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.4861.xml" />
-      <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.5175.xml" />
-      <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.6762.xml" />
-      <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.6763.xml" />
-      <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.7084.xml" />
-      <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.8174.xml" />
-      <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.8766.xml" />
-      <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.8781.xml" />
-      <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml3/reference.I-D.ietf-dnssd-srp.xml" />
-      <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml3/reference.I-D.ietf-dnssd-advertising-proxy.xml" />
-      <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml3/reference.I-D.hui-stub-router-ra-flag.xml" />
-    </references>
-    <references>
-      <name>Informative References</name>
-      <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.2328.xml" />
-      <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.4944.xml" />
-      <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.6282.xml" />
-    </references>
   </back>
 </rfc>
 
