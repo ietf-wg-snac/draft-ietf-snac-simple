@@ -34,7 +34,7 @@
       </address>
     </author>
 
-    <date year='2024' month='February' day='27'/>
+    <date year='2024' month='June' day='21'/>
     <area>Internet</area>
     <workgroup>Internet Engineering Task Force</workgroup>
     <abstract>
@@ -337,6 +337,26 @@
 	    required to be taken to monitor the state. The purpose of the state machine described here is to ensure that at all
 	    times, when a new host arrives on the AIL, it is able to acquire an IPv6 address on that
 	    link.</t>
+	  <t>
+	    During all of the states mentioned here except for state-unknown, the SNAC router is expected to treat the
+	    infrastructure interface as an Advertising Interface as described in <xref target="RFC4861" section="6.2.2"/>.
+	    There are two sets of information that need to be sent in an RA; if neither is present, then the SNAC router
+	    SHOULD NOT send an RA even if it is treating the infrastructure interface as an advertising interface.
+	  </t>
+	  <t>
+	    These two sets of information are the on-link prefix, if any, that is to be advertised. Whether or not such a prefix is
+	    advertised, and what exactly is advertised regarding that prefix, is determined by the state machine. The other set of
+	    information is a set of routes to prefixes on the SNAC network. Whenever we know of a reachable (scope is not
+	    link-local) prefix on the SNAC network, we include an RIO option in the RA on the infrastructure network indicating that
+	    that prefix is reachable through the SNAC router.
+	  </t>
+	  <t>
+	    It is important to note that it is possible for an on-link, routable prefix to be advertised and then withdrawn on the
+	    SNAC network, but for it to still be valid, and for there to still be some communication occurring using that prefix.
+	    In order to avoid prematurely interrupting such communication, the SNAC router MUST maintain a list of prefixes known
+	    to be valid on the SNAC network, even if those prefixes have been deprecated, and MUST include RIO options for all
+	    such prefixes in the RAs that it sends on the adjacent infrastructure link.
+	  </t>
 	  <section anchor="state-unknown">
 	    <name>Status of IP addressability on adjacent infrastructure link unknown (STATE-UNKNOWN)</name>
 	    <t>
@@ -353,9 +373,6 @@
 	  </section>
 	  <section anchor="state-suitable">
 	    <name>IP addressability already present on adjacent infrastructure link (STATE-SUITABLE)</name>
-	    <t>
-	      When entering this state, if the router MUST discontinue treating the interface as an Advertising Interface as
-	      described in <xref target="RFC4861" section="6.2.2"/>, if it has been doing so.</t>
 	    <t>
 	      When a new host appears on the AIL and sends an initial router solicit, if it does not
 	      receive a suitable on-link prefix, it will not be able to communicate. Consequently, the stub router MUST monitor router
@@ -394,10 +411,10 @@
 	    <t>
 	      In this state, the stub router generates its own on-link prefix for the interface. This prefix has a valid and
 	      preferred lifetime of STUB_PROVIDED_PREFIX_LIFETIME seconds. The stub router sends a router advertisement (RA) containing
-	      this prefix in a Prefix Information Option (PIO). In the PIO, the A (autonomous configuration)
-	      flag <xref target="RFC4861" section="4.6.2"/> MUST be set and the L (on-link) flag SHOULD be set.
-          The exception cases where the L flag can be cleared is where the specific link-layer technology and/or configuration
-          requires clearing the L flag.</t>
+	      this prefix in a Prefix Information Option (PIO). In the PIO, the 'A' flag bit (autonomous configuration)
+	      flag <xref target="RFC4861" section="4.6.2"/> MUST be set and the 'L' flag bit (on-link prefix) MUST be set.
+	      Link-layer technologies that require the 'L' flag bit to be cleared are out of scope of this document.
+        </t>
         <t>
           The Stub Router flag (<xref target="I-D.hui-stub-router-ra-flag"/>) MUST be set in the RA flags field.
 	      The values of the M and O flags MUST be copied from the respective M/O flag values seen in the
@@ -576,7 +593,53 @@
             with length greater than 64, the stub router MUST treat the prefix as unsuitable and allocate a ULA Link Prefix out of
             its ULA Site Prefix instead.
           </t>
+	  <t>
+	    A DHCPv6-PD client can request a particular lease interval for the DHCPv6-delegated prefix. However, there is no
+	    particular reason for a SNAC router to specify this interval.
+	  </t>
+	  <section>
+	    <name>Lifetime of IPv6 prefixes acquired using DHCPv6 Prefix Delegation</name>
+	    <t>
+	      It is possible that a SNAC router might obtain a prefix from a DHCPv6 server using prefix delegation and then something
+	      about the infrastructure network attachment might change that affects the validity of that prefix for use on the stub
+	      network. The section of <xref target="I-D.ietf-dhc-rfc8415bis"/> titled "Refreshing Configuration Information"
+	      discusses the various scenarios that can occur. We assume that the DHCPv6 prefix delegation client being used by
+	      the SNAC router conforms to this specification.
+	    </t>
+	    <t>
+	      Situations that can occur include (but are not limited to):
+	    </t>
+	    <ul>
+	      <li>DHCPv6 server becomes unavailable</li>
+	      <li>Stub router is moved to a different link</li>
+	      <li>A renumnbering event results in the old prefix being replaced with a new one</li>
+	    </ul>
+	    <t>
+	      The SNAC router MUST NOT use a prefix once the DHCPv6-PD client has determined that it is no longer valid. If the
+	      DHCPv6-PD client provides a new prefix, and the old prefix is still valid, the SNAC router SHOULD explicitly deprecate
+	      the old prefix at the same time that it first advertises the new prefix.</t>
+	    <t>
+	      If the DHCPv6-PD client determines that the prefix it provided to use as the OSNR prefix is no longer valid, and no
+	      replacement prefix is provided by the DHCPv6 server, then the SNAC router MUST switch to the ULA link prefix that it
+	      has allocated for use on the SNAC network.  In the case that the DHCPv6-PD client is unable to renew its lease on the
+	      current OSNR prefix, and time between the T2 interval for the prefix assignment
+	      <xref target="I-D.ietf-dhc-rfc8415bis" section="21.4" sectionFormat="of"/> and the end of the lease has been
+	      reached, then the SNAC router MUST deprecate the DHCPv6-PD-provided OSNR prefix and begin advertising the ULA link
+	      prefix.
+	    </t>
+	    <t>
+	      A failure to renew the DHCPv6-PD-provided OSNR prefix could be because the SNAC network has been disconnected from one
+	      AIL and moved to a different AIL. In this situation, if the new AIL also has IPv6 service and DHCPv6-PD service, the
+	      DHCPv6 client will get a clear indication that the old prefix is no longer valid. However, it may be that no DHCPv6-PD
+	      service is available on the new link, either because it is an IPv4-only link or because it's an IPv6-capable link that
+	      doesn't provide DHCPv6 service. In this situation, if the SNAC network remains connected to the link and no DHCPv6 service
+	      appears, the DHCPv6-PD-provided OSNR prefix will eventually time out and be replaced. The SNAC router SHOULD NOT attempt
+	      to replace it prior to this normal timeout process, because there is no benefit to changing the OSNR prefix on the
+	      SNAC network in such a situation, and it's possible that the SNAC router will return to the other link before the
+	      OSNR prefix expires.
+	    </t>
         </section>
+      </section>
       </section>
       <section>
 	<name>Managing reachability on the adjacent infrastructure link</name>
@@ -620,6 +683,7 @@
 	  In this case, the stub routers will be advertising Router Information options in their router advertisements for
 	  their OSNR prefixes. Stub routers MUST track the presence of such routes, and MUST advertise reachability to them on
 	  interfaces connected to stub networks.</t>
+      </section>
       <section>
 	<name>Providing discoverability between stub network links and infrastructure network links</name>
 	<t>
@@ -692,8 +756,31 @@
 	</section>
       </section>
     </section>
+  
     <section>
-      <name>Providing reachability to IPv4 services to the stub network</name>
+      <name>Providing reachability to IPv4-only services to hosts on the stub network</name>
+      <t>
+	SNAC networks rely on IPv6 to enable routing between links, which would not be possible with IPv4 due to the lack of a
+	standard mechanism similar to router advertisements in IPv4. However, it can stll be useful for hosts on the SNAC network
+	to establish communications with IPv4-only hosts on the infrastructure network.
+      </t>
+      <t>
+	Although NAT64 provides IPv6-only hosts with a way to reach IPv4 hosts, there is no easy way for an IPv4 host to
+	use NAT64 to originate communication with an IPv6 host. Therefore, this document enables IPv6 hosts on the SNAC network
+	to discover and reach with IPv4 hosts on infrastructure, but does not provide a way for IPv4-only hosts
+	on infrastructure to communicate to IPv6 hosts on the SNAC network.
+      </t>
+      <t>
+	This should be acceptable because hosts on the infrastructure network should not be IPv4-only, since the SNAC router is
+	providing IPv6 service on the infrastructure network that is suitable for communicating using IPv6 to hosts on the SNAC
+	network--there should not be any hosts on the infrastructure network that can't communicate with hosts on the stub network
+	unless such hosts do not have an IPv6 stack at all.
+      </t>
+      <t>
+	So the purpose of providing IPv4 connectivity for SNAC hosts is to enable communication with arbitrary IPv4 hosts which
+	may not be on the AIL. This is accomplished by providing NAT64 address translation in the stub router, and by enabling
+	service discovery using a Discovery Proxy.
+      </t>
       <t>Stub Network routers must be capable of providing NAT64 themselves, and must be capable of discovering the availability
 	of NAT64 service on the infrastructure network and providing it when it is available and suitable.
       </t>
@@ -822,6 +909,7 @@
 	</t>
       </section>
     </section>
+    
     <section>
       <name>Handling partitioning events on a stub network</name>
       <t>
@@ -850,6 +938,7 @@
 	coordinate in advance.
       </t>
     </section>
+    
     <section>
       <name>Services Provided by Stub Routers</name>
       <t>
@@ -872,8 +961,50 @@
 	  can communicate with IPv4 hosts on the infrastructure network and the global internet.</dd>
       </dl>
     </section>
+    
+    <section>
+      <name>IANA Considerations</name>
+      <t>
+        This document has no IANA actions.
+      </t>
+    </section>
+    
+    <section>
+      <name>Security Considerations</name>
+      <t>
+        Because a SNAC router operates as an IPv6 router that sends and receives IPv6 Neighbor Discovery protocol messages,
+        the security considerations of Section 11 of <xref target="RFC4861"/> apply. No additional security considerations are
+        identified.
+      </t>
+    </section>
   </middle>
+
   <back>
+    <references>
+      <name>Normative References</name>
+      <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.2119.xml" />
+      <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.4191.xml" />
+      <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.4193.xml" />
+      <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.4861.xml" />
+      <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.6762.xml" />
+      <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.6763.xml" />
+      <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.7084.xml" />
+      <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.8174.xml" />
+      <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.8200.xml" />
+      <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.8766.xml" />
+      <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.8781.xml" />
+      <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml3/reference.I-D.ietf-dnssd-srp.xml" />
+      <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml3/reference.I-D.ietf-dnssd-advertising-proxy.xml" />
+      <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml3/reference.I-D.hui-stub-router-ra-flag.xml" />
+      <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml3/reference.I-D.ietf-dhc-rfc8415bis.xml" />
+    </references>
+    <references>
+      <name>Informative References</name>
+      <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.2328.xml" />
+      <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.4944.xml" />
+      <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.6282.xml" />      
+    </references>
+
     <section anchor="net-analysis">
       <name>Analysis of deployment scenarios in which a stub router could cause problems</name>
       <section>
@@ -900,6 +1031,7 @@
 	  The owner of the stub router might be surprised in this case, but ultimately the owner of the infrastructure network gets
 	  to make this decision, and there isn't anything we can or should do on behalf of the stub router's owner in this case.
 	</t>
+    </section>
 	<section>
 	  <name>Use on an unmanaged (non-home) IPv6 network</name>
 	  <t>
@@ -909,7 +1041,6 @@
 	    settings for there to be a guest network for visitors, or for the network to enforce isolation between all nodes
 	    connected to it.
 	  </t>
-	</section>
       </section>
       <section>
 	<name>Use on a managed network</name>
@@ -970,7 +1101,6 @@
 	    destination, and in this case communication would fail. Only happy eyeballs can correct this situation.
 	  </t>
 	</section>
-      </section>
       <section>
 	<name>Use on a managed network without IPv6</name>
 	<t>
@@ -981,30 +1111,9 @@
 	  connecting an IPv4 NAT gateway in the same scenario would not cause operational problems.
 	</t>
       </section>
+      </section>
     </section>
-    <references>
-      <name>Normative References</name>
-      <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.2119.xml" />
-      <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.4191.xml" />
-      <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.4193.xml" />
-      <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.4861.xml" />
-      <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.5175.xml" />
-      <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.6762.xml" />
-      <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.6763.xml" />
-      <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.7084.xml" />
-      <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.8174.xml" />
-      <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.8766.xml" />
-      <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.8781.xml" />
-      <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml3/reference.I-D.ietf-dnssd-srp.xml" />
-      <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml3/reference.I-D.ietf-dnssd-advertising-proxy.xml" />
-      <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml3/reference.I-D.hui-stub-router-ra-flag.xml" />
-    </references>
-    <references>
-      <name>Informative References</name>
-      <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.2328.xml" />
-      <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.4944.xml" />
-      <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.6282.xml" />
-    </references>
+
     <section>
       <name>Router Advertisements on the Infrastructure Network</name>
       <t>
@@ -1012,20 +1121,19 @@
         on the infrastructure network.  These Router Advertisements are filled with the following values consistent with the message format
         given in Section 4.2 of <xref target="RFC4861"/>:
       </t>
-      <t>
 	<ul>
           <li> Router Lifetime: A SNAC router never advertises itself as a default router on infrastructure. Therefore, the router lifetime is always zero
 	    in SNAC router advertisements on infrastructure.</li>
           <li> In the 'M' flag bit and 'O' flag bits, section <xref target="state-begin-advertising"/> specifies that they must be zero.</li>
-	  <li> The 'SNAC router' flag bit <xref target="I-D.ietf-6man-snac-router-bit"/> MUST be 1.</li>
+	  <li> The 'SNAC router' flag bit xref target="I-D.ietf-6man-snac-router-bit" TBD WaitRef MUST be 1.</li>
           <li> In the Cur Hop Limit field: 0</li>
           <li> In the Reachable Time field: 0</li>
           <li> In the Retrans Timer field: 0</li>
           <li>
 	    In the options, with the exception of the options listed below, stub routers MUST NOT send any RA options, since
             these other options are for managing the network, and the stub network is not responsible for managing the infrastructure
-            network.
-            <ul>
+            network.</li>
+            <li><ul>
               <li>
 		Source Link-Layer Address option: Including this option whenever possible is RECOMMENDED. The load balancing use case
 		in <xref target="RFC4861" section="6.2.3" sectionFormat="of"/> is out of scope for this document and is not generally
@@ -1038,31 +1146,30 @@
 		choosing a PIO, only one SNAC routers will send it PIO. How this decision is made is described in
 		<xref target="suitable-prefix-state-machine"/>. When a stub router sents this option, the following settings
 		apply:</li>
-              <ul>
+              <li><ul>
                 <li> In the 'L' flag bit (on-link): 1.</li>
                 <li> In the 'A' flag bit (Autonomous address configuration): 1</li>
                 <li> In the Valid Lifetime field: normally STUB_PROVIDED_PREFIX_LIFETIME (see <xref target="constants"/>), but see
 		  <xref target="state-deprecating"/>.</li>
                 <li> In the Preferred Lifetime field: normally STUB_PROVIDED_PREFIX_LIFETIME (see <xref target="constants"/>), but see
 		  <xref target="state-deprecating"/>.</li>
-	      </ul>
+	      </ul></li>
 	      <li> Route Information Option: an active SNAC router always provides a Route Information Option for each prefix that
 		is valid on the stub network. This provides a route from the infrastructure network to the stub network. The
 		following settings apply:</li>
-	      <ul>
+	      <li><ul>
 		<li> Prefix Length: 64</li>
 		<li> Route Preference: low</li>
 		<li> Route Lifetime: STUB_NETWORK_REACHABLE_TIME (TBD: what about deprecated prefixes? Add reference to new proposed text that addresses issue #67 on github)</li>
 		<li> Prefix: the prefix advertised on the stub network</li>
-	      </ul>
-	    </ul>
-          </li>
+	      </ul></li>
+	    </ul></li>
 	</ul>
-      </t>
       <t>
 	It is expected that all RA options for a SNAC router will fit in a single RA. Therefore, we do not expect SNAC routers to send multiple
 	RAs with different information other than to announce that some information previously advertised has changed.</t>
     </section>
+    
     <section>
       <name>Router Advertisments on the stub network</name>
       <t>
@@ -1072,15 +1179,15 @@
         given in Section 4.2 of <xref target="RFC4861"/>:
       </t>
 	<ul>
-          <li> Router Lifetime: The SNAC router can be a default router on the SNAC network (see <xref target="snac-reachability"/>.</li>
+          <li> Router Lifetime: The SNAC router can be a default router on the SNAC network (see xref target="snac-reachability" TBD fixref).</li>
           <li> SNAC routers do not provide DHCP service on the stub network. Therefore, the 'M' flag bit and 'O' flag bits MUST be zero.</li>
-	  <li> The 'SNAC router' flag bit <xref target="I-D.ietf-6man-snac-router-bit"/> MUST be 0.</li>
+	  <li> The 'SNAC router' flag bit xref target="I-D.ietf-6man-snac-router-bit" TBD waitRef MUST be 0.</li>
           <li> In the Cur Hop Limit field: 0</li>
           <li> In the Reachable Time field: 0</li>
           <li> In the Retrans Timer field: 0</li>
           <li>
-	    In the options, the stub router may send options as appropriate.
-            <ul>
+	      In the options, the stub router may send options as appropriate.</li>
+            <li><ul>
               <li>
 		Source Link-Layer Address option: Including this option whenever possible is RECOMMENDED. The load balancing use case
 		in <xref target="RFC4861" section="6.2.3" sectionFormat="of"/> is out of scope for this document and is not generally
@@ -1091,30 +1198,28 @@
               <li> Some SNAC router will need to send a PIO. Normally, only one SNAC router will send a PIO. How this decision is made is described in
 		<xref target="stub-addressability"/>. When a stub router sents this option, the following settings
 		apply:</li>
-              <ul>
+              <li><ul>
                 <li> In the 'L' flag bit (on-link): 1.</li>
                 <li> In the 'A' flag bit (Autonomous address configuration): 1</li>
                 <li> In the Valid Lifetime field: normally STUB_PROVIDED_PREFIX_LIFETIME (see <xref target="constants"/>), but see
 		  <xref target="state-deprecating"/>.</li>
                 <li> In the Preferred Lifetime field: normally STUB_PROVIDED_PREFIX_LIFETIME (see <xref target="constants"/>), but see
 		  <xref target="state-deprecating"/>.</li>
-	      </ul>
-	      <li> Route Information Option: when a SNAC router is not advertising a default route, it MUST include one or more
+	      </ul></li>
+	      <li> <t>Route Information Option: when a SNAC router is not advertising a default route, it MUST include one or more
 		RIO options in router advertisements on the stub network to provide reachability to infrastructure. This is discussed in
-		<xref target="stub-reachability"/>. The following settings apply:</li>
+		<xref target="stub-reachability"/>. The following settings apply:</t>
 	      <ul>
 		<li> Prefix Length: the length of the prefix covered by the route, not necessarily 64.</li>
 		<li> Route Preference: low</li>
 		<li> Route Lifetime: The lifetime of the prefix on the infrastructure link, but no more than STUB_NETWORK_REACHABLE_TIME</li>
 		<li> Prefix: the prefix that is known to be reachable on the infrastructure network</li>
-	      </ul>
-	    </ul>
-          </li>
+	      </ul></li>
+	    </ul></li>
 	</ul>
-      <t>
 	</section>
-    </back>
-  </rfc>
+  </back>
+</rfc>
 
   <!-- Keep this comment at the end of the file
        Local variables:
