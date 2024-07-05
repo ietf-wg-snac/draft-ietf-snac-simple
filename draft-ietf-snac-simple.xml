@@ -256,7 +256,7 @@
 	  STUB_PROVIDED_PREFIX_LIFETIME, but the two should not be considered to be equivalent.</dd>
 	<dt>MAX_FLAGS_COPY_TIME (default: 150 minutes):</dt>
 	<dd>
-	  The maximum time period, after receiving an RA, that a stub router can copy flag values from the
+	  The maximum time period, after receiving an RA, that a stub router can copy flag bit values from the
 	  header of this RA for use in its own transmitted RAs.</dd>
 	<dt>MAX_SUITABLE_REACHABLE_TIME (default: 60 seconds):</dt>
 	<dd>
@@ -306,18 +306,18 @@
 	  </t>
 	  <ul>
 	    <li>Prefix Length value is 64,</li>
-            <li>'L' bit is set,</li>
-	    <li>'A' bit is set, and</li>
+            <li>'L' flag bit is set,</li>
+	    <li>'A' flag bit is set, and</li>
 	    <li>Preferred Lifetime of 30 minutes or more.</li>
 	  </ul>
 	  <t>
-	    A prefix is not considered a suitable on-link prefix if the 'L' bit is set, but the 'A' bit is not set. This indicates
+	    A prefix is not considered a suitable on-link prefix if the 'L' flag bit is set, but the 'A' flag bit is not set. This indicates
 	    that node addressability is being managed using DHCPv6. Nodes are not required to use DHCPv6 to acquire addresses, so a
 	    prefix that requires the use of DHCPv6 can't be considered "suitable"&mdash;not all hosts can actually use it.
 	  </t>
 	  <t>
-	    Note: there can be layer two networks where neighbor discovery is not supported and therefore we cannot set the 'L' bit,
-	    but could set the 'A' bit. The behavior of stub networks when connecting to such networks is out of scope for this document.
+	    Note: there can be layer two networks where neighbor discovery is not supported and therefore we cannot set the 'L' flag bit,
+	    but could set the 'A' flag bit. The behavior of stub networks when connecting to such networks is out of scope for this document.
 	  </t>
 	  <t>
 	    A prefix is considered to be advertised on the link if, when a Router Solicit message
@@ -412,12 +412,12 @@
 	      In this state, the stub router generates its own on-link prefix for the interface. This prefix has a valid and
 	      preferred lifetime of STUB_PROVIDED_PREFIX_LIFETIME seconds. The stub router sends a router advertisement (RA) containing
 	      this prefix in a Prefix Information Option (PIO). In the PIO, the 'A' flag bit (autonomous configuration)
-	      flag <xref target="RFC4861" section="4.6.2"/> MUST be set and the 'L' flag bit (on-link prefix) MUST be set.
+	      <xref target="RFC4861" section="4.6.2"/> MUST be set and the 'L' flag bit (on-link prefix) MUST also be set.
 	      Link-layer technologies that require the 'L' flag bit to be cleared are out of scope of this document.
         </t>
         <t>
-          The Stub Router flag (<xref target="I-D.hui-stub-router-ra-flag"/>) MUST be set in the RA flags field.
-	      The values of the M and O flags MUST be copied from the respective M/O flag values seen in the
+          The 'Stub Router' flag bit (<xref target="I-D.hui-stub-router-ra-flag"/>) MUST be set in the RA flags field.
+	      The values of the 'M' and 'O' flag bits MUST be copied from the respective 'M' and 'O' flag bit values seen in the
           most recent (unicast or multicast) RA received from a non-stub-router.
           For the selection of the most recent RA, the following RAs MUST be excluded:
         </t>
@@ -427,11 +427,11 @@
             <li>An RA received more than MAX_FLAGS_COPY_TIME ago.</li>
         </ul>
         <t>
-	      If there is no recent RA from a non-stub-router, both M and O flags MUST be cleared, unless the stub router rebooted
+	      If there is no recent RA from a non-stub-router, both 'M' and 'O' flag bits MUST be cleared, unless the stub router rebooted
           recently. After a reboot, if no recent RA is received from a non-stub router, but a recent RA has been
-          received from a stub router, the values for the M and O flags provided by that stub router MUST be copied. After
+          received from a stub router, the values for the 'M' and 'O' flag bits provided by that stub router MUST be copied. After
           MAX_FLAGS_COPY_TIME after reboot, the stub router MUST go back to the regular behavior defined above. This avoids
-          a situation where a stub router that has rebooted starts to advertise different M/O flag values
+          a situation where a stub router that has rebooted starts to advertise different 'M' and 'O' flag bit values
           than other stub routers present on the same link.</t>
 	    <t>
 	      The sent router advertisement MUST also include a Route Information option (<xref target="RFC4191" section="2.3"/>) for
@@ -452,10 +452,10 @@
 	    <t>
 	      The stub router may receive a router advertisement containing one or more suitable on-link prefixes on the AIL.
 	      If any of these prefixes are different than the prefix the stub router is advertising as the on-link suitable
-	      prefix, and the Stub Router flag is not set in in the Router Advertisement flags field, the stub router moves
+	      prefix, and the 'Stub Router' flag bit is not set in in the Router Advertisement flags field, the stub router moves
 	      the interface to STATE-DEPRECATING (<xref target="state-deprecating"/>).</t>
 	    <t>
-	      If the stub router bit is set in the RA header flags field, then one of the following must be true in order for that prefix to
+	      If the 'Stub Router' flag bit is set in the RA header flags field, then one of the following must be true in order for that prefix to
 	      be considered suitable:</t>
 	    <ul>
 	      <li>
@@ -891,7 +891,7 @@
 	</t><t>
 	  A stub network that services a Wi-Fi stub network SHOULD provide DNS64 translation: hosts on the stub network cannot be
 	  assumed to be able to do DNS64 synthesis in the stub resolver. In this case the DNS resolver on the stub router MUST honor
-	  the CD and DO bits if received in a request, since this indicates that the stub resolver on the requestor intends to do
+	  the 'CD' and 'DO' flag bits if received in a request, since this indicates that the stub resolver on the requestor intends to do
 	  DNSSEC validation. In this case, the resolver on the stub router MUST NOT perform DNS64 synthesis.
 	</t><t>
 	  On specific stub networks it may be desirable to require the stub network device to perform DNS64 synthesis. Stub network
@@ -1124,7 +1124,7 @@
 	<ul>
           <li> Router Lifetime: A SNAC router never advertises itself as a default router on infrastructure. Therefore, the router lifetime is always zero
 	    in SNAC router advertisements on infrastructure.</li>
-          <li> In the 'M' flag bit and 'O' flag bits, section <xref target="state-begin-advertising"/> specifies that they must be zero.</li>
+          <li> For the 'M' and 'O' flag bits, section <xref target="state-begin-advertising"/> specifies that they must be zero.</li>
 	  <li> The 'SNAC router' flag bit xref target="I-D.ietf-6man-snac-router-bit" TBD WaitRef MUST be 1.</li>
           <li> In the Cur Hop Limit field: 0</li>
           <li> In the Reachable Time field: 0</li>
@@ -1180,7 +1180,7 @@
       </t>
 	<ul>
           <li> Router Lifetime: The SNAC router can be a default router on the SNAC network (see xref target="snac-reachability" TBD fixref).</li>
-          <li> SNAC routers do not provide DHCP service on the stub network. Therefore, the 'M' flag bit and 'O' flag bits MUST be zero.</li>
+          <li> SNAC routers do not provide DHCP service on the stub network. Therefore, the 'M' and 'O' flag bits MUST be zero.</li>
 	  <li> The 'SNAC router' flag bit xref target="I-D.ietf-6man-snac-router-bit" TBD waitRef MUST be 0.</li>
           <li> In the Cur Hop Limit field: 0</li>
           <li> In the Reachable Time field: 0</li>
