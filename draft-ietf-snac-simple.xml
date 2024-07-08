@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE rfc SYSTEM "rfc2629-xhtml.ent">
-<rfc category="bcp" submissionType="IETF" docName="draft-ietf-snac-simple-04" ipr="trust200902"
+<rfc category="bcp" submissionType="IETF" docName="draft-ietf-snac-simple-05" ipr="trust200902"
      xmlns:xi="http://www.w3.org/2001/XInclude" version="3"
      scripts="Common,Latin" sortRefs="false" consensus="true"
      symRefs="true" tocDepth="3" tocInclude="true" xml:lang="en">
@@ -34,7 +34,7 @@
       </address>
     </author>
 
-    <date year='2024' month='June' day='21'/>
+    <date year='2024' month='July' day='8'/>
     <area>Internet</area>
     <workgroup>Internet Engineering Task Force</workgroup>
     <abstract>
@@ -214,7 +214,7 @@
 	  the stub network in this case is that the LAN is potentially a candidate to act as a transit network to reach other routers,
 	  whereas the stub network is not.</dd>
 	<dt>SNAC Router:</dt>
-	<dd>A Stub Network Auto-Configuring Router. This is a stub router that implements the autoconfiguration methods defined by 
+	<dd>A Stub Network Auto-Configuring Router. This is a stub router that implements the autoconfiguration methods defined by
       this specification.</dd>
 	<dt>RA Beacon:</dt>
 	<dd>A Router Advertisement (RA) message that is multicast on a link so that hosts can see that the router is still present. This is in
@@ -420,7 +420,7 @@
 	      Link-layer technologies that require the 'L' flag bit to be cleared are out of scope of this document.
         </t>
         <t>
-          The 'Stub Router' flag bit (<xref target="I-D.hui-stub-router-ra-flag"/>) MUST be set in the RA flags field.
+          The 'SNAC Router' flag bit (<xref target="I-D.ietf-6man-snac-router-ra-flag"/>) MUST be set in the RA flags field.
 	      The values of the 'M' and 'O' flag bits MUST be copied from the respective 'M' and 'O' flag bit values seen in the
           most recent (unicast or multicast) RA received from a non-SNAC-router.
           For the selection of the most recent RA, the following RAs MUST be excluded:
@@ -456,10 +456,10 @@
 	    <t>
 	      The SNAC router may receive a Router Advertisement message containing one or more suitable on-link prefixes on the AIL.
 	      If any of these prefixes are different than the prefix the SNAC router is advertising as the on-link suitable
-	      prefix, and the 'Stub Router' flag bit is not set in in the Router Advertisement flags field, the SNAC router moves
+	      prefix, and the 'SNAC Router' flag bit is not set in in the Router Advertisement flags field, the SNAC router moves
 	      the interface to STATE-DEPRECATING (<xref target="state-deprecating"/>).</t>
 	    <t>
-	      If the 'Stub Router' flag bit is set in the RA header flags field, then one of the following must be true in order for that prefix to
+	      If the 'SNAC Router' flag bit is set in the RA header flags field, then one of the following must be true in order for that prefix to
 	      be considered suitable:</t>
 	    <ul>
 	      <li>
@@ -515,12 +515,12 @@
       <section anchor="stub-addressability">
 	<name>Managing addressability on the stub network</name>
 	<t>
-	  How addressability is managed on stub networks depends on the nature of the stub network. For some stub networks, the stub
+	  How addressability is managed on stub networks depends on the nature of the stub network. For some stub networks, the SNAC
 	  router can be sure that it is the only router. For example, a SNAC router that is providing a Wi-Fi network for tethering
 	  will advertise its own SSID and use its own joining credentials; in this case, it can assume that it is the only router
 	  for that network, and advertise a default route and on-link prefix just like any other router.
 	</t><t>
-	  However, some stub networks are more cooperative in nature, for example IP mesh networks. On such networks, multiple stub
+	  However, some stub networks are more cooperative in nature, for example IP mesh networks. On such networks, multiple SNAC
 	  routers may be present and be providing addressability and reachability.
 	</t><t>
 	  In either case, some SNAC router connected to the stub network MUST provide a suitable on-link prefix (the OSNR prefix) for
@@ -565,7 +565,7 @@
 	<section>
 	  <name>Generating a per-stub-router ULA Site Prefix</name>
 	  <t>
-	    In order to be able to provide addressability either on the stub network or on an adjacent infrastructure network, a stub
+	    In order to be able to provide addressability either on the stub network or on an adjacent infrastructure network, a SNAC
 	    router MUST allocate its own ULA Site Pefix. ULA prefixes, described in Unique Local IPv6 Unicast Addresses
 	    (<xref target="RFC4193"/>) are randomly allocated prefixes. A SNAC router MUST allocate a single ULA Site Prefix for use in
 	    providing on-link prefixes to the stub network and the adjacent infrastructure link as described in <xref target="state-begin-advertising"/>.
@@ -648,7 +648,7 @@
       <section>
 	<name>Managing reachability on the adjacent infrastructure link</name>
 	<t>
-	  SNAC routers MUST advertise reachability to stub network OSNR prefixes on any AIL to which they are connected. If the stub
+	  SNAC routers MUST advertise reachability to stub network OSNR prefixes on any AIL to which they are connected. If the SNAC
 	  router is advertising a suitable prefix on any interface, any such prefixes MUST be advertised on that interface in the same
 	  Router Advertisement message that is advertising the suitable prefix, to avoid unnecessary multicast traffic.
 	</t><t>
@@ -665,7 +665,7 @@
 	<name>Managing reachability on the stub network</name>
 	<t>
 	  The SNAC router MAY advertise itself as a default router on the stub network, if it itself has a default route on the
-	  AIL. In some cases it may not be desirable to advertise reachability to the Internet as a whole; in this case the stub
+	  AIL. In some cases it may not be desirable to advertise reachability to the Internet as a whole; in this case the SNAC
 	  router is not required to advertise itself as a default router.
 	</t><t>
 	  If the SNAC router is not advertising itself as a default router on the stub network, it MUST advertise reachability to any
@@ -678,7 +678,7 @@
 	  case, if the infrastructure is not capable of routing between these two AILs, a packet which could have been delivered by
 	  another SNAC router will be lost by the SNAC router that received it.</t>
 	<t>
-	  Consequently, SNAC routers SHOULD be configurable to not advertise themselves as default routers on the stub network. Stub
+	  Consequently, SNAC routers SHOULD be configurable to not advertise themselves as default routers on the stub network. SNAC
 	  routers SHOULD be configurable to explicitly advertise AIL prefixes on the stub network even if they are advertising as a
 	  default router. The mechanisms by which such configuration can be accomplished are out of scope for this document.
 	</t>
@@ -760,7 +760,7 @@
 	</section>
       </section>
     </section>
-  
+
     <section>
       <name>Providing reachability to IPv4-only services to hosts on the stub network</name>
       <t>
@@ -913,7 +913,7 @@
 	</t>
       </section>
     </section>
-    
+
     <section>
       <name>Handling partitioning events on a stub network</name>
       <t>
@@ -942,7 +942,7 @@
 	coordinate in advance.
       </t>
     </section>
-    
+
     <section>
       <name>Services Provided by SNAC routers</name>
       <t>
@@ -965,14 +965,14 @@
 	  can communicate with IPv4 hosts on the infrastructure network and the global internet.</dd>
       </dl>
     </section>
-    
+
     <section>
       <name>IANA Considerations</name>
       <t>
         This document has no IANA actions.
       </t>
     </section>
-    
+
     <section>
       <name>Security Considerations</name>
       <t>
@@ -999,31 +999,31 @@
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.8781.xml" />
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml3/reference.I-D.ietf-dnssd-srp.xml" />
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml3/reference.I-D.ietf-dnssd-advertising-proxy.xml" />
-      <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml3/reference.I-D.hui-stub-router-ra-flag.xml" />
+      <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml3/reference.I-D.ietf-snac-router-ra-flag.xml" />
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml3/reference.I-D.ietf-dhc-rfc8415bis.xml" />
     </references>
     <references>
       <name>Informative References</name>
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.2328.xml" />
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.4944.xml" />
-      <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.6282.xml" />      
+      <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.6282.xml" />
     </references>
 
     <section anchor="net-analysis">
-      <name>Analysis of deployment scenarios in which a stub router could cause problems</name>
+      <name>Analysis of deployment scenarios in which a SNAC router could cause problems</name>
       <section>
 	<name>Unmanaged home network</name>
 	<t>
-	  In this scenario, a non-expert home user connects stub router to own unmanaged home network. This is the key intended use case for stub networks.
-	  This document describes how to implement a stub router such that it operates correctly in this situation, whether the ISP is providing IPv6
+	  In this scenario, a non-expert home user connects SNAC router to own unmanaged home network. This is the key intended use case for stub networks.
+	  This document describes how to implement a SNAC router such that it operates correctly in this situation, whether the ISP is providing IPv6
 	  reachability to the Internet or not.
 	</t>
 	<t>
 	  In some unmanaged network settings, there is a "guest" network in addition to the main network. In this configuration, if
-	  a stub router is added to the guest infrastructure network, no communication will be possible. The general intended
+	  a SNAC router is added to the guest infrastructure network, no communication will be possible. The general intended
 	  behavior of the guest network is to isolate untrusted hosts. Since this would be the intended behavior on the part of the
-	  owner of the network, it won't be a surprise to them, since they had to explicitly give the stub router's owner the guest
-	  network credentials and not the main network credentials. This should also mean that the owner of the stub router will not
+	  owner of the network, it won't be a surprise to them, since they had to explicitly give the SNAC router's owner the guest
+	  network credentials and not the main network credentials. This should also mean that the owner of the SNAC router will not
 	  expect it to function in this scenario.
 	</t>
 	<t>
@@ -1032,8 +1032,8 @@
 	  the same as being connected to the guest network, except that there is no other network. In this case we would expect that the
 	  owner of the network doesn't expect any devices attached to the network to be able to communicate with any other device, so
 	  the failure of devices connected to infrastructure to communicate with devices on the stub network would not be a surprise.
-	  The owner of the stub router might be surprised in this case, but ultimately the owner of the infrastructure network gets
-	  to make this decision, and there isn't anything we can or should do on behalf of the stub router's owner in this case.
+	  The owner of the SNAC router might be surprised in this case, but ultimately the owner of the infrastructure network gets
+	  to make this decision, and there isn't anything we can or should do on behalf of the SNAC router's owner in this case.
 	</t>
     </section>
 	<section>
@@ -1049,28 +1049,28 @@
       <section>
 	<name>Use on a managed network</name>
 	<t>
-	  In this scenario, a non-expert user attaches a stub router to an infrastructure network that's managed. This network has correctly deployed
-	  RA Guard and/or port-based access control. As a result, the stub router won't succeed in advertising a prefix on the managed network.
+	  In this scenario, a non-expert user attaches a SNAC router to an infrastructure network that's managed. This network has correctly deployed
+	  RA Guard and/or port-based access control. As a result, the SNAC router won't succeed in advertising a prefix on the managed network.
 	  Communications originating on the stub network that are able to communicate using NAT64 will still work.
 	</t>
 	<t>
-	  In the managed network case, it's possible that the network operator is willing to permit stub routers to be attached to the network by
+	  In the managed network case, it's possible that the network operator is willing to permit SNAC routers to be attached to the network by
 	  users. In this case, they might either not deploy RA guard, or they might deploy working DHCPv6 prefix delegation. This could be
 	  PD-per-host (where hosts are encouraged to use prefix delegation) or just ordinary prefix delegation (where hosts are given prefix
 	  delegation if they ask for it, but not encouraged to ask for it).
 	</t>
 	<t>
-	  In such a situation, if DHCPv6 PD works on the infrastructure link, the stub router will function correctly, because the delegated prefix
+	  In such a situation, if DHCPv6 PD works on the infrastructure link, the SNAC router will function correctly, because the delegated prefix
 	  will be correctly routed.
 	</t>
 	<t>
-	  It's worth noting that IPv4 devices that act similarly to stub routers, using NAT64, already exist and may indeed use the stub network
-	  functionality to support internal connections that aren't even apparent to the user. In this case the stub router is not relying on
+	  It's worth noting that IPv4 devices that act similarly to SNAC routers, using NAT64, already exist and may indeed use the stub network
+	  functionality to support internal connections that aren't even apparent to the user. In this case the SNAC router is not relying on
 	  RA to function because it's using its IPv4 address and NAT64 to provide connectivity, so there is no management issue even if RA is
 	  blocked. This is a reasonable use case for IPv6, and the current stub network document does in fact enable this use case.
 	</t>
 	<t>
-	  When a stub router is attached to an infrastructure network that has deployed RA guard and does not support DHCPv6 prefix delegation, and
+	  When a SNAC router is attached to an infrastructure network that has deployed RA guard and does not support DHCPv6 prefix delegation, and
 	  where that infrastructure network does allow the use of multicast DNS, services advertised on the stub network will be discoverable on the
 	  infrastructure network, but will not be reachable.
 	</t>
@@ -1109,8 +1109,8 @@
 	<name>Use on a managed network without IPv6</name>
 	<t>
 	  In this scenario, there is no IPv6 service being intentionally advertised on a managed network. Operators of such netowrks
-	  may not be aware of the possibility of configuring RA guard.  In this situation, a stub router will connect and advertise
-	  services, which will be reachable just as they would be in a similar unmanaged network. A stub router that conforms to
+	  may not be aware of the possibility of configuring RA guard.  In this situation, a SNAC router will connect and advertise
+	  services, which will be reachable just as they would be in a similar unmanaged network. A SNAC router that conforms to
 	  this specification will not advertise an IPv6 default route. Therefore it should not cause operational problems, just as
 	  connecting an IPv4 NAT gateway in the same scenario would not cause operational problems.
 	</t>
@@ -1134,8 +1134,8 @@
           <li> In the Reachable Time field: 0</li>
           <li> In the Retrans Timer field: 0</li>
           <li>
-	    In the options, with the exception of the options listed below, stub routers MUST NOT send any RA options, since
-            these other options are for managing the network, and the stub network is not responsible for managing the infrastructure
+	    In the options, with the exception of the options listed below, SNAC routers MUST NOT send any RA options, since
+            these other options are for managing the network, and the SNAC router is not responsible for managing the infrastructure
             network.</li>
             <li><ul>
               <li>
@@ -1144,11 +1144,11 @@
 		expected to be applicable. The benefit of including this option is that it eliminates the need to do neighbor discovery
 		on the SNAC router's link-local address in order to get its link-layer address.</li>
               <li>
-		MTU option: the stub router is not managing the link, and hence SHOULD NOT send this option.</li>
+		MTU option: the SNAC router is not managing the link, and hence SHOULD NOT send this option.</li>
               <li> Prefix Information options: when there is no suitable prefix (See <xref target="suitable"/>) on the
 		infrastructure link, some SNAC router will need to send a PIO. However, unless they are able to cooperate in
 		choosing a PIO, only one SNAC routers will send it PIO. How this decision is made is described in
-		<xref target="suitable-prefix-state-machine"/>. When a stub router sents this option, the following settings
+		<xref target="suitable-prefix-state-machine"/>. When a SNAC router sents this option, the following settings
 		apply:</li>
               <li><ul>
                 <li> In the 'L' flag bit (on-link): 1.</li>
@@ -1173,11 +1173,11 @@
 	It is expected that all RA options for a SNAC router will fit in a single RA. Therefore, we do not expect SNAC routers to send multiple
 	RAs with different information other than to announce that some information previously advertised has changed.</t>
     </section>
-    
+
     <section>
       <name>Router Advertisments on the stub network</name>
       <t>
-        A stub router sends periodic as well as solicited Router Advertisements
+        A SNAC router sends periodic as well as solicited Router Advertisements
         out its advertising interfaces on the stub network.  Outgoing Router Advertisements are
         filled with the following values consistent with the message format
         given in Section 4.2 of <xref target="RFC4861"/>:
@@ -1190,7 +1190,7 @@
           <li> In the Reachable Time field: 0</li>
           <li> In the Retrans Timer field: 0</li>
           <li>
-	      In the options, the stub router may send options as appropriate.</li>
+	      In the options, the SNAC router may send options as appropriate.</li>
             <li><ul>
               <li>
 		Source Link-Layer Address option: Including this option whenever possible is RECOMMENDED. The load balancing use case
@@ -1198,9 +1198,9 @@
 		expected to be applicable. The benefit of including this option is that it eliminates the need to do neighbor discovery
 		on the SNAC router's link-local address in order to get its link-layer address.</li>
               <li>
-		MTU option: the stub router is managing the link, and hence MAY send this option.</li>
+		MTU option: the SNAC router is managing the link, and hence MAY send this option.</li>
               <li> Some SNAC router will need to send a PIO. Normally, only one SNAC router will send a PIO. How this decision is made is described in
-		<xref target="stub-addressability"/>. When a stub router sents this option, the following settings
+		<xref target="stub-addressability"/>. When a SNAC router sents this option, the following settings
 		apply:</li>
               <li><ul>
                 <li> In the 'L' flag bit (on-link): 1.</li>
