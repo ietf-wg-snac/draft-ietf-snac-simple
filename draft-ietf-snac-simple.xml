@@ -310,14 +310,18 @@
 	  </t>
 	  <ul>
 	    <li>Prefix Length value is 64,</li>
-            <li>'L' flag bit is set,</li>
-	    <li>'A' flag bit is set, and</li>
+            <li>'L' flag bit is set and</li>
+	    <li>either the 'A' flag bit or the 'P' flag bit <xref target="I-D.ietf-6man-pio-pflag"/> is set, and</li>
 	    <li>Preferred Lifetime of 30 minutes or more.</li>
 	  </ul>
 	  <t>
-	    A prefix is not considered a suitable on-link prefix if the 'L' flag bit is set, but the 'A' flag bit is not set. This indicates
-	    that node addressability is being managed using DHCPv6. Nodes are not required to use DHCPv6 to acquire addresses, so a
-	    prefix that requires the use of DHCPv6 can't be considered "suitable"&mdash;not all hosts can actually use it.
+	    A prefix is not considered a suitable on-link prefix if the 'L' flag bit is not set, or if neither the 'A' flag bit 
+            nor the 'P' flag bit is set.
+	    When the 'A' flag bit is not set, this indicates
+	    that individual node addresses within the prefix are being managed using DHCPv6. If the 'P' flag bit is set, then hosts
+	    that wish to allocate their own addresses can do so by acquiring a prefix from which to allocate them using DHCPv6 Prefix Delegation <xref target="RFC 9663"/>.
+		  Nodes are not required to use DHCPv6 to acquire individual addresses, so a
+	    prefix that requires the use of DHCPv6 for that purpose can't be considered "suitable"&mdash;not all hosts can actually use it.
 	  </t>
 	  <t>
 	    Note: there can be layer two networks where neighbor discovery is not supported and therefore we cannot set the 'L' flag bit,
@@ -1001,12 +1005,14 @@
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml3/reference.I-D.ietf-dnssd-advertising-proxy.xml" />
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml3/reference.I-D.ietf-6man-snac-router-ra-flag.xml" />
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml3/reference.I-D.ietf-dhc-rfc8415bis.xml" />
+      <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml3/reference.I-D.ietf-6man-pio-pflag.xml" />
     </references>
     <references>
       <name>Informative References</name>
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.2328.xml" />
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.4944.xml" />
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.6282.xml" />
+      <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.9663.xml" />
     </references>
 
     <section anchor="net-analysis">
