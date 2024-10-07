@@ -596,7 +596,9 @@
 	    using DHCPv6 PD, it MUST use DHCPv6 PD rather than the ULA Link prefix it allocated for the stub network out of its ULA
 	    Site Prefix.
           </t><t>
-            A SNAC router SHOULD request stub network prefixes with length 64. If the SNAC router obtains a prefix with length less
+            A SNAC router MUST request stub network prefixes with length 64. It does so by sending an IA_PD option for each prefix,
+	    each with a different IAID, containing an IA_PREFIX with a hint of 64 as described in
+	    <xref target="RFC8415" section="18.3.9." sectionFormat="of"/>. If the SNAC router obtains a prefix with length less
             than 64, it SHOULD generate a /64 from the obtained prefix by padding with zeros. If the SNAC router obtains a prefix
             with length greater than 64, the SNAC router MUST treat the prefix as unsuitable and allocate a ULA Link Prefix out of
             its ULA Site Prefix instead.
