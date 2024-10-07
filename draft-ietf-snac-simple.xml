@@ -497,7 +497,7 @@
 		the usability of the infrastructure-provided on-link prefix should be monitored as in the STATE-SUITABLE state; if
 		during the deprecation period, the SNAC router detects that there are no longer any suitable prefixes on the link, as
 		described in <xref target="staleness"/> or in <xref target="nud"/>, it MUST return the interface to the
-		STATE-BEGIN-ADVERTISING (<xref target="state-advertising-suitable"/>) state and resume advertising its prefix with the
+		STATE-BEGIN-ADVERTISING (<xref target="state-begin-advertising"/>) state and resume advertising its prefix with the
 		valid and preferred lifetimes described there.</li>
 	    </ul>
 	    <t>
