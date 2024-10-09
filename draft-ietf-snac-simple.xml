@@ -214,8 +214,9 @@
 	  the stub network in this case is that the LAN is potentially a candidate to act as a transit network to reach other routers,
 	  whereas the stub network is not.</dd>
 	<dt>SNAC Router:</dt>
-	<dd>A Stub Network Auto-Configuring Router. This is a stub router that implements the autoconfiguration methods defined by
-      this specification.</dd>
+	<dd>A Stub Network Auto-Configuring (SNAC) Router. This is a stub router that implements the autoconfiguration methods defined by
+      this specification. By definition, a Customer Edge router <xref target="rfc704"/> can't be a SNAC router, because it is an
+      infrastructure router, and therefore has operational control over its stub networks.</dd>
 	<dt>RA Beacon:</dt>
 	<dd>A Router Advertisement (RA) message that is multicast on a link so that hosts can see that the router is still present. This is in
 	  contrast to a unicast RA message sent in response to the Router Solicitation message.</dd>
