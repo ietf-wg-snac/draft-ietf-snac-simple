@@ -34,7 +34,7 @@
       </address>
     </author>
 
-    <date year='2024' month='July' day='8'/>
+    <date year='2024' month='October' day='18'/>
     <area>Internet</area>
     <workgroup>Internet Engineering Task Force</workgroup>
     <abstract>
@@ -56,11 +56,11 @@
       </t>
       <ul>
 	<li>
-	  Incompatible speed: for example, an IEEE 802.15.4 network could not be easily bridged to a WiFi network because the data rates
+	  Incompatible speed: for example, an IEEE 802.15.4 network could not be easily bridged to a Wi-Fi network because the data rates
 	  are so dissimilar. So either it must be bridged in a very complicated and careful way to avoid overwhelming the 802.15.4
 	  network with irrelevant traffic, or the 802.15.4 network needs to be a separate subnet.</li>
 	<li>
-	  Incompatible media: for example, a constrained 802.15.4 network connected as a stub network to a WiFi or ethernet
+	  Incompatible media: for example, a constrained 802.15.4 network connected as a stub network to a Wi-Fi or ethernet
 	  infrastructure network.  In the case of an 802.15.4 network, it is quite possible that the devices used to link the
 	  infrastructure network to the stub network will not be conceived of by the end user as routers.  Consequently, we cannot
 	  assume that these devices will be on all the time. A solution for this use case will require some sort of commissioning
@@ -130,7 +130,7 @@
 	<t>
 	  Discoverability here means "discoverable using DNS, or DNS Service Discovery".  DNS Service Discovery includes multicast
 	  DNS <xref target="RFC6762"/>. As an example, when one host connected to
-	  a specific WiFi network wishes to discover services on hosts connected to that same WiFi network, it can do so using
+	  a specific Wi-Fi network wishes to discover services on hosts connected to that same Wi-Fi network, it can do so using
 	  multicast DNS.  Similarly, when a host on some other network
 	  wishes to discover the same service, it must use DNS-based DNS Service Discovery <xref target="RFC6763"/>.  In both cases,
 	  "discoverable using DNS" means that the host has one or more entries in the DNS that serve to make it discoverable.</t>
@@ -166,6 +166,45 @@
 	<t>
 	  SNAC routers can be attached to any network. However, there are network configurations where a SNAC router will not work.
 	  An analysis of networks where SNAC routers could be attached is provided in <xref target="net-analysis"/>.</t>
+      </section>
+
+      <section anchor="architecture"><name> Sample SNAC Router Aware Infrastructure Network</name>
+
+      <t>A Stub network attached via SNAC routers the infrastructure network. The Infrastructure router with in the scope of this specification is an IPv6 (aware) router and provides different services in the network. These routers can be a CE, home gateway or a WiFI router. A SNAC router will connect as any another device in the infrastructure network, additionally providing addressability, discoverability and reachability functions for devices in the stub network.</t>
+
+      <t>  This document describes mechanisms for connecting devices in Stub networks to the infrastructure using SNAC router as shown in <xref target="snac-rtr"/>. Although the use case described below is specific to home networks, the procedures apply for any type of infrastructure and stub network attachment scenarios.</t>
+      <t> A SNAC router receives and manages suitable IPV6 prefix on AIL preferably from the infrastructure router or from other SNAC routers in the network. In case addressing is not available, SNAC router provides and advertises it on the AIL.
+      </t>
+
+      <figure title="SNAC Router connecting Stub Networks to Infrastructure" anchor="snac-rtr">
+      <artwork> <![CDATA[
+
+                          (Internet)
+                              |
+                 +-------------------------+
+                 |  home Wi-Fi or CE        |
+                 |  Infrastructure Router  |
+                 +-------------------------+
+                              |
+   infrastructure devices   .-~-.
+     +-----+              _(     )__
+     |     |--+          (__________)
+     +-----+  |------------->|
+        +-----+              |  (AIL - Adjacent Infrastructure Link)
+            +------------------------+---------+
+            |                                  |
+      +-------------+                    +-------------+
+      | SNAC Router |--+                 | SNAC Router |
+      +-------------+  |                 +-------------+
+         +-------------+                      |
+              |                               |
+     +--------------------+             +--------------------+
+     |    Stub Network    |             |    Stub Network    |
+     +--------------------+             +--------------------+
+      ]]>
+      </artwork> </figure>
+
+
       </section>
     </section>
 
@@ -319,7 +358,7 @@
             nor the 'P' flag bit is set.
 	    When the 'A' flag bit is not set, this indicates
 	    that individual node addresses within the prefix are being managed using DHCPv6. If the 'P' flag bit is set, then hosts
-	    that wish to allocate their own addresses can do so by acquiring a prefix from which to allocate them using DHCPv6 Prefix Delegation <xref target="RFC 9663"/>.
+	    that wish to allocate their own addresses can do so by acquiring a prefix from which to allocate them using DHCPv6 Prefix Delegation <xref target="RFC9663"/>.
 		  Nodes are not required to use DHCPv6 to acquire individual addresses, so a
 	    prefix that requires the use of DHCPv6 for that purpose can't be considered "suitable"&mdash;not all hosts can actually use it.
 	  </t>
@@ -443,7 +482,7 @@
           than other SNAC routers present on the same link.</t>
 	    <t>
 	      The sent Router Advertisement message MUST also include a Route Information option (<xref target="RFC4191" section="2.3"/>) for
-	      each routable prefix advertised on the stub network. If the SNAC router is also a normal router (e.g. a home WiFi
+	      each routable prefix advertised on the stub network. If the SNAC router is also a normal router (e.g. a home Wi-Fi
 	      router), it SHOULD include all other routes that it is advertising in the RA, if there is space.</t>
 	    <t>
 	      After having sent the initial Router Advertisement, the SNAC router moves the interface into the STATE-ADVERTISING-SUITABLE
@@ -1001,6 +1040,7 @@
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.7084.xml" />
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.8174.xml" />
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.8200.xml" />
+      <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.8415.xml" />
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.8766.xml" />
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.8781.xml" />
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml3/reference.I-D.ietf-dnssd-srp.xml" />
