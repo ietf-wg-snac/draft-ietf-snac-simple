@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE rfc SYSTEM "rfc2629-xhtml.ent">
-<rfc category="bcp" submissionType="IETF" docName="draft-ietf-snac-simple-05" ipr="trust200902"
+<rfc category="bcp" submissionType="IETF" docName="draft-ietf-snac-simple-06" ipr="trust200902"
      xmlns:xi="http://www.w3.org/2001/XInclude" version="3"
      scripts="Common,Latin" sortRefs="false" consensus="true"
      symRefs="true" tocDepth="3" tocInclude="true" xml:lang="en">
@@ -34,7 +34,7 @@
       </address>
     </author>
 
-    <date year='2024' month='July' day='8'/>
+    <date year='2024'/>
     <area>Internet</area>
     <workgroup>Internet Engineering Task Force</workgroup>
     <abstract>
@@ -319,7 +319,7 @@
             nor the 'P' flag bit is set.
 	    When the 'A' flag bit is not set, this indicates
 	    that individual node addresses within the prefix are being managed using DHCPv6. If the 'P' flag bit is set, then hosts
-	    that wish to allocate their own addresses can do so by acquiring a prefix from which to allocate them using DHCPv6 Prefix Delegation <xref target="RFC 9663"/>.
+	    that wish to allocate their own addresses can do so by acquiring a prefix from which to allocate them using DHCPv6 Prefix Delegation <xref target="RFC9663"/>.
 		  Nodes are not required to use DHCPv6 to acquire individual addresses, so a
 	    prefix that requires the use of DHCPv6 for that purpose can't be considered "suitable"&mdash;not all hosts can actually use it.
 	  </t>
@@ -1001,6 +1001,7 @@
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.7084.xml" />
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.8174.xml" />
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.8200.xml" />
+      <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.8415.xml" />
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.8766.xml" />
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.8781.xml" />
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml3/reference.I-D.ietf-dnssd-srp.xml" />
