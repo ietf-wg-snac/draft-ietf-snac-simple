@@ -1019,9 +1019,9 @@
     <section anchor="net-analysis">
       <name>Analysis of deployment scenarios in which a SNAC router could cause problems</name>
       <section>
-	<name>Unmanaged  network</name>
+	<name>Unmanaged home network</name>
 	<t>
-	  In this scenario, a non-expert  user connects SNAC router to own unmanaged  network. This is the key intended use case for stub networks.
+	  In this scenario, a non-expert home user connects SNAC router to own unmanaged  network. This is the key intended use case for stub networks.
 	  This document describes how to implement a SNAC router such that it operates correctly in this situation, whether the ISP is providing IPv6
 	  reachability to the Internet or not.
 	</t>
