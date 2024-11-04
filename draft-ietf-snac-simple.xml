@@ -95,7 +95,7 @@
 	A host on a globally reachable stub network should be able to interoperate with hosts on other network links in the same
 	infrastructure as well as hosts on the global internet.</t>
       <t>
-	It may be noted that just as you can plug several Home Gateway devices together in series to form multi-layer NATs, there is
+	It may be noted that just as you can plug several CE Router devices together in series to form multi-layer NATs, there is
 	nothing preventing the owner of a stub network router from attaching it to a stub network as if that network were its
 	infrastructure network. In the case of an IoT wireless network, there may be no way to do this, nor would it be desirable,
 	but a stub router that uses ethernet on both the infrastructure and stub network sides could be connected this way. Nothing
@@ -187,15 +187,15 @@
 	<dt>Adjacent Infrastructure Link (AIL):</dt>
 	<dd>any link to which a stub network router is directly attached, that is part of an infrastructure network and is not the
 	  stub network.</dd>
-        <dt>Home Gateway:</dt>
-        <dd>A device, such as a CE Router <xref target="RFC7084"/>, that is intended to connect a single uplink network to a
+        <dt>CE Router:</dt>
+        <dd>CE Router is defined in <xref target="RFC7084"/>. A CE router is a device that is intended to connect a single uplink network to a
           Local-Area Network. A CE router may be provided by an ISP and only capable of connecting directly to the ISP's
           means of service delivery, e.g. Cable or DSL, or it may have an ethernet port on the WAN side and one or more ethernet
           ports, plus WiFi, on the LAN side.</dd>
 	<dt>Infrastructure network:</dt>
 	<dd>
 	  the network infrastructure to which a stub router connects. This network can be a single link, or a network of links. The
-	  network is typically formed by a Home Gateway, which may also provide some services, such as a DNS resolver, a DHCPv4
+	  network is typically formed by a CE router, which may also provide some services, such as a DNS resolver, a DHCPv4
 	  server, and a DHCPv6 prefix delegation server, for example.</dd>
 	<dt>Off-Stub-Network-Routable (OSNR) Prefix:</dt>
 	<dd>a prefix advertised on the stub network that can be used for communication with hosts not on the stub network.</dd>
@@ -209,7 +209,7 @@
 	<dt>Stub Router:</dt>
 	<dd>A router that provides connectivity between a stub network and an infrastructure network. A stub router may also provide
 	  connectivity between other networks: the term "stub router" refers specifically to its role in providing connectivity to
-	  a stub network. For example, a Home Gateway may provide connectivity between a provider network (WAN) and a home network
+	  a stub network. For example, a CE Router may provide connectivity between a provider network (WAN) and a  network
 	  (LAN), while at the same time providing connectivity between the LAN and a stub network. What distinguishes the LAN from
 	  the stub network in this case is that the LAN is potentially a candidate to act as a transit network to reach other routers,
 	  whereas the stub network is not.</dd>
@@ -444,8 +444,7 @@
           than other SNAC routers present on the same link.</t>
 	    <t>
 	      The sent Router Advertisement message MUST also include a Route Information option (<xref target="RFC4191" section="2.3"/>) for
-	      each routable prefix advertised on the stub network. If the SNAC router is also a normal router (e.g. a home WiFi
-	      router), it SHOULD include all other routes that it is advertising in the RA, if there is space.</t>
+	      each routable prefix advertised on the stub network.</t>
 	    <t>
 	      After having sent the initial Router Advertisement, the SNAC router moves the interface into the STATE-ADVERTISING-SUITABLE
 	      state (<xref target="state-advertising-suitable"/>).</t>
@@ -663,9 +662,8 @@
 	  to that stub network SHOULD advertise reachability to all such prefixes on any AIL to which it is attached using router
 	  advertisements.
 	</t><t>
-	  A SNAC router SHOULD NOT advertise itself as a default router on an AIL by setting a non-zero Router Lifetime value in the
-	  header of its Router Advertisements. The exception to this rule is the case where the SNAC router itself is the default router
-	  for a particular AIL: for example, it may be the home router providing connectivity to an ISP.
+	  A SNAC router MUST NOT advertise itself as a default router on an AIL by setting a non-zero Router Lifetime value in the
+	  header of its Router Advertisements.
 	</t>
       </section>
       <section anchor="stub-reachability">
@@ -1021,9 +1019,9 @@
     <section anchor="net-analysis">
       <name>Analysis of deployment scenarios in which a SNAC router could cause problems</name>
       <section>
-	<name>Unmanaged home network</name>
+	<name>Unmanaged  network</name>
 	<t>
-	  In this scenario, a non-expert home user connects SNAC router to own unmanaged home network. This is the key intended use case for stub networks.
+	  In this scenario, a non-expert  user connects SNAC router to own unmanaged  network. This is the key intended use case for stub networks.
 	  This document describes how to implement a SNAC router such that it operates correctly in this situation, whether the ISP is providing IPv6
 	  reachability to the Internet or not.
 	</t>
