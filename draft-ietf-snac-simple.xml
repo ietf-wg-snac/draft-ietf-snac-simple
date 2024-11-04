@@ -1021,7 +1021,7 @@
       <section>
 	<name>Unmanaged home network</name>
 	<t>
-	  In this scenario, a non-expert home user connects SNAC router to own unmanaged  network. This is the key intended use case for stub networks.
+	  In this scenario, a non-expert home user connects a SNAC router to their own unmanaged home network. This is the key intended use case for stub networks.
 	  This document describes how to implement a SNAC router such that it operates correctly in this situation, whether the ISP is providing IPv6
 	  reachability to the Internet or not.
 	</t>
