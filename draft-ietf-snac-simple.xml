@@ -187,7 +187,7 @@
 	<dt>Adjacent Infrastructure Link (AIL):</dt>
 	<dd>any link to which a stub network router is directly attached, that is part of an infrastructure network and is not the
 	  stub network.</dd>
-        <dt>CE Router:</dt>
+        <dt>Customer Edge (CE) Router:</dt>
         <dd>CE Router is defined in <xref target="RFC7084"/>. A CE router is a device that is intended to connect a single uplink network to a
           Local-Area Network. A CE router may be provided by an ISP and only capable of connecting directly to the ISP's
           means of service delivery, e.g. Cable or DSL, or it may have an ethernet port on the WAN side and one or more ethernet
@@ -215,7 +215,7 @@
 	  whereas the stub network is not.</dd>
 	<dt>SNAC Router:</dt>
 	<dd>A Stub Network Auto-Configuring (SNAC) Router. This is a stub router that implements the autoconfiguration methods defined by
-      this specification. By definition, a Customer Edge router <xref target="rfc704"/> can't be a SNAC router, because it is an
+      this specification. By definition, a CE router can't be a SNAC router, because it is an
       infrastructure router, and therefore has operational control over its stub networks.</dd>
 	<dt>RA Beacon:</dt>
 	<dd>A Router Advertisement (RA) message that is multicast on a link so that hosts can see that the router is still present. This is in
