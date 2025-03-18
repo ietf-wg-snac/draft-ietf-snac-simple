@@ -638,11 +638,11 @@
 	      prefix.
 	    </t>
 	    <t>
-	      A failure to renew the DHCPv6-PD-provided OSNR prefix could be because the stub network has been disconnected from one
+	      A failure to renew the DHCPv6-PD-provided OSNR prefix could be because the SNAC router has been disconnected from one
 	      AIL and moved to a different AIL. In this situation, if the new AIL also has IPv6 service and DHCPv6-PD service, the
 	      DHCPv6 client will get a clear indication that the old prefix is no longer valid. However, it may be that no DHCPv6-PD
 	      service is available on the new link, either because it is an IPv4-only link or because it's an IPv6-capable link that
-	      doesn't provide DHCPv6 service. In this situation, if the stub network remains connected to the link and no DHCPv6 service
+	      doesn't provide DHCPv6 service. In this situation, if the SNAC router remains connected to the link and no DHCPv6 service
 	      appears, the DHCPv6-PD-provided OSNR prefix will eventually time out and be replaced. The SNAC router SHOULD NOT attempt
 	      to replace it prior to this normal timeout process, because there is no benefit to changing the OSNR prefix on the
 	      stub network in such a situation, and it's possible that the SNAC router will return to the other link before the
