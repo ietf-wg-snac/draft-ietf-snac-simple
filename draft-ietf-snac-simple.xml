@@ -1124,6 +1124,75 @@
 	</t>
       </section>
       </section>
+      <section>
+	<n>SNAC Router M/O Flag Coordination Example</n>
+	<t>
+	  This section provides an example that illustrates why the MAX_FLAGS_COPY_TIME mechanism described in 
+	  <xref target="state-begin-advertising"/> is necessary to maintain consistent M/O flag values across 
+	  multiple SNAC routers on the same infrastructure link.
+	</t>
+	<section>
+	  <n>Scenario Setup</n>
+	  <t>
+	    Consider an infrastructure link with the following configuration:
+	  </t>
+	  <ul>
+	    <li>Infrastructure Router (IR): Advertises RAs with M=1, O=1 (managed configuration)</li>
+	    <li>SNAC Router A: Has been operating for hours, copying M=1, O=1 from IR</li>
+	    <li>SNAC Router B: Has been operating for hours, copying M=1, O=1 from IR</li>
+	  </ul>
+	  <t>
+	    Both SNAC routers are consistently advertising M=1, O=1 in their Router Advertisements 
+	    on the infrastructure link, maintaining consistency with the infrastructure router.
+	  </t>
+	</section>
+	<section>
+	  <n>Problem Scenario Without MAX_FLAGS_COPY_TIME Rule</n>
+	  <t>
+	    Now consider what would happen if SNAC Router A reboots and the MAX_FLAGS_COPY_TIME rule 
+	    was not present:
+	  </t>
+	  <ol>
+	    <li>SNAC Router A reboots and immediately starts advertising on the infrastructure link</li>
+	    <li>SNAC Router A has not yet received a recent RA from the Infrastructure Router (IR)</li>
+	    <li>Without the rule, SNAC Router A would default to M=0, O=0</li>
+	    <li>SNAC Router B continues advertising M=1, O=1 (copied from IR)</li>
+	    <li>Infrastructure Router continues advertising M=1, O=1</li>
+	  </ol>
+	  <t>
+	    This creates an inconsistent state where different routers on the same link are advertising 
+	    conflicting DHCP configuration signals:
+	  </t>
+	  <ul>
+	    <li>Infrastructure Router: M=1, O=1 (use DHCP for addresses and other config)</li>
+	    <li>SNAC Router A: M=0, O=0 (use SLAAC, no DHCP needed)</li>
+	    <li>SNAC Router B: M=1, O=1 (use DHCP for addresses and other config)</li>
+	  </ul>
+	  <t>
+	    Hosts on the infrastructure link receiving these conflicting Router Advertisements would 
+	    have inconsistent behavior depending on which router's advertisement they process.
+	  </t>
+	</section>
+	<section>
+	  <n>Solution With MAX_FLAGS_COPY_TIME Rule</n>
+	  <t>
+	    With the MAX_FLAGS_COPY_TIME rule in place, the scenario proceeds as follows:
+	  </t>
+	  <ol>
+	    <li>SNAC Router A reboots and immediately starts advertising on the infrastructure link</li>
+	    <li>SNAC Router A has not yet received a recent RA from the Infrastructure Router (IR)</li>
+	    <li>SNAC Router A receives a recent RA from SNAC Router B with M=1, O=1</li>
+	    <li>Following the rule, SNAC Router A copies M=1, O=1 from SNAC Router B</li>
+	    <li>All routers now consistently advertise M=1, O=1</li>
+	    <li>After MAX_FLAGS_COPY_TIME expires, SNAC Router A will have received recent RAs from IR</li>
+	    <li>SNAC Router A continues copying M=1, O=1 directly from IR (normal operation)</li>
+	  </ol>
+	  <t>
+	    This ensures that the temporary inconsistency window is avoided, and hosts on the 
+	    infrastructure link receive consistent configuration signals from all routers.
+	  </t>
+	</section>
+      </section>
     </section>
 
     <section>
