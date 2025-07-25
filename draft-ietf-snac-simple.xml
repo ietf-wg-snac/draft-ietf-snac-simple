@@ -1123,8 +1123,113 @@
 	  connecting an IPv4 NAT gateway in the same scenario would not cause operational problems.
 	</t>
       </section>
+      <section>
+	<n>Multi-AIL Scenarios</n>
+	<t>
+	  This section provides diagrams and examples for scenarios where multiple SNAC routers are connected to the same stub
+	  network, but each SNAC router is connected to a different Adjacent Infrastructure Link (AIL), as mentioned in 
+	  <xref target="stub-reachability"/>. These scenarios illustrate the routing challenges and expected behaviors.
+	</t>
+	<section>
+	  <n>Basic Multi-AIL Topology</n>
+	  <t>
+	    Consider a scenario where two SNAC routers (SNAC-A and SNAC-B) are both connected to the same stub network, but
+	    connected to different infrastructure networks:
+	  </t>
+	  <artwork><![CDATA[
+    Infrastructure-1        Infrastructure-2
+    [2001:db8:1::/64]       [2001:db8:2::/64]
+            |                       |
+        [SNAC-A]                [SNAC-B]
+            |                       |
+            +-------+-------+-------+
+                    |
+                Stub Network
+             [2001:db8:100::/64]
+                    |
+            [Device-X] [Device-Y]
+]]></artwork>
+	  <t>
+	    In this topology:
+	  </t>
+	  <ul>
+	    <li>SNAC-A is connected to Infrastructure-1 (prefix 2001:db8:1::/64)</li>
+	    <li>SNAC-B is connected to Infrastructure-2 (prefix 2001:db8:2::/64)</li>
+	    <li>Both SNAC routers share the same stub network (prefix 2001:db8:100::/64)</li>
+	    <li>Devices on the stub network can reach either infrastructure through the appropriate SNAC router</li>
+	  </ul>
+	</section>
+	<section>
+	  <n>Routing Considerations and Packet Flow</n>
+	  <t>
+	    When multiple SNAC routers are present, several routing considerations arise:
+	  </t>
+	  <section>
+	    <n>Default Route Advertisement</n>
+	    <t>
+	      As specified in <xref target="stub-reachability"/>, SNAC routers SHOULD be configurable to not advertise themselves
+	      as default routers on the stub network to avoid routing ambiguity. Instead, they SHOULD advertise specific routes
+	      to their respective AIL prefixes using Route Information Options (RIO).
+	    </t>
+	    <t>
+	      Example Router Advertisement from SNAC-A on the stub network:
+	    </t>
+	    <artwork><![CDATA[
+Router Advertisement:
+  Router Lifetime: 0 (not a default router)
+  Route Information Option:
+    Prefix: 2001:db8:1::/64
+    Route Preference: low
+    Route Lifetime: 1800
+]]></artwork>
+	    <t>
+	      Example Router Advertisement from SNAC-B on the stub network:
+	    </t>
+	    <artwork><![CDATA[
+Router Advertisement:
+  Router Lifetime: 0 (not a default router)  
+  Route Information Option:
+    Prefix: 2001:db8:2::/64
+    Route Preference: low
+    Route Lifetime: 1800
+]]></artwork>
+	  </section>
+	  <section>
+	    <n>Packet Routing Example</n>
+	    <t>
+	      Consider Device-X on the stub network (address 2001:db8:100::x) wanting to communicate with a host on 
+	      Infrastructure-1 (address 2001:db8:1::h1):
+	    </t>
+	    <ol>
+	      <li>Device-X performs longest-prefix match and finds route to 2001:db8:1::/64 via SNAC-A</li>
+	      <li>Device-X sends packet to SNAC-A: src=2001:db8:100::x, dst=2001:db8:1::h1</li>
+	      <li>SNAC-A forwards packet to Infrastructure-1</li>
+	      <li>Host h1 receives packet and sends reply: src=2001:db8:1::h1, dst=2001:db8:100::x</li>
+	      <li>Infrastructure-1 routes reply back to SNAC-A (via RIO advertisement from SNAC-A)</li>
+	      <li>SNAC-A forwards reply to Device-X on stub network</li>
+	    </ol>
+	  </section>
+	  <section>
+	    <n>Problem Case: Non-Routable Infrastructure</n>
+	    <t>
+	      A potential problem arises when Infrastructure-1 and Infrastructure-2 cannot route between each other, but a
+	      SNAC router advertises a default route. Consider the case where SNAC-A advertises itself as a default router:
+	    </t>
+	    <ol>
+	      <li>Device-X wants to reach host h2 on Infrastructure-2 (2001:db8:2::h2)</li>
+	      <li>Device-X has no specific route to 2001:db8:2::/64, so uses default route via SNAC-A</li>
+	      <li>SNAC-A receives packet: src=2001:db8:100::x, dst=2001:db8:2::h2</li>
+	      <li>SNAC-A forwards to Infrastructure-1, but Infrastructure-1 has no route to 2001:db8:2::/64</li>
+	      <li>Packet is lost, even though SNAC-B could have delivered it</li>
+	    </ol>
+	    <t>
+	      This demonstrates why SNAC routers in multi-AIL scenarios should not advertise default routes and should instead
+	      advertise specific routes to their respective infrastructure prefixes.
+	    </t>
+	  </section>
+	</section>
       </section>
-    </section>
+      </section>
 
     <section>
       <name>Router Advertisements on the Infrastructure Network</name>
