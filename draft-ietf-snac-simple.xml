@@ -269,6 +269,8 @@
 	  prefixes it has advertised are no longer considered suitable.</dd>
 	<dt>STUB_NETWORK_REACHABLE_TIME (default: 30 minutes)</dt>
 	<dd>The reachable time that will be specified in Route Information Options sent by the SNAC router</dd>
+	<dt>MAX_DHCPV4_WAIT (default: 15 seconds)</dt>
+	<dd>The maximum time that DHCPv4 can fail to respond before we assume DHCPv4 service is not present on the infrastructure link</dd>
       </dl>
     </section>
 
@@ -316,7 +318,7 @@
 	    <li>Preferred Lifetime of 30 minutes or more.</li>
 	  </ul>
 	  <t>
-	    A prefix is not considered a suitable on-link prefix if the 'L' flag bit is not set, or if neither the 'A' flag bit 
+	    A prefix is not considered a suitable on-link prefix if the 'L' flag bit is not set, or if neither the 'A' flag bit
             nor the 'P' flag bit is set.
 	    When the 'A' flag bit is not set, this indicates
 	    that individual node addresses within the prefix are being managed using DHCPv6. If the 'P' flag bit is set, then hosts
@@ -473,7 +475,7 @@
 		prefix. In this case, the interface moves into the STATE-DEPRECATING (<xref target="state-deprecating"/>) state.</li>
 	      <li>
 		Both prefixes are ULA prefixes, and the received prefix, considered as a 128-bit big-endian unsigned integer,
-		is numerically lower, then the interface moves to STATE-DEPRECATING (<xref target="state-deprecating"/>.</li>
+		is numerically lower, then the interface moves to STATE-DEPRECATING (<xref target="state-deprecating"/>).</li>
 	      <li>
 		Otherwise the interface remains in STATE-ADVERTISING-SUITABLE.</li>
 	    </ul>
@@ -580,7 +582,7 @@
             behave otherwise.
 	  </t>
 	</section>
-	<section>
+	<section anchor="PrefixDelegation">
 	  <name>Using DHCPv6 Prefix Delegation to acquire a prefix to provide addressability</name>
           <t>
             If DHCPv6 prefix delegation and IPv6 service are both available on the infrastructure link, then the SNAC router MUST
@@ -918,6 +920,201 @@
 	  ipv4only.arpa record in the Additional section.
 	</t>
       </section>
+
+      <section>
+	<name>NAT64 Prefix maintenance state machine</name>
+	<t>
+	  This section describes the state machine required to determine when to advertise a prefix on the stub network and what
+	  prefix to advertise. An implementation must track the following information:
+	</t>
+	<ol spacing="compact" type="A">
+	  <li><t>PREF64-provided prefixes present on infrastructure</t>        <!-- A -->
+	    <ul spacing="compact">
+	      <li>PREF64 prefixes are found in router advertisements.</li>
+	      <li>There may be more than one PREF64 prefix advertised in any router advertisement.</li>
+	      <li>More than one router may be advertising PREF64 prefixes.</li>
+	      <li><t>!A is known if:</t>
+		<ul spacing="compact">
+		  <li>router discovery fails or</li>
+		  <li>if router discovery succeeds but no PREF64 prefixes are seen in any router advertisement on infrastructure, or</li>
+		  <li>the last PREF64 prefix seen advertised on infrastructure has not been re-advertised in STALE_RA_TIME.</li>
+		</ul>
+	      </li>
+	      <li>A is known when we see an RA with one or more PREF64 prefixes on infrastructure.</li>
+	    </ul>
+	  </li>
+	  <li><t>IPv6 default route is seen on infrastructure</t>              <!-- B -->
+	    <ul spacing="compact">
+	      <li><t>!B is known when:</t>
+		<ul spacing="compact">
+		  <li>router discovery fails, or</li>
+		  <li>when we have not seen a router advertisement with a nonzero router lifetime, or</li>
+		  <li>when router advertisement with a nonzero router lifetime has been seen in STALE_RA_TIME.</li>
+		</ul>
+	      </li>
+	      <li>B is known when we see a router advertisement with a nonzero router lifetime.</li>
+	    </ul>
+	  </li>
+	  <li><t>Routable prefix present on stub network. Either:</t>          <!-- C -->
+	    <ul spacing="compact">
+	      <li>a delegated prefix that we are publishing on the stub network (<xref target="PrefixDelegation"/>), or</li>
+	      <li>a GUA prefix that we see advertised on the stub network, or</li>
+	      <li>
+		a known-local ULA <xref target="I-D.ietf-6man-rfc6724-update"/> prefix that we see advertised on the stub
+		network.</li>
+	      <li><t>!C is known when:</t>
+		<ul spacing="compact">
+		  <li>router discovery on the stub network has failed, or</li>
+		  <li>the lifetime of the last Prefix Information Option containing a routable prefix has expired.</li>
+		</ul>
+	      </li>
+	      <li><t>C is known when:</t>
+		<ul spacing="compact">
+		  <li>we get a router advertisement that contains a PIO advertising a routable prefix, or</li>
+		  <li>we advertise one.</li>
+		</ul>
+	      </li>
+	    </ul>
+	  </li>
+	  <li><t>IPv4 present on infrastructure:</t>                           <!-- D -->
+	    <ul spacing="compact">
+	      <li>IPv4 address that is not link-local <xref target="RFC3927"/>, and</li>
+	      <li>IPv4 default route</li>
+	      <li>!D is known when DHCPv4 fails to discover an IP address within MAX_DHCPV4_WAIT.</li>
+	      <li>D is known when DHCPv4 assigns an IPv4 address and provides a default route.</li>
+	    </ul>
+	  </li>
+          <li><t>Unpublishable NAT64 prefix seen on Stub Network. Either:</t>  <!-- E -->
+	    <ul spacing="compact">
+	      <li>We have not seen it advertised in a PREF64 on infrastructure, or</li>
+	      <li>We have seen it advertised in a PREF64, but we do not have the prerequisites to publish it ourselves.</li>
+	    </ul>
+	    <t>!E is known when:</t>
+	    <ul spacing="compact">
+	      <li>the lifetime of the NAT64 prefix in any router advertisement we have seen advertised on the stub network has expired, or</li>
+	      <li>router discovery fails on the stub network.</li>
+	    </ul>
+	    <t>E is known when we see an unpublishable NAT64 prefix advertised on the stub network.</t>
+	  </li>
+	  <li><t>Winning NAT64 prefix is present. Either:</t>      <!-- F -->
+	    <ul spacing="compact">
+	      <li>it is numerically lower than the NAT64 prefix we are publishing, or</li>
+	      <li>we are publishing a self-generated NAT64 prefix and it is a known-local ULA prefix</li>
+	    </ul>
+	    <t>!E is known when:</t>
+	    <ul spacing="compact">
+	      <li>no winning NAT64 prefix has been advertised on the stub network, or</li>
+	      <li>when the lifetime of any NAT64 prefix seen advertised on the stub network has expired.</li>
+	    </ul>
+	    <t>E is known when a router advertisement containing a winning NAT64 prefix is seen on the stub network.</t>
+	  </li>
+	</ol>
+	<t>
+	  We have the following states:
+	</t>
+	<ol spacing="compact">
+	  <!-- 1 -->
+	  <li><t>Startup</t>
+	    <ul spacing="compact">
+	      <li>We enter this state on system startup</li>
+	      <li>We do nothing on entry to this state</li>
+	      <li>
+		<t>We leave this state when we know the values of A-F</t>
+		<ul spacing="compact">
+		  <!-- RFC Editor note: this is code, please do not try to reorganize it -->
+		  <li>If !A || !B || !C || ! || E  ==&gt; 2</li>
+		  <li>otherwise if A &amp;&amp; B &amp;&amp; C ==&gt; 4</li>
+		  <li>otherwise ==&gt; 3</li>
+		</ul>
+	      </li>
+	    </ul>
+	  </li>
+	  <!-- 2 -->
+	  <li><t>Not advertising a NAT64 route</t>
+	    <ul spacing="compact">
+	      <li>We enter this state from 1, 3 or 4</li>
+	      <li>On entry we stop advertising whatever prefix we are advertising</li>
+	      <li><t>We leave this state when !E &amp;&amp; (D &amp;&amp; || (A &amp;&amp; B &amp;&amp; C &amp;&amp;))</t>
+		<ul spacing="compact">
+		  <li>If A &amp;&amp; B &amp;&amp; C  ==&gt; 4, else</li>
+		  <li>==&gt; 3</li>
+		</ul>
+	      </li>
+	    </ul>
+	  </li>
+	  <!-- 3 -->
+	  <li><t>Publishing a BR-specific low-priority ULA NAT64 route</t>
+	    <ul spacing="compact">
+	      <li>We enter this state from 1 or 2</li>
+	      <li>On entry we publish our own self-generated NAT64 ULA prefix</li>
+	      <li><t>We leave this state when (A &amp;&amp; B &amp;&amp; C) || !D || F</t>
+		<ul spacing="compact">
+		  <li>==&gt; 2</li>
+		</ul>
+	      </li>
+	    </ul>
+	  </li>
+	  <li><t>Publishing an infrastructure-specific medium-priority NAT64 prefix</t>
+	    <ul spacing="compact">
+	      <li>We enter this state from 1 or 2</li>
+	      <li>On entry we publish the chosen prefix found in PREF64 <em>(??? What if we have more than one PREF64 prefix? Is
+		  this a valid situation? Why?)</em></li>
+	      <li><t>We leave this state when !A || !B || !C || F</t>
+		<ul spacing="compact">
+		  <li>==&gt; 2</li>
+		</ul>
+	      </li>
+	    </ul>
+	  </li>
+	</ol>
+      </section>
+      <section>
+	<name>NAT64 translation state machine</name>
+	<t>
+	  In addition to advertising a NAT64 prefix on the stub network, we may need to translate between our own self-generated ULA
+	  prefix and our IPv4 address on infrastructure. The state machine for this is a bit simpler:
+	</t>
+	<ol spacing="compact">
+	  <li><t>Not translating</t>
+	    <ul spacing="compact">
+	      <li><t>We enter this state:</t>
+		<ul spacing="compact">
+		  <li>on startup</li>
+		  <li>whenever the lifetime of any self-generated ULA prefix we advertised on the stub network has expired.</li>
+		</ul>
+	      </li>
+	      <li>
+		<t>On entry translation between our self-generated prefix and our external IPv4 address, if enabled, is disabled.</t>
+	      </li>
+	      <li>
+		<t>We exit this state when</t>
+		<ul spacing="compact">
+		  <li>we begin advertising our own self-generated ULA NAT64 prefix</li>
+		</ul>
+	      </li>
+	    </ul>
+	  </li>
+	  <li><t>Translating</t>
+	    <ul spacing="compact">
+	      <li>
+		<t>We enter this state when we publish our own self-generated ULA NAT64 prefix</t>
+		<t>
+		  Note that it is possible that our external IPv4 address might change. In this situation, any established
+		  connections between devices on the stub network and IPv4 services reachable via infrastructure will stop working,
+		  and it may be necessary to re-initialize the Network Address Translation mechanism.
+		</t>
+	      </li>
+	      <li><t>We exit this state when</t>
+		<ul spacing="compact">
+		  <li>we have stopped advertising our self-generated ULA NAT64 prefix, and</li>
+		  <li>the most lifetime specified in the most recent advertisement for our self-generated ULA NAT64 prefix on the
+		  stub network has expired.</li>
+		</ul>
+	      </li>
+	    </ul>
+	  </li>
+	</ol>
+      </section>
     </section>
 
     <section>
@@ -993,6 +1190,7 @@
     <references>
       <name>Normative References</name>
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.2119.xml" />
+      <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.3927.xml" />
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.4191.xml" />
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.4193.xml" />
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.4861.xml" />
@@ -1009,6 +1207,7 @@
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml3/reference.I-D.ietf-6man-snac-router-ra-flag.xml" />
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml3/reference.I-D.ietf-dhc-rfc8415bis.xml" />
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml3/reference.I-D.ietf-6man-pio-pflag.xml" />
+      <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml3/reference.I-D.ietf-6man-rfc6724-update.xml" />
     </references>
     <references>
       <name>Informative References</name>
