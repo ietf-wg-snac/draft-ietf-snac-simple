@@ -769,8 +769,9 @@
     <section>
       <name>Providing reachability to IPv4-only services to hosts on the stub network</name>
       <t>
-	stub networks rely on IPv6 to enable routing between links, which would not be possible with IPv4 due to the lack of a
-	standard mechanism similar to Router Advertisements in IPv4. However, it can stll be useful for hosts on the stub network
+	stub networks rely on IPv6 to enable routing between links, which would not be possible with IPv4 due to the limited
+	availability and functionality of IPv4 router discovery mechanisms (such as ICMP Router Discovery Messages 
+	<xref target="RFC1256"/>) compared to IPv6 Router Advertisements. However, it can still be useful for hosts on the stub network
 	to establish communications with IPv4-only hosts on the infrastructure network.
       </t>
       <t>
@@ -1011,6 +1012,7 @@
     </references>
     <references>
       <name>Informative References</name>
+      <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.1256.xml" />
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.2328.xml" />
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.4944.xml" />
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.6282.xml" />
