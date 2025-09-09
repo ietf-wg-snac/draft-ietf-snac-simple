@@ -274,7 +274,7 @@
 	  The minimum preferred lifetime required for a prefix to be considered suitable for use by SNAC routers.
 	  This value ensures that prefixes have sufficient lifetime to be reliably used for address autoconfiguration
 	  and communication establishment.
-</dd>
+	</dd>
       </dl>
     </section>
 
