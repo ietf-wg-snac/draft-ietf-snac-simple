@@ -273,8 +273,8 @@
 	<dd>
 	  The minimum preferred lifetime required for a prefix to be considered suitable for use by SNAC routers.
 	  This value ensures that prefixes have sufficient lifetime to be reliably used for address autoconfiguration
-	  and communication establishment. Prefixes with shorter preferred lifetimes may expire before communication
-	  can be established, particularly in networks with occasional connectivity issues or during DHCPv6 renewal periods.</dd>
+	  and communication establishment.
+</dd>
       </dl>
     </section>
 
