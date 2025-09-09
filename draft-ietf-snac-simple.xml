@@ -269,6 +269,12 @@
 	  prefixes it has advertised are no longer considered suitable.</dd>
 	<dt>STUB_NETWORK_REACHABLE_TIME (default: 30 minutes)</dt>
 	<dd>The reachable time that will be specified in Route Information Options sent by the SNAC router</dd>
+	<dt>MIN_SUITABLE_PREFIX_PREFERRED_LIFETIME (default: 30 minutes):</dt>
+	<dd>
+	  The minimum preferred lifetime required for a prefix to be considered suitable for use by SNAC routers.
+	  This value ensures that prefixes have sufficient lifetime to be reliably used for address autoconfiguration
+	  and communication establishment.
+	</dd>
       </dl>
     </section>
 
@@ -313,7 +319,7 @@
 	    <li>Prefix Length value is 64,</li>
             <li>'L' flag bit is set and</li>
 	    <li>either the 'A' flag bit or the 'P' flag bit <xref target="I-D.ietf-6man-pio-pflag"/> is set, and</li>
-	    <li>Preferred Lifetime of 30 minutes or more.</li>
+	    <li>Preferred Lifetime of MIN_SUITABLE_PREFIX_PREFERRED_LIFETIME or more.</li>
 	  </ul>
 	  <t>
 	    A prefix is not considered a suitable on-link prefix if the 'L' flag bit is not set, or if neither the 'A' flag bit 
