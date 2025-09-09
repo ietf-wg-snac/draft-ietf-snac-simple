@@ -353,12 +353,6 @@
 	    SHOULD NOT send an RA even if it is treating the infrastructure interface as an advertising interface.
 	  </t>
 	  <t>
-	    As part of standard IPv6 router behavior on the infrastructure interface, the SNAC router MUST join the 
-	    All-Routers multicast address (FF02::2) to receive Router Solicitation messages and other router-to-router 
-	    communications, and MUST join the All-Nodes multicast address (FF02::1) to receive Neighbor Solicitation 
-	    messages and other node-to-node communications as described in <xref target="RFC4861"/>.
-	  </t>
-	  <t>
 	    These two sets of information are the on-link prefix, if any, that is to be advertised. Whether or not such a prefix is
 	    advertised, and what exactly is advertised regarding that prefix, is determined by the state machine. The other set of
 	    information is a set of routes to prefixes on the stub network. Whenever we know of a reachable (scope is not
@@ -1192,11 +1186,6 @@
       <name>Router Advertisements on the stub network</name>
       <t>
         A SNAC router sends periodic as well as solicited Router Advertisements
-        out its advertising interfaces on the stub network. As part of standard IPv6 router behavior 
-        on the stub network interface, the SNAC router MUST join the All-Routers multicast address (FF02::2) 
-        to receive Router Solicitation messages and other router-to-router communications, and MUST join the 
-        All-Nodes multicast address (FF02::1) to receive Neighbor Solicitation messages and other node-to-node 
-        communications as described in <xref target="RFC4861"/>. Outgoing Router Advertisements are
         filled with the following values consistent with the message format
         given in Section 4.2 of <xref target="RFC4861"/>:
       </t>
