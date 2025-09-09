@@ -397,7 +397,7 @@
 	    </section>
 	    <section anchor="nud"><name>Router Unreachability Detection</name>
 	      <t>
-		For each suitable route, the SNAC router MUST monitor the state of reachability to the router(s) that
+		For each suitable prefix, the SNAC router MUST monitor the state of reachability to the router(s) that
 		advertised it as described in (<xref target="RFC4861" section="7.3.1" sectionFormat="comma"/>) using a ReachableTime
 		value of no more than MAX_SUITABLE_REACHABLE_TIME. The reason for this is that if no router providing the on-link
 		prefix on the AIL is reachable, then when a new host joins the network, it will have no suitable on-link
@@ -1185,10 +1185,9 @@
     </section>
 
     <section>
-      <name>Router Advertisments on the stub network</name>
+      <name>Router Advertisements on the stub network</name>
       <t>
         A SNAC router sends periodic as well as solicited Router Advertisements
-        out its advertising interfaces on the stub network.  Outgoing Router Advertisements are
         filled with the following values consistent with the message format
         given in Section 4.2 of <xref target="RFC4861"/>:
       </t>
