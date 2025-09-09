@@ -609,6 +609,19 @@
             with length greater than 64, the SNAC router MUST treat the prefix as unsuitable and allocate a ULA Link Prefix out of
             its ULA Site Prefix instead.
           </t>
+          <t>
+            When multiple prefixes are available for delegation (e.g., both Global Unicast Address (GUA) and Unique Local Address (ULA) prefixes),
+            a SNAC router MUST select prefixes based on the following criteria, evaluated in order:
+          </t>
+          <ul>
+            <li>Single prefix constraint: For constrained stub networks (e.g., 6LoWPAN, Thread mesh networks) that have limited support for multiple prefixes, a SNAC router MUST select only the single best prefix. Prefix type GUA is MUST be preferred over ULA, then the prefix with the longest preferred and valid lifetimes is chosen for distrubution.</li>
+            <li>Multiple prefix constraint: For stub networks without a single prefix constraint, the GUA and ULA prefixes with the longest preferred and valid lifetimes are chosen for distribution. Distributing both GUA and ULA prefixes allows hosts to decide how they will communicate.</li>
+          </ul>
+          <t>
+            The timeout/lifetime-based selection ensures that the stub network avoids frequent renumbering events that can
+            disrupt ongoing communications and create excessive maintenance overhead. SNAC routers SHOULD monitor delegated
+            prefix lifetimes and re-evaluate prefix selection when lifetimes are renewed or when new prefixes become available.
+          </t>
 	  <t>
 	    A DHCPv6-PD client can request a particular lease interval for the DHCPv6-delegated prefix. However, there is no
 	    particular reason for a SNAC router to specify this interval.
