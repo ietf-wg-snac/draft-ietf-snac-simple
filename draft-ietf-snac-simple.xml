@@ -608,18 +608,8 @@
             a SNAC router MUST select prefixes based on the following criteria, evaluated in order:
           </t>
           <ul>
-            <li>Prefix lifetime and stability: A SNAC router MUST compare the valid lifetimes and preferred lifetimes of available prefixes.
-            Prefixes with longer lifetimes (valid lifetime &gt; 24 hours) SHOULD be preferred over those with shorter lifetimes to minimize
-            renumbering events and address configuration churn on the stub network.</li>
-            <li>Prefix type preference: When prefixes have comparable lifetimes (difference &lt; 6 hours), Global Unicast Address (GUA)
-            prefixes SHOULD be preferred over ULA prefixes to enable global connectivity. However, if a ULA prefix has significantly
-            longer lifetime (&gt; 6 hours longer valid lifetime), it MAY be preferred for stability reasons.</li>
-            <li>Single prefix constraint: For constrained stub networks (e.g., 6LoWPAN, Thread mesh networks) that have limited
-            support for multiple prefixes, a SNAC router MUST select only the single best prefix according to the above criteria
-            to minimize network overhead, maintenance traffic, and memory consumption.</li>
-            <li>Multiple prefix support: For stub networks that can efficiently support multiple prefixes, a SNAC router MAY
-            accept and advertise both the best GUA and best ULA prefix (if both meet minimum lifetime requirements of valid lifetime &gt; 2 hours),
-            allowing hosts to choose their preferred address type.</li>
+            <li>Single prefix constraint: For constrained stub networks (e.g., 6LoWPAN, Thread mesh networks) that have limited support for multiple prefixes, a SNAC router MUST select only the single best prefix. Prefix type GUA is MUST be preferred over ULA, then the prefix with the longest preferred and valid lifetimes is chosen for distrubution.</li>
+            <li>Multiple prefix constraint: For stub networks without a single prefix constraint, the GUA and ULA prefixes with the longest preferred and valid lifetimes are chosen for distribution. Distributing both GUA and ULA prefixes allows hosts to decide how they will communicate.</li>
           </ul>
           <t>
             The timeout/lifetime-based selection ensures that the stub network avoids frequent renumbering events that can
