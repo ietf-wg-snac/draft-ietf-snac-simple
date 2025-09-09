@@ -310,7 +310,7 @@
 	    values:
 	  </t>
 	  <ul>
-	    <li>Prefix Length is suitable for IPv6 Stateless Address Autoconfiguration (SLAAC),</li>
+	    <li>Prefix Length is 64, suitable for IPv6 Stateless Address Autoconfiguration (SLAAC), consistent with current implementations and RFC4291 section 2.5.1 64bit Interface Identifiers</li>
             <li>'L' flag bit is set and</li>
 	    <li>either the 'A' flag bit or the 'P' flag bit <xref target="I-D.ietf-6man-pio-pflag"/> is set, and</li>
 	    <li>Preferred Lifetime of 30 minutes or more.</li>
