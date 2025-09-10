@@ -1211,9 +1211,9 @@
         given in Section 4.2 of <xref target="RFC4861"/>:
       </t>
 	<ul>
-          <li> Router Lifetime: The SNAC router can be a default router on the stub network (see xref target="snac-reachability" TBD fixref).</li>
-          <li> SNAC routers do not provide DHCP service on the stub network. Therefore, the 'M' and 'O' flag bits MUST be zero.</li>
-	  <li> The 'SNAC router' flag bit xref target="I-D.ietf-6man-snac-router-bit" TBD waitRef MUST be 0.</li>
+		  <li> Router Lifetime: The SNAC router can be a default router on the stub network (see xref target="snac-reachability" TBD fixref).</li>
+		  <li> For the 'M' and 'O' flag bits in Router Advertisements on the stub network: If the SNAC router has received and remembers any valid (not expired) Router Advertisement (RA) from an infrastructure router, it MUST copy the M and O bits from the most-recently-received such RA into advertisements on the stub network. If no valid RA is available (i.e., none have been received or all have expired), the SNAC router MUST set the M and O bits to zero in advertisements on the stub network.</li>
+		  <li> The 'SNAC router' flag bit xref target="I-D.ietf-6man-snac-router-bit" TBD waitRef MUST be 0.</li>
           <li> In the Cur Hop Limit field: 0</li>
           <li> In the Reachable Time field: 0</li>
           <li> In the Retrans Timer field: 0</li>
