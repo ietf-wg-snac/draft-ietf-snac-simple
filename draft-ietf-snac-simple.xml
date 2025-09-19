@@ -62,7 +62,7 @@
 	<li>
 	  Incompatible media: for example, a constrained 802.15.4 network connected as a stub network to a Wi-Fi or ethernet
 	  infrastructure network.  In the case of an 802.15.4 network, it is quite possible that the devices used to link the
-	  infrastructure network to the stub network will not be conceived of by the end user as routers.  Consequently, we cannot
+	  infrastructure network to the stub network will not be conceived of by the end user as routers.  Consequently, one cannot
 	  assume that these devices will be on all the time. A solution for this use case will require some sort of commissioning
 	  process for stub routers, and can't assume that any particular stub router will always be available; rather, any stub
 	  router that is available must be able to adapt to current conditions to provide reachability.</li>
@@ -95,11 +95,11 @@
 	A host on a globally reachable stub network should be able to interoperate with hosts on other network links in the same
 	infrastructure as well as hosts on the global internet.</t>
       <t>
-	It may be noted that just as you can plug several CE Router devices together in series to form multi-layer NATs, there is
+	It may be noted that just as one can plug several CE Router devices together in series to form multi-layer NATs, there is
 	nothing preventing the owner of a stub network router from attaching it to a stub network as if that network were its
 	infrastructure network. In the case of an IoT wireless network, there may be no way to do this, nor would it be desirable,
 	but a stub router that uses ethernet on both the infrastructure and stub network sides could be connected this way. Nothing
-	in this document is intended to prevent this from being done, but neither do we attempt to solve the problems that this
+	in this document is intended to prevent this from being done, but neither does this document attempt to solve the problems that this
 	could create.</t>
       <t>
 	The goal of this document is to describe the minimal set of changes or behaviors required to use existing IETF
@@ -108,7 +108,7 @@
       <section anchor="interop-goals"><name>Interoperability Goals</name>
 	<t>
 	  The specific goal is for hosts on the stub network to be able to interoperate with hosts on the adjacent infrastructure
-	  link or links. What we mean by "interoperate" is that a host on a stub network:
+	  link or links. What is meant by "interoperate" is that a host on a stub network:
 	</t>
 	<ul>
 	  <li>
@@ -135,8 +135,8 @@
 	  wishes to discover the same service, it must use DNS-based DNS Service Discovery <xref target="RFC6763"/>.  In both cases,
 	  "discoverable using DNS" means that the host has one or more entries in the DNS that serve to make it discoverable.</t>
 	<t>
-	  We lump discoverability in with reachability and addressability, both of which are essentially Layer 3 issues. The reason
-	  for this is that it does us no good to automatically set up connectivity between stub network hosts and infrastructure
+	  Discoverability is lumped in with reachability and addressability, both of which are essentially Layer 3 issues. The reason
+	  for this is that it does no good to automatically set up connectivity between stub network hosts and infrastructure
 	  hosts if the infrastructure hosts have no means to learn about the availability of services provided by stub network
 	  hosts. For stub network hosts that only consume cloud services this will not be an issue, but for stub networks that
 	  provide services, such as IoT devices on stub networks with incompatible media, discoverability is necessary in order for
@@ -160,7 +160,7 @@
       </section>
       <section anchor="usability-goals"><name>Usability Goals</name>
 	<t>
-	  In addition to the interoperability goals we've described above, the additional goal for stub networks is that they be
+	  In addition to the interoperability goals described above, the additional goal for stub networks is that these be
 	  able to be connected automatically, with no user intervention.  The experience of connecting a stub network to an
 	  infrastructure network should be as straightforward as connecting a new host to the same infrastructure network.</t>
 	<t>
@@ -277,7 +277,7 @@
 	<dt>STALE_RA_TIME (default: 10 minutes):</dt>
 	<dd>
 	  The amount of time that can pass after the last time a Router Advertisement message from a particular router has
-	  been received before we assume the router is no longer present. This is a stopgap in case the router is reachable but has
+	  been received before it is assumed the router is no longer present. This is a stopgap in case the router is reachable but has
 	  silently stopped advertising a prefix; this situation is unlikely, but if it does happen, new devices joining the
 	  infrastructure network will not be able to reach devices on the stub network until the SNAC router decides that the router
 	  that advertised the suitable prefix is stale.</dd>
@@ -329,10 +329,10 @@
     <section>
       <name>Support for adjacent infrastructure links</name>
       <t>
-	We assume that the AIL supports neighbor discovery <xref target="RFC4861"/>, and specifically that
+	This document assumes that the AIL supports neighbor discovery <xref target="RFC4861"/>, and specifically that
 	routers and on-link prefixes can be advertised using Router Advertisement messages and discovered using Neighbor Solicitation messages. The stub
 	network link may also support this, or may use some different mechanism. This section specifies how advertisement of the
-	on-link prefix for such links is managed. In this section we will use the term "advertising interface" as described in
+	on-link prefix for such links is managed. In this section the term "advertising interface" is used as defined in
 	<xref target="RFC4861" section="6.2.2"/>.</t>
       <t>
 	Support for AILs on networks where neighbor discovery is not supported is out of scope for this document. SNAC routers
@@ -371,8 +371,8 @@
 	    prefix that requires the use of DHCPv6 for that purpose can't be considered "suitable"&mdash;not all hosts can actually use it.
 	  </t>
 	  <t>
-	    Note: there can be layer two networks where neighbor discovery is not supported and therefore we cannot set the 'L' flag bit,
-	    but could set the 'A' flag bit. The behavior of stub networks when connecting to such networks is out of scope for this document.
+	    Note: there can be layer two networks where neighbor discovery is not supported and therefore the 'L' flag bit cannot be set,
+	    while the 'A' flag bit could be set. The behavior of SNAC routers when connecting to such networks is out of scope for this document.
 	  </t>
 	  <t>
 	    A prefix is considered to be advertised on the link if, when a Router Solicitation message
@@ -382,7 +382,7 @@
 	  </t><t>
 	    After an RA message containing a suitable prefix has been received, it can be assumed for some period of time thereafter that that prefix
 	    is still valid on the link. However, prefix lifetimes and router lifetimes are often quite long. In addition to knowing that
-	    a prefix has been advertised on the link in the past, and is still valid, we must therefore ensure
+	    a prefix has been advertised on the link in the past, and is still valid, it must therefore be ensured
 	    that at least one router that has advertised this prefix is still alive to respond to Router Advertisement messages.</t>
 	</section>
 	<section anchor="suitable-prefix-state-machine">
@@ -401,8 +401,8 @@
 	  <t>
 	    These two sets of information are the on-link prefix, if any, that is to be advertised. Whether or not such a prefix is
 	    advertised, and what exactly is advertised regarding that prefix, is determined by the state machine. The other set of
-	    information is a set of routes to prefixes on the stub network. Whenever we know of a reachable (scope is not
-	    link-local) prefix on the stub network, we include an RIO option in the RA on the infrastructure network indicating that
+	    information is a set of routes to prefixes on the stub network. Whenever the SNAC router knows of a reachable (scope is not
+	    link-local) prefix on the stub network, it includes an RIO option in the RA on the infrastructure network indicating that
 	    that prefix is reachable through the SNAC router.
 	  </t>
 	  <t>
@@ -432,7 +432,7 @@
 	      When a new host appears on the AIL and sends an initial Router Solicitation message, if it does not
 	      receive a suitable on-link prefix, it will not be able to communicate. Consequently, the SNAC router MUST monitor Router
 	      Solicitation and Router Advertisement messages on the interface in order to determine whether a prefix that has been advertised on the
-	      link is still being advertised. To accomplish this we have two complementary methods: router staleness detection and
+	      link is still being advertised. To accomplish this, the SNAC router uses two complementary methods: router staleness detection and
 	      neighbor unreachability detection.</t>
 	    <section anchor="staleness"><name>Router staleness detection</name>
 	      <t>
@@ -672,8 +672,8 @@
 	      It is possible that a SNAC router might obtain a prefix from a DHCPv6 server using prefix delegation and then something
 	      about the infrastructure network attachment might change that affects the validity of that prefix for use on the stub
 	      network. The section of <xref target="I-D.ietf-dhc-rfc8415bis"/> titled "Refreshing Configuration Information"
-	      discusses the various scenarios that can occur. We assume that the DHCPv6 prefix delegation client being used by
-	      the SNAC router conforms to this specification.
+	      discusses the various scenarios that can occur. The DHCPv6 prefix delegation client being used by
+	      the SNAC router is assumed to conform to this specification.
 	    </t>
 	    <t>
 	      Situations that can occur include (but are not limited to):
@@ -763,7 +763,7 @@
 	  <name>Discoverability by hosts on adjacent infrastructure links</name>
 	  <t>
 	    The adjacent infrastructure can be assumed to already enable some service discovery mechanism between hosts on
-	    the infrastructure network, and can be assumed to provide a local DNS resolver. Therefore, we do not need to
+	    the infrastructure network, and can be assumed to provide a local DNS resolver. Therefore, this document does not
 	    define a stub-network-specific mechanism for providing these services on the infrastructure network.</t>
 	  <t>
 	    In some cases it will be necessary for hosts on the AIL to be able to discover devices on the
@@ -801,8 +801,8 @@
 	<section>
 	  <name>Providing discoverability of adjacent infrastructure hosts on the stub network</name>
 	  <t>
-	    Hosts on the stub network may need to discover hosts on the AIL, or on the stub network.  In
-	    the IoT network example we've been using, there might be a light switch on the stub network which needs to be able to
+	    Hosts on the stub network may need to discover hosts on the AIL, or on the stub network. In
+	    an IoT use case, for example, there might be a light switch on the stub network which needs to be able to
 	    actuate a light bulb connected to the AIL. In order to know where to send the actuation
 	    messages, the light switch will need to be able to discover the light bulb's address somehow.</t>
 	  <t>
@@ -880,12 +880,12 @@
 	In the first case, infrastructure-provided NAT64 is preferred, and the SNAC router MUST advertise this service
 	to the stub network.</t>
       <t>
-	In the second case, there is no way to provide connectivity to the infrastructure: we don't have IPv6 routing other than to
-	the adjacent infrastructure link, because we don't have a routable prefix, we don't have NAT64 for the same reason, and we
-	don't have IPv4, so the SNAC router can't do NAT64 on its own. In this case, the SNAC router MUST NOT advertise NAT64
+	In the second case, there is no way to provide connectivity to the infrastructure: there is no IPv6 routing other than to
+	the adjacent infrastructure link, because there is no routable prefix, and there is no NAT64 for the same reason, and there
+	is no IPv4, so the SNAC router can't do NAT64 on its own. In this case, the SNAC router MUST NOT advertise NAT64
 	service.</t>
       <t>
-	In the third case, despite the infrastructure providing NAT64, we can't use it, so the SNAC router MUST provide its own
+	In the third case, despite the infrastructure providing NAT64, nodes in the stub network can't use it, so the SNAC router MUST provide its own
 	NAT64 service.</t>
       <t>
 	In the fourth case, the SNAC router MUST provide its own NAT64 service.</t>
@@ -993,7 +993,7 @@
 	the stub network.
       </t><t>
 	An implication of this is that when such a partition forms, the same ULA link prefix can’t be advertised on both partitions,
-	since this will result in ambiguous routing. We address this problem by requiring that each SNAC router generate its own ULA
+	since this will result in ambiguous routing. This problem is addressed by requiring that each SNAC router generate its own ULA
 	site prefix. This prefix is then available for two purposes: providing addressing on the AIL, if needed, and providing
 	addressing on the stub network, if needed.
       </t><t>
@@ -1011,8 +1011,8 @@
     <section>
       <name>Services Provided by SNAC routers</name>
       <t>
-	In order to provide network access, SNAC routers must provide some network services to the stub network. We have previously
-	discussed the following services:</t>
+	In order to provide network access, SNAC routers must provide some network services to the stub network. In this document
+	the following services have been discussed:</t>
       <dl>
 	<dt>DNS Resolver:</dt><dd>The stub network MUST provide a DNS resolver. If RAs are in use on the stub network, the DNS resolver
 	  is advertised in the Router Advertisement Recursive DNS Server (RDNSS) option. If RAs are not in use on the stub network, then
@@ -1098,17 +1098,17 @@
 	<t>
 	  An additional feature of some unmanaged networks is that the owner of the network can choose to isolate all devices on the
 	  network, so that devices on the network are able to use the Internet, but not communicate with each other. This is essentially
-	  the same as being connected to the guest network, except that there is no other network. In this case we would expect that the
+	  the same as being connected to the guest network, except that there is no other network. In this case, one can assume that the
 	  owner of the network doesn't expect any devices attached to the network to be able to communicate with any other device, so
 	  the failure of devices connected to infrastructure to communicate with devices on the stub network would not be a surprise.
 	  The owner of the SNAC router might be surprised in this case, but ultimately the owner of the infrastructure network gets
-	  to make this decision, and there isn't anything we can or should do on behalf of the SNAC router's owner in this case.
+	  to make this decision, and there isn't anything a SNAC router can or should do on behalf of the SNAC router's owner in this case.
 	</t>
     </section>
 	<section>
 	  <name>Use on an unmanaged (non-home) IPv6 network</name>
 	  <t>
-	    In this scenario we have a site that is not a home, so perhaps a restaurant or business, where there is no network
+	    In this scenario there is a site that is not a home, so perhaps a restaurant or business, where there is no network
 	    operator per se, and the network is deployed similarly to a home network. There is little difference between this
 	    scenario and an unmanaged home network, but expectations may be different. In particular, it is very common in such
 	    settings for there to be a guest network for visitors, or for the network to enforce isolation between all nodes
@@ -1157,18 +1157,18 @@
 	  </t>
 	  <t>
 	    However, this can only happen in practice if the host did not receive an address from DHCPv6.  In this case, the host
-	    would not be able to communicate anyway. So the behavior we might see here is that a series of IP packets with an
-	    unexpected source address might be sent to a device on another link, and the device would be unable to send a
+	    would not be able to communicate anyway. The problem that might occur here is that a series of IP packets with an
+	    unexpected source address are sent to a device on another link, and the device would be unable to send a
 	    response.
 	  </t>
 	  <t>
-	    In such scenarios we have no way to actually know based on the network configuration what the operator's intention was. An operator
+	    In such scenarios there is no way to actually know based on the network configuration what the operator's intention was. An operator
 	    that sees a problem with this can react by implementing RA guard or by blocking unknown source addresses at the router, and in so
 	    doing they would be expressing their intention. This configuration would not cause any new problem: a host that could communicate would
 	    still be able to communicate, and a host that could not communicate would not become able to communicate.
 	  </t>
 	  <t>
-	    The one scenario where we could actually see a communication problem is when there is a GUA prefix advertised by
+	    The one scenario where a communication problem can actually be expected is when there is a GUA prefix advertised by
 	    infrastructure but no ULA prefix, but there is a ULA destination to reach. In this case, the longest-matching-prefix
 	    algorithm could choose the SNAC-router-provided ULA prefix as a source address to reach the site-provided ULA
 	    destination, and in this case communication would fail. Only happy eyeballs can correct this situation.
@@ -1239,7 +1239,7 @@
 	    </ul></li>
 	</ul>
       <t>
-	It is expected that all RA options for a SNAC router will fit in a single RA. Therefore, we do not expect SNAC routers to send multiple
+	It is expected that all RA options for a SNAC router will fit in a single RA. Therefore, SNAC routers are not expected to send multiple
 	RAs with different information other than to announce that some information previously advertised has changed.</t>
     </section>
 
