@@ -801,8 +801,8 @@
 	<section>
 	  <name>Providing discoverability of adjacent infrastructure hosts on the stub network</name>
 	  <t>
-	    Hosts on the stub network may need to discover hosts on the AIL, or on the stub network.  In
-	    an IoT use case for example, there might be a light switch on the stub network which needs to be able to
+	    Hosts on the stub network may need to discover hosts on the AIL, or on the stub network. In
+	    an IoT use case, for example, there might be a light switch on the stub network which needs to be able to
 	    actuate a light bulb connected to the AIL. In order to know where to send the actuation
 	    messages, the light switch will need to be able to discover the light bulb's address somehow.</t>
 	  <t>
@@ -1012,7 +1012,7 @@
       <name>Services Provided by SNAC routers</name>
       <t>
 	In order to provide network access, SNAC routers must provide some network services to the stub network. In this document
-	the following services were discussed:</t>
+	the following services have been discussed:</t>
       <dl>
 	<dt>DNS Resolver:</dt><dd>The stub network MUST provide a DNS resolver. If RAs are in use on the stub network, the DNS resolver
 	  is advertised in the Router Advertisement Recursive DNS Server (RDNSS) option. If RAs are not in use on the stub network, then
@@ -1098,7 +1098,7 @@
 	<t>
 	  An additional feature of some unmanaged networks is that the owner of the network can choose to isolate all devices on the
 	  network, so that devices on the network are able to use the Internet, but not communicate with each other. This is essentially
-	  the same as being connected to the guest network, except that there is no other network. In this case one would expect that the
+	  the same as being connected to the guest network, except that there is no other network. In this case, one can assume that the
 	  owner of the network doesn't expect any devices attached to the network to be able to communicate with any other device, so
 	  the failure of devices connected to infrastructure to communicate with devices on the stub network would not be a surprise.
 	  The owner of the SNAC router might be surprised in this case, but ultimately the owner of the infrastructure network gets
@@ -1157,8 +1157,8 @@
 	  </t>
 	  <t>
 	    However, this can only happen in practice if the host did not receive an address from DHCPv6.  In this case, the host
-	    would not be able to communicate anyway. So the potential behavior here is that a series of IP packets with an
-	    unexpected source address might be sent to a device on another link, and the device would be unable to send a
+	    would not be able to communicate anyway. The problem that might occur here is that a series of IP packets with an
+	    unexpected source address are sent to a device on another link, and the device would be unable to send a
 	    response.
 	  </t>
 	  <t>
@@ -1168,7 +1168,7 @@
 	    still be able to communicate, and a host that could not communicate would not become able to communicate.
 	  </t>
 	  <t>
-	    The one scenario where actually a communication problem can be expected is when there is a GUA prefix advertised by
+	    The one scenario where a communication problem can actually be expected is when there is a GUA prefix advertised by
 	    infrastructure but no ULA prefix, but there is a ULA destination to reach. In this case, the longest-matching-prefix
 	    algorithm could choose the SNAC-router-provided ULA prefix as a source address to reach the site-provided ULA
 	    destination, and in this case communication would fail. Only happy eyeballs can correct this situation.
