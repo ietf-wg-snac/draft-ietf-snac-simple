@@ -361,11 +361,12 @@
 	    <li>Preferred Lifetime of MIN_SUITABLE_PREFIX_PREFERRED_LIFETIME or more.</li>
 	  </ul>
 	  <t>
-	    A prefix is not considered a suitable on-link prefix if the 'L' flag bit is not set, or if neither the 'A' flag bit 
-            nor the 'P' flag bit is set.
-	    When the 'A' flag bit is not set, this indicates
-	    that individual node addresses within the prefix are being managed using DHCPv6. If the 'P' flag bit is set, then hosts
-	    that wish to allocate their own addresses can do so by acquiring a prefix from which to allocate them using DHCPv6 prefix delegation <xref target="RFC9663"/>.
+		  A prefix is not considered a suitable on-link prefix if the 'L' flag bit is not set, or if neither
+		  the 'A' flag bit nor the 'P' flag bit is set.
+		  When the 'A' flag bit is not set, this indicates that individual node addresses cannot be configured with SLAAC.
+		  In this case, typically addresses are managed using DHCPv6, or (in rare cases) another method.
+		  If the 'P' flag bit is set, then hosts that wish to allocate their own addresses can do so by
+		  acquiring a prefix from which to allocate them using DHCPv6 prefix delegation <xref target="RFC9663"/>.
 		  Nodes are not required to use DHCPv6 to acquire individual addresses, so a
 	    prefix that requires the use of DHCPv6 for that purpose can't be considered "suitable"&mdash;not all hosts can actually use it.
 	  </t>
