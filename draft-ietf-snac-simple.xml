@@ -298,10 +298,7 @@
 	  prefixes will be consumed on a network where SNAC routers are not stable. The lifetime here is chosen to be long enough
 	  that a reboot of the DHCP server will not prevent the prefix being renewed. It happens to coincide with the value of
 	  STUB_PROVIDED_PREFIX_LIFETIME, but the two should not be considered to be equivalent.</dd>
-	<dt>MAX_FLAGS_COPY_TIME (default: 150 minutes):</dt>
-	<dd>
-	  The maximum time period, after receiving an RA, that a SNAC router can copy flag bit values from the
-	  header of this RA for use in its own transmitted RAs.</dd>
+
 	<dt>MAX_SUITABLE_REACHABLE_TIME (default: 60 seconds):</dt>
 	<dd>
 	  The maximum ReachableTime value that a router can have in the Neighbor Table before any suitable
@@ -479,15 +476,9 @@
         <ul>
             <li>An RA received from a router longer ago than the Router Lifetime period indicated in the RA header. This only
             applies for a non-zero Router Lifetime value.</li>
-            <li>An RA received more than MAX_FLAGS_COPY_TIME ago.</li>
         </ul>
         <t>
-	      If there is no recent RA from a non-SNAC-router, both 'M' and 'O' flag bits MUST be cleared, unless the SNAC router rebooted
-          recently. After a reboot, if no recent RA is received from a non-SNAC-router, but a recent RA has been
-          received from a SNAC router, the values for the 'M' and 'O' flag bits provided by that SNAC router MUST be copied. After
-          MAX_FLAGS_COPY_TIME after reboot, the SNAC router MUST go back to the regular behavior defined above. This avoids
-          a situation where a SNAC router that has rebooted starts to advertise different 'M' and 'O' flag bit values
-          than other SNAC routers present on the same link.</t>
+	      If there is no RA received from a non-SNAC-router, both 'M' and 'O' flag bits MUST be cleared.</t>
 	    <t>
 	      The sent Router Advertisement message MUST also include a Route Information option (<xref target="RFC4191" section="2.3"/>) for
 	      each routable prefix advertised on the stub network.</t>
