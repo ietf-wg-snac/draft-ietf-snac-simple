@@ -478,12 +478,7 @@
             applies for a non-zero Router Lifetime value.</li>
         </ul>
         <t>
-	      If there is no recent RA from a non-SNAC-router, both 'M' and 'O' flag bits MUST be cleared, unless the SNAC router rebooted
-          recently. After a reboot, if no recent RA is received from a non-SNAC-router, but a recent RA has been
-          received from a SNAC router, the values for the 'M' and 'O' flag bits provided by that SNAC router MUST be copied
-          as long as that RA has not expired according to the Router Lifetime period indicated in the RA header. This avoids
-          a situation where a SNAC router that has rebooted starts to advertise different 'M' and 'O' flag bit values
-          than other SNAC routers present on the same link.</t>
+	      If there is no RA from a non-SNAC-router, both 'M' and 'O' flag bits MUST be cleared.</t>
 	    <t>
 	      The sent Router Advertisement message MUST also include a Route Information option (<xref target="RFC4191" section="2.3"/>) for
 	      each routable prefix advertised on the stub network.</t>
