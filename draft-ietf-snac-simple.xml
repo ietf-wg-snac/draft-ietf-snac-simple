@@ -571,6 +571,7 @@
 	  Stub networks that do not support the use of Router Advertisements for router discovery must use some similar
 	  mechanism that is compatible with that type of network. Describing the process of establishing a common OSNR prefix on
 	  such networks is out of scope for this document.
+      Some informative discussion on this topic is in <xref target="appendix-failure-change"/>.
 	</t>
 	<section>
 	  <name>Maintenance across SNAC router restarts</name>
@@ -603,7 +604,7 @@
             randomly using the same mechanism that is specified in RFC 4193 for the ULA prefix bits.
           </t>
 	</section>
-	<section>
+	<section anchor="ula-site-prefix">
 	  <name>Generating a per-SNAC-router ULA Site Prefix</name>
 	  <t>
 	    In order to be able to provide addressability either on the stub network or on an adjacent infrastructure network, a SNAC
@@ -617,7 +618,7 @@
             behave otherwise.
 	  </t>
 	</section>
-	<section>
+	<section anchor="dhcpv6-pd">
 	  <name>Using DHCPv6 Prefix Delegation to acquire a prefix to provide addressability</name>
           <t>
             If DHCPv6 prefix delegation and IPv6 service are both available on the infrastructure link, then the SNAC router MUST
@@ -645,8 +646,8 @@
             a SNAC router MUST select prefixes based on the following criteria, evaluated in order:
           </t>
           <ul>
-            <li>Single prefix constraint: For constrained stub networks (e.g., 6LoWPAN, Thread mesh networks) that have limited support for multiple prefixes, a SNAC router MUST select only the single best prefix. Prefix type GUA is MUST be preferred over ULA, then the prefix with the longest preferred and valid lifetimes is chosen for distrubution.</li>
-            <li>Multiple prefix constraint: For stub networks without a single prefix constraint, the GUA and ULA prefixes with the longest preferred and valid lifetimes are chosen for distribution. Distributing both GUA and ULA prefixes allows hosts to decide how they will communicate.</li>
+            <li>Single OSNR prefix constraint: For constrained stub networks (e.g., 6LoWPAN, Thread mesh networks) that have limited support for multiple OSNR prefixes, a SNAC router MUST select only the single best prefix. Prefix type GUA is MUST be preferred over ULA, then the prefix with the longest preferred and valid lifetimes is chosen for distrubution.</li>
+            <li>Multiple OSNR prefix constraint: For stub networks without a single OSNR prefix constraint, the GUA and ULA prefixes with the longest preferred and valid lifetimes are chosen for distribution. Distributing both GUA and ULA prefixes allows hosts to decide how they will communicate.</li>
           </ul>
           <t>
             The timeout/lifetime-based selection ensures that the stub network avoids frequent renumbering events that can
@@ -971,35 +972,6 @@
     </section>
 
     <section>
-      <name>Handling partitioning events on a stub network</name>
-      <t>
-	Some technologies used for stub networks, for example Thread or 6LoWPAN mesh networks, can produce partitioned networks,
-        where what is notionally the same stub network winds up looking like two or more discrete links. For mesh networks, such
-        partitions can form and rejoin over time as a result of either changes in radio propagation or the addition of, or removal
-        of, devices on the mesh.
-      </t><t>
-	On stub networks that can partition, one way of detecting that a partition has occurred is to notice that the SNAC router
-	that has advertised the on-link prefix for the stub network is no longer reachable via the stub network. When this occurs,
-	SNAC routers that notice this loss of reachability MUST advertise a ULA link prefix derived from their ULA site prefix on
-	the stub network.
-      </t><t>
-	An implication of this is that when such a partition forms, the same ULA link prefix can’t be advertised on both partitions,
-	since this will result in ambiguous routing. This problem is addressed by requiring that each SNAC router generate its own ULA
-	site prefix. This prefix is then available for two purposes: providing addressing on the AIL, if needed, and providing
-	addressing on the stub network, if needed.
-      </t><t>
-	When partitions of this type occur, they may also heal. When a partition heals in a situation where two SNAC routers have
-	both been advertising a prefix, it will now appear that there are two prefixes on the stub network.
-      </t><t>
-	When the time comes to deprecate one or more prefixes as a result of a network partition healing, only one prefix should
-	remain. If there are any GUA prefixes, and if there is no specific configuration contradicting this, the GUA prefix that is
-	numerically lowest should be kept, and all others deprecated. If there are no GUA prefixes, then the ULA link prefix that is
-	numerically lowest should be kept, and the others deprecated. By using this approach, it is not necessary for the routers to
-	coordinate in advance.
-      </t>
-    </section>
-
-    <section>
       <name>Services Provided by SNAC routers</name>
       <t>
 	In order to provide network access, SNAC routers must provide some network services to the stub network. In this document
@@ -1045,6 +1017,7 @@
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.2119.xml" />
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.4191.xml" />
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.4193.xml" />
+      <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.4291.xml" />
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.4861.xml" />
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.6762.xml" />
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.6763.xml" />
@@ -1281,6 +1254,71 @@
 	    </ul></li>
 	</ul>
 	</section>
+
+    <section anchor="appendix-failure-change">
+      <name>Handling failure and change situations on a stub network</name>
+      <t>
+	How a SNAC router handles situations of device failure, network failure or other changes on its stub network is
+	outside the scope of the normative specification for a SNAC router.
+	This handling depends on the specific stub network technology being used.
+	This informative appendix provides guidance about the expected behavior and properties of the stub network with
+	respect to failure and change situations, such that the interoperability goals (<xref target="interop-goals"/>)
+	and the usability goals (<xref target="usability-goals"/>) can be satisfied.
+      </t>
+      <t>
+	A SNAC router that supports cooperation between multiple SNAC routers in the same stub network is expected to support
+    the following basic failure and change situations by automatically adapting to the new situation:
+      </t>
+      <ul>
+          <li>A new SNAC router is added to the stub network.</li>
+          <li>A SNAC router is powered down, or removed from the stub network.</li>
+          <li>An existing SNAC router is powered up again, after a short (e.g. reboot) or long period of time.</li>
+          <li>A SNAC router fails and stops operating.</li>
+          <li>Connectivity in the stub network changes due to e.g. changing radio conditions, moved devices, or
+              plugged/unplugged cables.</li>
+      </ul>
+      <t>
+    While the details of how a stub network technology supports these basic cases is out of scope of this document,
+    some hints, suggestions and examples from current stub network technologies are discussed below.
+      </t><t>
+	Some technologies used for stub networks, for example Thread or 6LoWPAN wireless mesh networks, can produce partitioned networks,
+	where what is notionally the same stub network winds up looking like two or more discrete links.
+	Such partitions can form and rejoin over time as a result of either changes in radio propagation or the addition of, or removal
+	of, or mobility of, devices on the mesh.
+      </t><t>
+	On stub networks that can partition, one way of detecting that a partition has occurred is to notice that the SNAC router
+	that has advertised the on-link OSNR prefix for the stub network is no longer reachable via the stub network.
+	A SNAC router that notices such a loss of reachability can take action in order to satisfy the requirement in
+	<xref target="stub-addressability"/> that at least one SNAC router provides an OSNR prefix.
+	How this requirement is satisfied is specific to the stub network technology used.
+	For example, the SNAC router could autonomously decide to advertise its own OSNR prefix
+	if it sees that no other SNAC router is advertising an OSNR prefix yet.
+	Or, it could perform a coordination protocol with the other SNAC routers that it can still reach, to determine
+    which of the SNAC routers should provide the OSNR prefix next.
+      </t><t>
+	An implication of this is that when such a partition forms, the same OSNR prefix cannot be advertised on both partitions,
+	since this will result in ambiguous routing. This problem is already addressed by the requirement that each SNAC
+    router generate its own ULA	site prefix (see <xref target="ula-site-prefix"/>).
+      </t><t>
+	When partitions of this type occur, they may also heal at a later time. When a stub network heals in a situation where two SNAC routers have
+	both been advertising an OSNR prefix on their respective partitions, it will now appear that there are two OSNR prefixes on the same stub network.
+      </t><t>
+	How the case of two or more OSNR prefixes on the same stub network is handled, is specific to the stub network
+	technology. Some technologies may easily handle multiple OSNR prefixes, while other more constrained network
+	technologies may need to apply a maximum to the number of OSNR prefixes for resource/efficiency reasons.
+    See <xref target="dhcpv6-pd"/> for more discussion on such single-prefix and multiple-prefix constraints.
+    While that section has DHCPv6-specific requirements only, the general issue needs to be resolved by a stub network
+    technology also for deployments in which DHCPv6-PD is not available or deployments with mixed DHCPv6/ULA based
+    OSNR prefixes.
+	  </t><t>
+	As an example that can be used in a constrained stub network: a feasible strategy is for each SNAC router to perform
+    a numeric comparison between the multiple OSNR prefixes and let the numerically lowest prefix/prefixes "win".
+	The prefixes that don't win are deprecated.
+	This has the benefit that global DHCPv6-PD delegated OSNR prefixes are selected in favor of the numerically higher
+	ULA link prefixes, thus supporting the SNAC interoperability goal of IP connectivity to the Internet.
+      </t>
+    </section>
+
   </back>
 </rfc>
 
