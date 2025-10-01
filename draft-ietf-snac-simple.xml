@@ -67,8 +67,8 @@
 	  process for stub routers, and can't assume that any particular stub router will always be available; rather, any stub
 	  router that is available must be able to adapt to current conditions to provide reachability.</li>
 	<li>
-	  Incompatible mechanisms: the medium of the stub network may not, for example, use neighbor discovery to populate a
-	  neighbor table. If the infrastructure network (as is typical) does use neighbor discovery, then bridging the two networks
+	  Incompatible mechanisms: the medium of the stub network may not, for example, use IPv6 neighbor discovery to populate a
+	  neighbor cache. If the infrastructure network (as is typical) does use neighbor discovery, then bridging the two networks
 	  together would require some way of translating between neighbor discovery and whatever mechanism is used on the stub
 	  network, and hence complicates rather than simplifying the problem of connecting the two networks.</li>
 	<li>
@@ -301,7 +301,7 @@
 
 	<dt>MAX_SUITABLE_REACHABLE_TIME (default: 60 seconds):</dt>
 	<dd>
-	  The maximum ReachableTime value that a router can have in the Neighbor Table before any suitable
+	  The maximum ReachableTime value that a router can have in the neighbor cache before any suitable
 	  prefixes it has advertised are no longer considered suitable.</dd>
 	<dt>STUB_NETWORK_REACHABLE_TIME (default: 30 minutes)</dt>
 	<dd>The reachable time that will be specified in Route Information Options sent by the SNAC router</dd>
