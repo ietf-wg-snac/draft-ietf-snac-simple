@@ -303,8 +303,11 @@
 	<dd>
 	  The maximum ReachableTime value that a router can have in the neighbor cache before any suitable
 	  prefixes it has advertised are no longer considered suitable.</dd>
-	<dt>STUB_NETWORK_REACHABLE_TIME (default: 30 minutes)</dt>
-	<dd>The reachable time that will be specified in Route Information Options sent by the SNAC router</dd>
+	<dt>STUB_NETWORK_ROUTE_LIFETIME (default: 30 minutes)</dt>
+	<dd>The Route Lifetime that will be specified in Route Information Options sent by the SNAC router to
+        advertise the route to its stub network on the AIL.
+        Also, the maximum Route Lifetime that will be specified in Route Information Options sent by the SNAC router
+        to its stub network to advertise the route to the AIL.</dd>
 	<dt>MIN_SUITABLE_PREFIX_PREFERRED_LIFETIME (default: 30 minutes):</dt>
 	<dd>
 	  The minimum preferred lifetime required for a prefix to be considered suitable for use by SNAC routers.
@@ -1224,7 +1227,7 @@
 	      <li><ul>
 		<li> Prefix Length: 64</li>
 		<li> Route Preference: low</li>
-		<li> Route Lifetime: STUB_NETWORK_REACHABLE_TIME (TBD: what about deprecated prefixes? Add reference to new proposed text that addresses issue #67 on github)</li>
+		<li> Route Lifetime: STUB_NETWORK_ROUTE_LIFETIME (TBD: what about deprecated prefixes? Add reference to new proposed text that addresses issue #67 on github)</li>
 		<li> Prefix: the prefix advertised on the stub network</li>
 	      </ul></li>
 	    </ul></li>
@@ -1275,7 +1278,7 @@
 	      <ul>
 		<li> Prefix Length: the length of the prefix covered by the route, not necessarily 64.</li>
 		<li> Route Preference: low</li>
-		<li> Route Lifetime: The lifetime of the prefix on the infrastructure link, but no more than STUB_NETWORK_REACHABLE_TIME</li>
+		<li> Route Lifetime: The lifetime of the prefix on the infrastructure link, but no more than STUB_NETWORK_ROUTE_LIFETIME</li>
 		<li> Prefix: the prefix that is known to be reachable on the infrastructure network</li>
 	      </ul></li>
 	    </ul></li>
