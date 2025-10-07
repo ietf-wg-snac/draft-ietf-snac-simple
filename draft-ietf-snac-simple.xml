@@ -296,7 +296,7 @@
 	  The maximum interval for periodic unsolicited RA message sending (as defined in <xref target="RFC4861"/>) for a SNAC router.</dd>
 	<dt>MIN_PD_PREFIX_LIFETIME (default: 30 minutes):</dt>
 	<dd>
-	  The minimum preferred lifetime that a prefix, delegated with DHCPv6-PD, must have in order to be usable as a
+	  The minimum preferred lifetime that a prefix, delegated with DHCPv6-PD, must have in order to be suitable as a
       OSNR prefix for the stub network. The minimum lifetime is chosen to be long enough that a reboot of the DHCP
       server or the SNAC router will not prevent the successful renewal of the prefix.</dd>
 	<dt>MAX_SUITABLE_REACHABLE_TIME (default: 60 seconds):</dt>
