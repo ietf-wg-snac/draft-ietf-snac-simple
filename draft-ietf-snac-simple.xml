@@ -280,7 +280,7 @@
 	  that advertised the suitable prefix is stale.</dd>
 	<dt>STUB_PROVIDED_PREFIX_LIFETIME (default: 30 minutes):</dt>
 	<dd>
-	  The valid and preferred lifetime the SNAC router will advertise. This should be long enough that a
+	  The valid and preferred lifetime the SNAC router will advertise for a prefix on the AIL. This should be long enough that a
 	  host is actually willing to use it, and obviously should also be long enough that a missed RA will not cause the host
 	  to stop using it. The values suggested here allow ten RAs to be missed before the host will stop using the
 	  prefix.</dd>
@@ -294,13 +294,11 @@
 	<dt>MaxRtrAdvInterval (default: 206 seconds):</dt>
 	<dd>
 	  The maximum interval for periodic unsolicited RA message sending (as defined in <xref target="RFC4861"/>) for a SNAC router.</dd>
-	<dt>PREFIX_DELEGATION_INTERVAL (default: 30 minutes):</dt>
+	<dt>MIN_PD_PREFIX_LIFETIME (default: 30 minutes):</dt>
 	<dd>
-	  The lifetime a SNAC router should request for a DHCPv6-delegated prefix. The longer this is, the more
-	  prefixes will be consumed on a network where SNAC routers are not stable. The lifetime here is chosen to be long enough
-	  that a reboot of the DHCP server will not prevent the prefix being renewed. It happens to coincide with the value of
-	  STUB_PROVIDED_PREFIX_LIFETIME, but the two should not be considered to be equivalent.</dd>
-
+	  The minimum preferred lifetime that a prefix, delegated with DHCPv6-PD, must have in order to be suitable as a
+      OSNR prefix for the stub network. The minimum lifetime is chosen to be long enough that a reboot of the DHCP
+      server or the SNAC router will not prevent the successful renewal of the prefix.</dd>
 	<dt>MAX_SUITABLE_REACHABLE_TIME (default: 60 seconds):</dt>
 	<dd>
 	  The maximum ReachableTime value that a router can have in the neighbor cache before any suitable
@@ -312,7 +310,7 @@
         to its stub network to advertise the route to the AIL.</dd>
 	<dt>MIN_SUITABLE_PREFIX_PREFERRED_LIFETIME (default: 30 minutes):</dt>
 	<dd>
-	  The minimum preferred lifetime required for a prefix to be considered suitable for use by SNAC routers.
+	  The minimum preferred lifetime required for an AIL prefix to be considered suitable for use by SNAC routers.
 	  This value ensures that prefixes have sufficient lifetime to be reliably used for address autoconfiguration
 	  and communication establishment.
 	</dd>
@@ -659,10 +657,12 @@
             disrupt ongoing communications and create excessive maintenance overhead. SNAC routers SHOULD monitor delegated
             prefix lifetimes and re-evaluate prefix selection when lifetimes are renewed or when new prefixes become available.
           </t>
-	  <t>
-	    A DHCPv6-PD client can request a particular lease interval for the DHCPv6-delegated prefix. However, there is no
-	    particular reason for a SNAC router to specify this interval.
-	  </t>
+          <t>
+            A SNAC router MUST check in the server's Advertise message that the preferred lifetime a DHCPv6-PD server
+            can offer is at least MIN_PD_PREFIX_LIFETIME prior to requesting a prefix delegation to that
+            server. If no DHCPv6-PD server can offer this, the SNAC router MUST treat all potential DHCPv6-PD prefixes
+            as unsuitable and allocate a ULA link prefix out of its ULA site prefix instead.
+          </t>
 	  <section>
 	    <name>Lifetime of IPv6 prefixes acquired using DHCPv6 Prefix Delegation</name>
 	    <t>
@@ -678,7 +678,7 @@
 	    <ul>
 	      <li>DHCPv6 server becomes unavailable</li>
 	      <li>SNAC router is moved to a different link</li>
-	      <li>A renumnbering event results in the old prefix being replaced with a new one</li>
+	      <li>A renumbering event results in the old prefix being replaced with a new one</li>
 	    </ul>
 	    <t>
 	      The SNAC router MUST NOT use a prefix once the DHCPv6-PD client has determined that it is no longer valid. If the
