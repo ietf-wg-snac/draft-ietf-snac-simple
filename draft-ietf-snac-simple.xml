@@ -34,7 +34,7 @@
       </address>
     </author>
 
-    <date year='2024'/>
+    <date year='2025'/>
     <area>Internet</area>
     <workgroup>Internet Engineering Task Force</workgroup>
     <abstract>
@@ -200,7 +200,7 @@
               |                               |
      +--------+-----------+             +-----+--------------+
      |    Stub Network    |             |    Stub Network    |
-     +--------------------+             +--------------------+             
+     +--------------------+             +--------------------+
       ]]>
       </artwork> </figure>
 
@@ -513,7 +513,7 @@
 		prefix. In this case, the interface moves into the STATE-DEPRECATING (<xref target="state-deprecating"/>) state.</li>
 	      <li>
 		Both prefixes are ULA prefixes, and the received prefix, considered as a 128-bit big-endian unsigned integer,
-		is numerically lower, then the interface moves to STATE-DEPRECATING (<xref target="state-deprecating"/>.</li>
+		is numerically lower, then the interface moves to STATE-DEPRECATING (<xref target="state-deprecating"/>).</li>
 	      <li>
 		Otherwise the interface remains in STATE-ADVERTISING-SUITABLE.</li>
 	    </ul>
@@ -826,7 +826,7 @@
       <name>Providing reachability to IPv4-only services to hosts on the stub network</name>
       <t>
 	stub networks rely on IPv6 to enable routing between links, which would not be possible with IPv4 due to the limited
-	availability and functionality of IPv4 router discovery mechanisms (such as ICMP Router Discovery Messages 
+	availability and functionality of IPv4 router discovery mechanisms (such as ICMP Router Discovery Messages
 	<xref target="RFC1256"/>) compared to IPv6 Router Advertisements. However, it can still be useful for hosts on the stub network
 	to establish communications with IPv4-only hosts on the infrastructure network.
       </t>
@@ -977,6 +977,493 @@
     </section>
 
     <section>
+      <name>State machines</name>
+      <t>
+	This section contains state machine descriptions for the various functions described in earlier sections.
+      </t>
+      <section>
+	<name>NAT64 Prefix maintenance state machine</name>
+	<t>
+	  This section describes the state machine required to determine when to advertise a prefix on the stub network and what
+	  prefix to advertise. An implementation must track the following information:
+	</t>
+	<ol spacing="compact" type="A">
+	  <li><t>PREF64-provided prefixes present on infrastructure</t>        <!-- A -->
+	    <ul spacing="compact">
+	      <li>PREF64 prefixes are found in router advertisements.</li>
+	      <li>There may be more than one PREF64 prefix advertised in any router advertisement.</li>
+	      <li>More than one router may be advertising PREF64 prefixes.</li>
+	      <li><t>!A is known if:</t>
+		<ul spacing="compact">
+		  <li>router discovery fails or</li>
+		  <li>if router discovery succeeds but no PREF64 prefixes are seen in any router advertisement on infrastructure, or</li>
+		  <li>the last PREF64 prefix seen advertised on infrastructure has not been re-advertised in STALE_RA_TIME.</li>
+		</ul>
+	      </li>
+	      <li>A is known when we see an RA with one or more PREF64 prefixes on infrastructure.</li>
+	    </ul>
+	  </li>
+	  <li><t>IPv6 default route is seen on infrastructure</t>              <!-- B -->
+	    <ul spacing="compact">
+	      <li><t>!B is known when:</t>
+		<ul spacing="compact">
+		  <li>router discovery fails, or</li>
+		  <li>when we have not seen a router advertisement with a nonzero router lifetime, or</li>
+		  <li>when router advertisement with a nonzero router lifetime has been seen in STALE_RA_TIME.</li>
+		</ul>
+	      </li>
+	      <li>B is known when we see a router advertisement with a nonzero router lifetime.</li>
+	    </ul>
+	  </li>
+	  <li><t>Routable prefix present on stub network. Either:</t>          <!-- C -->
+	    <ul spacing="compact">
+	      <li>a delegated prefix that we are publishing on the stub network (<xref target="dhcpv6-pd"/>), or</li>
+	      <li>a GUA prefix that we see advertised on the stub network, or</li>
+	      <li>
+		a known-local ULA <xref target="I-D.ietf-6man-rfc6724-update"/> prefix that we see advertised on the stub
+		network.</li>
+	      <li><t>!C is known when:</t>
+		<ul spacing="compact">
+		  <li>router discovery on the stub network has failed, or</li>
+		  <li>the lifetime of the last Prefix Information Option containing a routable prefix has expired.</li>
+		</ul>
+	      </li>
+	      <li><t>C is known when:</t>
+		<ul spacing="compact">
+		  <li>we get a router advertisement that contains a PIO advertising a routable prefix, or</li>
+		  <li>we advertise one.</li>
+		</ul>
+	      </li>
+	    </ul>
+	  </li>
+	  <li><t>IPv4 present on infrastructure:</t>                           <!-- D -->
+	    <ul spacing="compact">
+	      <li>IPv4 address that is not link-local <xref target="RFC3927"/>, and</li>
+	      <li>IPv4 default route</li>
+	      <li>!D is known when DHCPv4 fails to discover an IP address within MAX_DHCPV4_WAIT.</li>
+	      <li>D is known when DHCPv4 assigns an IPv4 address and provides a default route.</li>
+	    </ul>
+	  </li>
+          <li><t>Unpublishable NAT64 prefix seen on Stub Network. Either:</t>  <!-- E -->
+	    <ul spacing="compact">
+	      <li>We have not seen it advertised in a PREF64 on infrastructure, or</li>
+	      <li>We have seen it advertised in a PREF64, but we do not have the prerequisites to publish it ourselves.</li>
+	    </ul>
+	    <t>!E is known when:</t>
+	    <ul spacing="compact">
+	      <li>the lifetime of the NAT64 prefix in any router advertisement we have seen advertised on the stub network has expired, or</li>
+	      <li>router discovery fails on the stub network.</li>
+	    </ul>
+	    <t>E is known when we see an unpublishable NAT64 prefix advertised on the stub network.</t>
+	  </li>
+	  <li><t>Winning NAT64 prefix is present. Either:</t>      <!-- F -->
+	    <ul spacing="compact">
+	      <li>it is numerically lower than the NAT64 prefix we are publishing, or</li>
+	      <li>we are publishing a self-generated NAT64 prefix and it is a known-local ULA prefix</li>
+	    </ul>
+	    <t>!E is known when:</t>
+	    <ul spacing="compact">
+	      <li>no winning NAT64 prefix has been advertised on the stub network, or</li>
+	      <li>when the lifetime of any NAT64 prefix seen advertised on the stub network has expired.</li>
+	    </ul>
+	    <t>E is known when a router advertisement containing a winning NAT64 prefix is seen on the stub network.</t>
+	  </li>
+	</ol>
+	<t>
+	  We have the following states:
+	</t>
+	<ol spacing="compact">
+	  <!-- 1 -->
+	  <li><t>Startup</t>
+	    <ul spacing="compact">
+	      <li>We enter this state on system startup</li>
+	      <li>We do nothing on entry to this state</li>
+	      <li>
+		<t>We leave this state when we know the values of A-F</t>
+		<ul spacing="compact">
+		  <!-- RFC Editor note: this is code, please do not try to reorganize it -->
+		  <li>If !A || !B || !C || ! || E  ==&gt; 2</li>
+		  <li>otherwise if A &amp;&amp; B &amp;&amp; C ==&gt; 4</li>
+		  <li>otherwise ==&gt; 3</li>
+		</ul>
+	      </li>
+	    </ul>
+	  </li>
+	  <!-- 2 -->
+	  <li><t>Not advertising a NAT64 route</t>
+	    <ul spacing="compact">
+	      <li>We enter this state from 1, 3 or 4</li>
+	      <li>On entry we stop advertising whatever prefix we are advertising</li>
+	      <li><t>We leave this state when !E &amp;&amp; (D &amp;&amp; || (A &amp;&amp; B &amp;&amp; C &amp;&amp;))</t>
+		<ul spacing="compact">
+		  <li>If A &amp;&amp; B &amp;&amp; C  ==&gt; 4, else</li>
+		  <li>==&gt; 3</li>
+		</ul>
+	      </li>
+	    </ul>
+	  </li>
+	  <!-- 3 -->
+	  <li><t>Publishing a BR-specific low-priority ULA NAT64 route</t>
+	    <ul spacing="compact">
+	      <li>We enter this state from 1 or 2</li>
+	      <li>On entry we publish our own self-generated NAT64 ULA prefix</li>
+	      <li><t>We leave this state when (A &amp;&amp; B &amp;&amp; C) || !D || F</t>
+		<ul spacing="compact">
+		  <li>==&gt; 2</li>
+		</ul>
+	      </li>
+	    </ul>
+	  </li>
+	  <li><t>Publishing an infrastructure-specific medium-priority NAT64 prefix</t>
+	    <ul spacing="compact">
+	      <li>We enter this state from 1 or 2</li>
+	      <li>On entry we publish the chosen prefix found in PREF64 <em>(??? What if we have more than one PREF64 prefix? Is
+		  this a valid situation? Why?)</em></li>
+	      <li><t>We leave this state when !A || !B || !C || F</t>
+		<ul spacing="compact">
+		  <li>==&gt; 2</li>
+		</ul>
+	      </li>
+	    </ul>
+	  </li>
+	</ol>
+      </section>
+
+      <section>
+	<name>NAT64 translation state machine</name>
+	<t>
+	  In addition to advertising a NAT64 prefix on the stub network, we may need to translate between our own self-generated ULA
+	  prefix and our IPv4 address on infrastructure. The state machine for this is a bit simpler:
+	</t>
+	<ol spacing="compact">
+	  <li><t>Not translating</t>
+	    <ul spacing="compact">
+	      <li><t>We enter this state:</t>
+		<ul spacing="compact">
+		  <li>on startup</li>
+		  <li>whenever the lifetime of any self-generated ULA prefix we advertised on the stub network has expired.</li>
+		</ul>
+	      </li>
+	      <li>
+		<t>On entry translation between our self-generated prefix and our external IPv4 address, if enabled, is disabled.</t>
+	      </li>
+	      <li>
+		<t>We exit this state when</t>
+		<ul spacing="compact">
+		  <li>we begin advertising our own self-generated ULA NAT64 prefix</li>
+		</ul>
+	      </li>
+	    </ul>
+	  </li>
+	  <li><t>Translating</t>
+	    <ul spacing="compact">
+	      <li>
+		<t>We enter this state when we publish our own self-generated ULA NAT64 prefix</t>
+		<t>
+		  Note that it is possible that our external IPv4 address might change. In this situation, any established
+		  connections between devices on the stub network and IPv4 services reachable via infrastructure will stop working,
+		  and it may be necessary to re-initialize the Network Address Translation mechanism.
+		</t>
+	      </li>
+	      <li><t>We exit this state when</t>
+		<ul spacing="compact">
+		  <li>we have stopped advertising our self-generated ULA NAT64 prefix, and</li>
+		  <li>the most lifetime specified in the most recent advertisement for our self-generated ULA NAT64 prefix on the
+		    stub network has expired.</li>
+		</ul>
+	      </li>
+	    </ul>
+	  </li>
+	</ol>
+      </section>
+
+      <section>
+	<name>Router Advertisement Monitor</name>
+	<t>
+	  This state machine monitors the state of router advertisements on the adjacent infrastructure link.  Timers are assumed to
+	  be non-recurring: when a timer has expired, it is not automatically restarted. A set of Router Monitors is maintained, one
+	  per router from which a Router Advertisement has been seen. Routers are identified by IP source address.
+	</t>
+	<section anchor="RAM-routine">
+	  <name>Routine Behavior</name>
+	  <t>
+	    This section defines behavior that always happens regardless of what state the Router Advertisement Monitor is in.
+	  </t>
+	  <t>
+	    Whenever a router advertisement is received, the Router Advertisement Monitor looks for a Router Monitor state machine
+	    that corresponds to the source address of the router advertisement. If such a state machine is found, a "Router
+	    Advertisement Received" event is delivered to the state machine that includes the received Router Advertisement.
+	    If no such state machine is found, one is created using the information in the router advertisement.
+	  </t>
+	</section>
+	<section>
+	  <name>Discovery State</name>
+	  <t>
+	    The Router Advertisement Monitor starts in the Discovery state. During discovery, the goal is to determine whether there are
+	    IPv6 routers on the AIL that the state machine is monitoring.
+	  </t>
+	  <t>On entry, the following actions are performed:</t>
+	  <ul>
+	    <li>Start a router discovery timer that expires in ROUTER_DISCOVERY_TIMEOUT (20) seconds.</li>
+	    <li>
+	      Set the router solicit retransmission timeout (ROUTER_SOLICIT_RETRANSMISSION_TIMEOUT) to
+	      MAX_RTR_SOLICITATION_DELAY <xref target="RFC4861" section="10" sectionFormat="of"/>.
+	    </li>
+	    <li>Set the router solicit retransmission count (ROUTER_SOLICIT_RETRANSMISSION_COUNT) to 1</li>
+	    <li>
+	      Start a router solicitation retransmission timer that expires at a random interval between 0 and ROUTER_SOLICIT_RETRANSMISSION_TIMEOUT seconds.
+	      Note that this interval must be computed in fractional seconds, since the MAX_RTR_SOLICITATION_DELAY defaults to 1.
+	    </li>
+	    <li>
+	      Subscribe to the all routers multicast address and begin listening for ICMP messages.
+	    </li>
+	  </ul>
+	  <t>On exit from this state, the following actions are performed:</t>
+	  <ul>
+	    <li>Stop router discovery timer if still active.</li>
+	    <li>Stop router solicit retransmission timer if still active.</li>
+	  </ul>
+	  <t>Events that have meaning in this state:</t>
+	  <ul>
+	    <li>The router discovery timer expires</li>
+	    <li>
+	      <ul>
+		<li>Move to the Monitoring.</li>
+	      </ul>
+	    </li>
+	    <li>The router solicit retransmission timer expires:</li>
+	    <li>
+	      <ul>
+		<li>send a router solicitation message as described in <xref target="RFC4861" section="6.3.7" sectionFormat="of"/>.</li>
+		<li>Set the router solicit retransmission timeout (ROUTER_SOLICIT_RETRANSMISSION_TIMEOUT) to twice its current value.</li>
+		<li>Increment the router solicit retransmission count (ROUTER_SOLICIT_RETRANSMISSION_COUNT) by 1</li>
+		<li>
+		  If ROUTER_SOLICIT_RETRANSMISSION_COUNT is less than or equal to MAX_RTR_SOLICITATIONS
+		  <xref target="RFC4861" section="10" sectionFormat="of"/>, restart the router solicitation retransmission timer to
+		  expire at a random interval between (ROUTER_SOLICIT_RETRANSMISSION_TIMEOUT - MAX_RTR_SOLICITATION_DELAY / 2) and
+		  (ROUTER_SOLICIT_RETRANSMISSION_TIMEOUT + MAX_RTR_SOLICITATION_DELAY / 2) seconds.
+		</li>
+	      </ul>
+	    </li>
+	    <li>If a router advertisement is received:</li>
+	    <li>
+	      <ul>
+		<li>Process the Router Advertisement as described in <xref target="RAM-routine"/>.</li>
+		<li>Move to the Monitoring state</li>
+	      </ul>
+	    </li>
+	  </ul>
+	</section>
+	<section>
+	  <name>Monitoring State</name>
+	  <t>
+	    In the Monitoring State, the Router Advertisement State Machine simply listens for Router Advertisements and
+	    processes them as described in <xref target="RAM-routine"/>.
+	  </t>
+	</section>
+      </section> <!-- Router Advertisement Monitor -->
+      <section>
+	<name>Router Monitor</name>
+	<t>
+	  The Router Monitor state machine monitors an individual router. For each router that is seen by the Router Advertisement
+	  Monitor, a Router Monitor state machine will be created. This state machine tracks the current status of the router
+	  with respect to reachability and what it is advertising. This latter can be managed simply by remembering the most
+	  recent router advertisement received with the router's link-local address as its source address. Reachability is
+	  represented by the most recent time that we have received a Router Advertisement or Neighbor Advertisement from
+	  the router. Data tracked by this state machine include:
+	</t>
+	<ul>
+	  <li>Reachable time</li>
+	  <li>List of on-link prefixes advertised <xref target="RFC4861" section="4.6.2" sectionFormat="of"/>, each of which includes:</li>
+	  <li>
+	    <ul>
+	      <li>Prefix bits (up to 128 bits)</li>
+	      <li>Prefix width (0-128)</li>
+	      <li>Prefix Valid Lifetime</li>
+	      <li>Prefix Preferred Lifetime</li>
+	      <li>On-link flag</li>
+	      <li>Autonomous flag</li>
+	      <li>DHCPv6-PD Preferred Flag <xref target="RFC9762"/></li>
+	    </ul>
+	  </li>
+	  <li>List of routes <xref target="RFC4191"/> advertised, each of which includes></li>
+	  <li>
+	    <ul>
+	      <li>Destination Prefix bits (up to 128 bits)</li>
+	      <li>Destination Prefix width (0-128)</li>
+	      <li>Preference value (high, medium, low)</li>
+	      <li>Route Lifetime</li>
+	    </ul>
+	  </li>
+	  <li>PREF64 option received (if any)</li>
+	  <li>Interface on which router is seen</li>
+	  <li>Stub Router Flag</li>
+	  <li>Router Lifetime</li>
+	</ul>
+	<t>
+	  It can be convenient to simply remember the most recently received router advertisement rather than unpacking the
+	  contents of the router advertisement into a separate data structure. However, lifetimes must be understandable in terms
+	  of absolute time, but are transmitted as relative time in the router advertisement. If lifetimes are retrained in their
+	  relative form, the time at which the Router Advertisement was received MUST be remembered so that when any lifetime
+	  from the router advertisement is needed, it can be added to the received time of the Router Advertisemnt to produce
+	  an absolute time at which the lifetime expires.
+	</t>
+	<section>
+	  <name>Routine Behavior</name>
+	  <t>
+	    This section describes behavior that always happens when a Router Tracker state machine receives a certain event. In
+	    addition to these routine actions, there may also be state-specific actions taken for these events. These are documented
+	    in later sections specific to those states.
+	  </t>
+	  <t>
+	    On startup, and whenever a Router Advertisement is received from the router, the following actions are taken:
+	  </t>
+	  <ul>
+	    <li>Set the reachable time to the current time</li>
+	    <li>Update all data derived from router advertisements based on the new router advertisement.</li>
+	    <li>Clear any outstanding Neighbor Solicit Probe Retransmit timer</li>
+	    <li>Start the Neighbor Solicit Probe Retransmit to expire in sixty seconds</li>
+	    <li>Start the Router Advertisement Lifetime timer. The expiration time of this timer is determined by taking:</li>
+	    <li>
+	      <ul>
+		<li>the maximum Preferred lifetime of any PIO included in the Router Advertisement, or if no PIO is present,</li>
+		<li>the maximum Route Lifetime from any RIO contained in the Router Advertisement, or if neither is present,</li>
+		<li>the Router Lifetime from the Router Advertisement, if not zero, or if none of the above,</li>
+		<li>the Router Advertisement Lifetime timer event occurs immediately.</li>
+	      </ul>
+	    </li>
+	  </ul>
+	  <t>
+	    Whenever the Neighbor Solicit Probe Retransmit timer expires, send a Unicast Neighbor Solicit message to the router
+	    address.
+	  </t>
+	  <t>Whenever a Neighbor Advertise is received from the router:</t>
+	  <ul>
+	    <li>Clear any outstanding Neighbor Solicit Probe Retransmit timer</li>
+	    <li>Start the Neighbor Solicit Probe Retransmit to expire in sixty seconds</li>
+	    <li>Set the reachable time to the current time</li>
+	  </ul>
+	  <t>
+	    Whenever the Router Advertisement Lifetime timer expires, the Router Tracker state machine is removed from the list of
+	    Router Tracker state machines and forgotten.
+	  </t>
+	</section>
+	<section>
+	  <name>Suitable Prefix Determination</name>
+	  <t>
+	    A Router Advertisement contains a suitable prefix if the following conditions are true:
+	  </t>
+	  <ul>
+	    <li>SNAC Router RA flag not set</li>
+	    <li>Router Lifetime >= MIN_SUITABLE_PREFIX_PREFERRED_LIFETIME</li>
+	    <li>PIO option present with:</li>
+	    <li>
+	      <ul>
+		<li>Preferred Lifetime equal to or greater than MIN_SUITABLE_PREFIX_PREFERRED_LIFETIME</li>
+		<li>A or P flag bit set</li>
+	      </ul>
+	    </li>
+	  </ul>
+	</section>
+
+	<section>
+	  <name>Not Suitable state</name>
+	  <t>
+	    When in this state, the router is not providing a suitable prefix.
+	  </t>
+	  <section>
+	    <name>On Entry</name>
+	    <t>Neighbor Solicit Probe Retransmit Timer is canceled.</t>
+	  </section>
+	  <section>
+	    <name>Events</name>
+	    <dl>
+	      <dt>Router Advertisement received with Suitable prefix</dt>
+	      <dd>
+		<t>Router Monitor moves to Suitable state</t>
+	      </dd>
+	    </dl>
+	  </section>
+	</section>
+
+	<section>
+	  <name>Suitable state</name>
+	  <t>
+	    When in this state, the router is known to be reachable, is not providing a suitable prefix.
+	  </t>
+	  <section>
+	    <name>On Entry</name>
+	    <t>A Suitable Prefix Present event is generated and delivered to all state machines that track it.</t>
+	  </section>
+	  <section>
+	    <name>On Exit</name>
+	    <t>A Suitable Prefix Lost event is generated and delivered to all state machines that track it.</t>
+	  </section>
+	  <section>
+	    <name>Events</name>
+	    <ul>
+	      <li>Router Advertisement received with no Suitable prefix</li>
+	      <li>
+		<ul>
+		  <li>Router Monitor moves to Not Suitable state</li>
+		</ul>
+	      </li>
+	      <li>Router Advertisement received with Suitable prefix</li>
+	      <li>
+		<ul>
+		  <li>If Router Advertisement includes PREF64 option:</li>
+		  <li>
+		    <ul>
+		      <li>and this Router Tracker has no PREF64 option:</li>
+		      <li><ul>
+			  <li>generate PREF64 Added event and deliver to all state machines consuming this event.</li>
+			  <li>set the PREF64 option for this Router Tracker to the value of the new PREF64 option.</li>
+		      </ul></li>
+		  </ul></li>
+		  <li>and this Router Tracker has a different PREF64 option value:</li>
+		  <li><ul>
+		      <li>generate PREF64 Changed event and deliver to all state machines consuming this event.</li>
+		      <li>update the PREF64 option for this Router Tracker to the value of the new PREF64 option.</li>
+		  </ul></li>
+		  <li><ul>
+		      <li>If Router Advertisement does not include PREF64 option, and this Router Tracker has a current Pref64 option:</li>
+		      <li><ul>
+			  <li>generate PREF64 Lost event and deliver to all state machines consuming this event.</li>
+			  <li>remove the PREF64 option for this Router Tracker.</li>
+		      </ul></li>
+		  </ul></li>
+	      </ul></li>
+	      <li>Neighbor Solicit Probe Retransmit Timer expires.</li>
+		  <li><ul>
+		      <li>Move to Not Reachable state</li>
+		  </ul></li>
+	    </ul>
+	  </section>
+	</section>
+
+	<section>
+	  <name>Not Reachable state</name>
+	  <t>
+	    When in this state, the router is not known to be reachable, and is providing a suitable prefix.
+	  </t>
+	  <section>
+	    <name>Events</name>
+	    <dl>
+	      <dt>Router Advertisement received with suitable prefix</dt>
+	      <dd>
+		<t>Router Monitor moves to Suitable state</t>
+	      </dd>
+	      <dt>Router Advertisement Received with no suitable prefix</dt>
+	      <dd>Move to No Sutable Prefix state</dd>
+	      <dt>Neighbor Advertisement message received</dt>
+	      <dd>Move to Suitable Prefix Present state.</dd>
+	    </dl>
+	  </section>
+	</section>
+      </section>
+    </section>
+
+    <section>
       <name>Services Provided by SNAC routers</name>
       <t>
 	In order to provide network access, SNAC routers must provide some network services to the stub network. In this document
@@ -1020,6 +1507,7 @@
     <references>
       <name>Normative References</name>
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.2119.xml" />
+      <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.3927.xml" />
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.4191.xml" />
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.4193.xml" />
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.4291.xml" />
@@ -1032,11 +1520,13 @@
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.8415.xml" />
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.8766.xml" />
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.8781.xml" />
+      <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.9762.xml" />
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml3/reference.I-D.ietf-dnssd-srp.xml" />
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml3/reference.I-D.ietf-dnssd-advertising-proxy.xml" />
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml3/reference.I-D.ietf-6man-snac-router-ra-flag.xml" />
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml3/reference.I-D.ietf-dhc-rfc8415bis.xml" />
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml3/reference.I-D.ietf-6man-pio-pflag.xml" />
+      <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml3/reference.I-D.ietf-6man-rfc6724-update.xml" />
     </references>
     <references>
       <name>Informative References</name>
