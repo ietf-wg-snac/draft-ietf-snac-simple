@@ -874,7 +874,7 @@
 	</li>
       </ol>
       <t>
-	In the first case, infrastructure-provided NAT64 is preferred, and the SNAC router MUST advertise this service
+	In the first case, infrastructure-provided NAT64 is preferred, and the SNAC router by default MUST advertise this service
 	to the stub network.</t>
       <t>
 	In the second case, there is no way to provide connectivity to the infrastructure: there is no IPv6 routing other than to
@@ -882,10 +882,10 @@
 	is no IPv4, so the SNAC router can't do NAT64 on its own. In this case, the SNAC router MUST NOT advertise NAT64
 	service.</t>
       <t>
-	In the third case, despite the infrastructure providing NAT64, nodes in the stub network can't use it, so the SNAC router MUST provide its own
-	NAT64 service.</t>
+	In the third case, despite the infrastructure providing NAT64, nodes in the stub network can't use it, so the SNAC
+	router by default MUST provide its own NAT64 service.</t>
       <t>
-	In the fourth case, the SNAC router MUST provide its own NAT64 service.</t>
+	In the fourth case, the SNAC router by default MUST provide its own NAT64 service.</t>
       <t>
 	An additional complication is that there may be more than one SNAC router connecting the stub network to infrastructure.  In
 	this case, it may be desirable to limit the number of SNAC routers providing NAT64 service, or it may be acceptable for all
@@ -903,6 +903,11 @@
 	service appears on the stub network, SNAC routers that are not able to advertise an infrastructure NAT64 service MUST
 	NOT do so.</t>
       <t>
+	For stub network technologies that support the advertising of a NAT64 service with an associated preference level,
+	the below rules for preference level selection MUST be used.
+	For stub network technologies that don't support this (for example, technologies using the PREF64 option), these rules do
+	not apply.</t>
+      <t>
 	To differentiate between infrastructure-provided NAT64 service and SNAC router-provided NAT64 service, SNAC routers that
 	advertise infrastructure-provided NAT64 service MUST use a preference of medium for this service. SNAC routers advertising
 	their own service MUST use a preference of low.</t>
@@ -911,8 +916,10 @@
 	MUST advertise the prefix with a preference of high.</t>
       <t>
 	SNAC routers must monitor the advertisement of other NAT64 prefixes on the stub network. If a SNAC router is advertising
-	a NAT64 prefix, and a NAT64 prefix is advertised on the stub network with a higher preference, the SNAC router SHOULD
-	deprecate the prefix it is advertising.</t>
+	a NAT64 prefix on a constrained stub network, and another NAT64 prefix is advertised on the stub network with a
+	higher preference, the SNAC router SHOULD deprecate the prefix it is advertising.
+	This rule is based on the assumption that for a constrained stub network technology the size of the network configuration
+	data by default needs to be minimized. Exceptions specific to a stub network technology may apply.</t>
 
       <section>
 	<name>NAT64 provided by infrastructure</name>
