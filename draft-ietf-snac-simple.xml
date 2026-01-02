@@ -1066,8 +1066,8 @@
 	</t>
 	<t>
 	  An additional feature of some unmanaged networks is that the owner of the network can choose to isolate all devices on the
-	  network, so that devices on the network are able to use the Internet, but not communicate with each other. This is essentially
-	  the same as being connected to the guest network, except that there is no other network. In this case, one can assume that the
+	  network, so that devices on the network are able to use the Internet, but not communicate with each other.
+	  In this case, one can assume that the
 	  owner of the network doesn't expect any devices attached to the network to be able to communicate with any other device, so
 	  the failure of devices connected to infrastructure to communicate with devices on the stub network would not be a surprise.
 	  The owner of the SNAC router might be surprised in this case, but ultimately the owner of the infrastructure network gets
