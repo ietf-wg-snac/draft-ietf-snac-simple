@@ -1010,8 +1010,19 @@
       <name>Security Considerations</name>
       <t>
         Because a SNAC router operates as an IPv6 router that sends and receives IPv6 Neighbor Discovery protocol messages,
-        the security considerations of Section 11 of <xref target="RFC4861"/> apply. No additional security considerations are
-        identified.
+        the security considerations of Section 11 of <xref target="RFC4861"/> apply.
+      </t>
+      <t>
+        A SNAC router MUST support DNS-over-TLS as specified in <xref target="RFC9665" section="7" sectionFormat="of"/>
+        for any DNS unicast communication with hosts (acting as DNS clients) in the stub network.
+        This provides opportunistic privacy for SRP Updates as well as for DNS queries.
+      </t>
+      <t>
+        If a SNAC router receives a DNS query protected by TLS from a stub network host, it may happen that the query
+        is forwarded without security to the DNS resolver configured in the infrastructure network.
+        One specific example when this happens is when the configured DNS resolver is inside a CE router and it only
+        supports unsecured DNS. In such case, the SNAC router is expected to fall back to sending unsecured DNS queries
+        in order to meet the SNAC interoperability and usability goals.
       </t>
     </section>
   </middle>
