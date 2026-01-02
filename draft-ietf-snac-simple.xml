@@ -326,7 +326,7 @@
       </t>
     </section>
 
-    <section>
+    <section anchor="support-ail">
       <name>Support for adjacent infrastructure links</name>
       <t>
 	This document assumes that the AIL supports neighbor discovery <xref target="RFC4861"/>, and specifically that
@@ -334,6 +334,11 @@
 	network link may also support this, or may use some different mechanism. This section specifies how advertisement of the
 	on-link prefix for such links is managed. In this section the term "advertising interface" is used as defined in
 	<xref target="RFC4861" section="6.2.2"/>.</t>
+      <t>
+	When a SNAC router sends a Router Advertisement (RA) message as specified in any of the below subsections, it
+	MUST NOT use multiple RA messages with each containing a subset of the options. Such splitting behavior is specified in
+    <xref target="RFC4861" section="6.2.3"/>. Instead, all options are always included in a single RA message.
+    Multiple RA messages with different information contents are only sent to indicate that previously sent information changed.</t>
       <t>
 	Support for AILs on networks where neighbor discovery is not supported is out of scope for this document. SNAC routers
 	do not provide routing between AILs when connected to more than one such link.</t>
@@ -1208,8 +1213,9 @@
 	    </ul></li>
 	</ul>
       <t>
-	It is expected that all RA options for a SNAC router will fit in a single RA. Therefore, SNAC routers are not expected to send multiple
-	RAs with different information other than to announce that some information previously advertised has changed.</t>
+	Per <xref target="support-ail"/>, all RA options for a SNAC router must fit in a single RA message.
+	SNAC routers must not send multiple RAs with different information other than to announce that some information
+	that was previously advertised has changed.</t>
     </section>
 
     <section>
