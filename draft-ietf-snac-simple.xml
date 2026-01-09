@@ -1338,7 +1338,7 @@
 	As an example that can be used in a constrained stub network: a feasible strategy is for each SNAC router to perform
     a numeric comparison between the multiple OSNR prefixes and let the numerically lowest prefix/prefixes "win".
 	The prefixes that don't win are deprecated.
-	This has the benefit that global DHCPv6-PD delegated OSNR prefixes are selected in favor of the numerically higher
+	This has the benefit that non-ULA DHCPv6-PD delegated OSNR prefixes are selected in favor of the numerically higher
 	ULA link prefixes, thus supporting the SNAC interoperability goal of IP connectivity to the Internet.
       </t>
     </section>
