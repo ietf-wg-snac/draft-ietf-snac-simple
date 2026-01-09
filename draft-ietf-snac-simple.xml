@@ -1058,11 +1058,12 @@
 	</t>
 	<t>
 	  In some unmanaged network settings, there is a "guest" network in addition to the main network. In this configuration, if
-	  a SNAC router is added to the guest infrastructure network, no communication will be possible. The general intended
+	  a SNAC router is added to the guest infrastructure network, no communication between that router's stub network and
+	  other nodes in the home will be possible. The general intended
 	  behavior of the guest network is to isolate untrusted hosts. Since this would be the intended behavior on the part of the
 	  owner of the network, it won't be a surprise to them, since they had to explicitly give the SNAC router's owner the guest
 	  network credentials and not the main network credentials. This should also mean that the owner of the SNAC router will not
-	  expect it to function in this scenario.
+	  expect it to fully function in this scenario.
 	</t>
 	<t>
 	  An additional feature of some unmanaged networks is that the owner of the network can choose to isolate all devices on the
