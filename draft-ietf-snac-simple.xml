@@ -248,7 +248,7 @@
 	<dt>Stub Router:</dt>
 	<dd>A router that provides connectivity between a stub network and an infrastructure network. A stub router may also provide
 	  connectivity between other networks: the term "stub router" refers specifically to its role in providing connectivity to
-	  a stub network. For example, a CE Router may provide connectivity between a provider network (WAN) and a  network
+	  a stub network. For example, a CE Router may provide connectivity between a provider network (WAN) and a network
 	  (LAN), while at the same time providing connectivity between the LAN and a stub network. What distinguishes the LAN from
 	  the stub network in this case is that the LAN is potentially a candidate to act as a transit network to reach other routers,
 	  whereas the stub network is not.</dd>
@@ -323,6 +323,10 @@
 	The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED",
 	"MAY", and "OPTIONAL" in this document are to be interpreted as described in BCP 14 <xref target="RFC2119"/>
         <xref target="RFC8174"/> when, and only when, they appear in all capitals, as shown here.
+      </t>
+      <t>
+	The terms "resolver" and "stub resolver" used in this document are defined in <xref target="RFC9499"/>.
+	"DNS resolver" is used as a synonym for "resolver" to clearly point out the DNS context of this term.
       </t>
     </section>
 
@@ -820,12 +824,12 @@
 	    provided on the stub network, as described in <xref target="RFC6763" section="11"/>.</t>
 	  <t>
 	    By implication, this means that SNAC routers MUST provide a DNS resolver. In addition, SNAC routers MUST provide
-	    DNS zones for each AIL, and MUST list these zones in the list of default browsing zones
-	    as defined in RFC6763. [[WG TBD: we need to say how these zones are named. Or refer to the Advertising Proxy doc and
-	    have that doc say how they are named.]]</t>
+	    a DNS zone for each AIL, and MUST list all these zones in the list of default browsing zones
+	    as defined in <xref target="RFC6763"/>.
+	    [[WG TBD: we need to say how these zones are named. Or refer to the Advertising Proxy doc and have that doc say how they are named.]]</t>
 	  <t>
-	    The SNAC router MUST also maintain an SRP registrar and use registrations made through that registrar to populate
-	    a DNS zone which is advertised as a default browsing domain, as above. This SRP registrar MUST be advertised on the
+	    The SNAC router MUST also maintain an SRP registrar and use registrations made through that SRP registrar to populate
+	    a DNS zone which is advertised as a default browsing domain, as defined above. This SRP registrar MUST be advertised on the
 	    stub network either using the dnssd-srp and/or dnssd-srp-tls service names or some stub-network-specific mechanism,
 	    the details of which are out of scope for this document.</t>
 	</section>
@@ -947,7 +951,7 @@
 	  Unless otherwise configured to do so, the SNAC router MUST NOT advertise infrastructure-provided NAT64 service on the
 	  stub network if it has not acquired the OSNR prefix through DHCPv6 prefix delegation.</t>
       </section>
-      <section>
+      <section anchor="nat64-by-snac">
 	<name>NAT64 provided by SNAC router(s)</name>
 	<t>
 	  Most infrastructure networks at present do not provide NAT64 service. Many infrastructure networks do not provide DHCPv6
@@ -965,22 +969,22 @@
 	  uses its own NAT64 prefix—there is no common NAT64 prefix. The reason for this is that NAT64 translation is not stateless,
 	  and is tied to the SNAC router&apos;s IPv4 address. Therefore, each NAT64 egress is not equivalent.
 	</t><t>
-	  A stub network that services a Wi-Fi stub network SHOULD provide DNS64 translation: hosts on the stub network cannot be
-	  assumed to be able to do DNS64 synthesis in the stub resolver. In this case the DNS resolver on the SNAC router MUST honor
+	  A SNAC router that services a Wi-Fi stub network SHOULD provide DNS64 translation: IPv6 hosts on the stub network cannot be
+	  assumed to be able to do DNS64 synthesis in their stub resolver. In this case the DNS resolver on the SNAC router MUST honor
 	  the 'CD' and 'DO' flag bits if received in a request, since this indicates that the stub resolver on the requestor intends to do
-	  DNSSEC validation. In this case, the resolver on the SNAC router MUST NOT perform DNS64 synthesis.
+	  DNSSEC validation. In this case, the DNS resolver on the SNAC router MUST NOT perform DNS64 synthesis.
 	</t><t>
-	  On specific stub networks it may be desirable to require the stub network device to perform DNS64 synthesis. Stub network
+	  On specific stub networks it may be desirable to require the stub network host itself to perform DNS64 synthesis. SNAC
 	  routers for such networks do not need to provide DNS64 synthesis. Instead, they MUST provide an ipv4only.arpa answer that
 	  advertises the NAT64 prefix for that SNAC router, and MUST provide an explicit route to that NAT64 prefix on the stub
 	  network using RA or whatever technology is specific to that stub network type.
 	</t><t>
-	  In constrained networks it can be very useful if stub network resolvers provide the information required to do DNS64
+	  In constrained networks it can be very useful if stub network DNS resolvers provide the information required to do DNS64
 	  translation in the answer to the AAAA query. If the answer to an AAAA query comes back with "no data" (not NXDOMAIN), this
-	  suggests that there may be an A record. In this case, the stub network&apos;s resolver SHOULD attempt to look up an A record on
-	  the same name. If such a record exists, the resolver SHOULD return no data in the Answer section of the DNS response, and
+	  suggests that there may be an A record. In this case, the DNS resolver in the SNAC router SHOULD attempt to look up an A record on
+	  the same name. If such a record exists, the DNS resolver SHOULD return no data in the Answer section of the DNS response, and
 	  SHOULD provide any CNAME records that were involved in returning the "no data" answer to the AAAA query, and SHOULD
-	  provide any A records that were ultimately returned, in the Additional section. The resolver should also include an
+	  provide any A records that were ultimately returned, in the Additional section. The response message SHOULD also include an
 	  ipv4only.arpa record in the Additional section.
 	</t>
       </section>
@@ -992,19 +996,19 @@
 	In order to provide network access, SNAC routers must provide some network services to the stub network. In this document
 	the following services have been discussed:</t>
       <dl>
-	<dt>DNS Resolver:</dt><dd>The stub network MUST provide a DNS resolver. If RAs are in use on the stub network, the DNS resolver
-	  is advertised in the Router Advertisement Recursive DNS Server (RDNSS) option. If RAs are not in use on the stub network, then
+	<dt>DNS Resolver:</dt><dd>The SNAC router MUST provide a DNS resolver. If RA messages are in use on the stub network, the DNS resolver
+	  is advertised in the Router Advertisement Recursive DNS Server (RDNSS) option. If RA messages are not in use on the stub network, then
 	  the mechanism whereby the DNS resolver is advertised by the SNAC router is specific to that type of stub network.</dd>
 	<dt>DHCPv6 Server:</dt><dd>The use of DHCPv6 on the stub network is NOT RECOMMENDED. In some cases it may be necessary, but should be
 	  disabled by default if the SNAC router provides this capability at all.</dd>
 	<dt>Discovery Proxy:</dt><dd>In order to discover services on the AIL, SNAC routers MUST act as
 	  Discovery Proxies for any AILs to which they are attached.</dd>
 	<dt>SRP Registrar:</dt><dd>SNAC routers MUST provide SRP registrar service. This service MUST be advertised using DNS-SD in
-	  a legacy browsing domain that is discoverable through the SNAC router's resolver.</dd>
-	<dt>Legacy Browsing Domains:</dt><dd>The stub resolver must advertise legacy browsing domains for each AIL,
-	  for the zone that is maintained by its SRP service, and in addition must list the legacy browsing domains provided
+	  a legacy browsing domain (<xref target="RFC6763" section="11"/>) that is discoverable through the SNAC router's DNS resolver.</dd>
+	<dt>Legacy Browsing Domains:</dt><dd>The DNS resolver in the SNAC router MUST advertise a legacy browsing domain for each AIL,
+	  for the zone that is maintained by its SRP service, and in addition it MUST list the legacy browsing domains provided
 	  by the infrastructure network, if any.</dd>
-	<dt>NAT64:</dt><dd>As mentioned above, SNAC routers may need to provide NAT64 service so that devices on the stub network
+	<dt>NAT64:</dt><dd>As mentioned in <xref target="nat64-by-snac"/>, SNAC routers need to provide NAT64 service in particular circumstances so that IPv6 hosts on the stub network
 	  can communicate with IPv4 hosts on the infrastructure network and the global internet.</dd>
       </dl>
     </section>
@@ -1041,6 +1045,7 @@
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.8200.xml" />
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.8766.xml" />
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.8781.xml" />
+      <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.9499.xml" />
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml3/reference.I-D.ietf-dnssd-srp.xml" />
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml3/reference.I-D.ietf-dnssd-advertising-proxy.xml" />
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml3/reference.I-D.ietf-6man-snac-router-ra-flag.xml" />
