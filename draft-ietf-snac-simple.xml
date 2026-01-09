@@ -835,14 +835,14 @@
     <section>
       <name>Providing reachability to IPv4-only services to hosts on the stub network</name>
       <t>
-	stub networks rely on IPv6 to enable routing between links, which would not be possible with IPv4 due to the limited
+	Stub networks rely on IPv6 to enable routing between links, which would not be possible with IPv4 due to the limited
 	availability and functionality of IPv4 router discovery mechanisms (such as ICMP Router Discovery Messages 
 	<xref target="RFC1256"/>) compared to IPv6 Router Advertisements. However, it can still be useful for hosts on the stub network
 	to establish communications with IPv4-only hosts on the infrastructure network.
       </t>
       <t>
 	Although NAT64 provides IPv6-only hosts with a way to reach IPv4 hosts, there is no easy way for an IPv4 host to
-	use NAT64 to originate communication with an IPv6 host. Therefore, this document enables IPv6 hosts on the stub network
+	use NAT64 to originate communication with an IPv6 host. Therefore, a SNAC router enables IPv6 hosts on the stub network
 	to discover and reach with IPv4 hosts on infrastructure, but does not provide a way for IPv4-only hosts
 	on infrastructure to communicate to IPv6 hosts on the stub network.
       </t>
@@ -853,11 +853,11 @@
 	unless such hosts do not have an IPv6 stack at all.
       </t>
       <t>
-	So the purpose of providing IPv4 connectivity for SNAC hosts is to enable communication with arbitrary IPv4 hosts which
+	So the purpose of providing IPv4 connectivity for stub network hosts is to enable communication with arbitrary IPv4 hosts which
 	may not be on the AIL. This is accomplished by providing NAT64 address translation in the SNAC router, and by enabling
 	service discovery using a Discovery Proxy.
       </t>
-      <t>Stub Network routers must be capable of providing NAT64 themselves, and must be capable of discovering the availability
+      <t>SNAC routers must be capable of providing NAT64 themselves, and must be capable of discovering the availability
 	of NAT64 service on the infrastructure network and providing it when it is available and suitable.
       </t>
       <t>
@@ -865,6 +865,11 @@
 	is available, SNAC routers MUST use the mechanism provided by the network medium used on the stub network to advertise
 	NAT64 service. Otherwise, NAT64 service MUST be advertised using the PREF64 Router Advertisement option
 	<xref target="RFC8781"/>.
+      </t>
+      <t>
+	All the normative requirements in the remainder of this section (including subsections) apply to the default operation
+    of a SNAC router. In case that the NAT64 function in a SNAC router is administratively disabled, these
+    requirements do not apply as long as the NAT64 function remains disabled.
       </t>
       <t>There are four possible combinations of circumstances in which to consider how to provide NAT64 service:</t>
       <ol>
@@ -884,7 +889,7 @@
 	</li>
       </ol>
       <t>
-	In the first case, infrastructure-provided NAT64 is preferred, and the SNAC router MUST advertise this service
+	In the first case, infrastructure-provided NAT64 is preferred, and the SNAC router advertise this service
 	to the stub network.</t>
       <t>
 	In the second case, there is no way to provide connectivity to the infrastructure: there is no IPv6 routing other than to
@@ -892,8 +897,8 @@
 	is no IPv4, so the SNAC router can't do NAT64 on its own. In this case, the SNAC router MUST NOT advertise NAT64
 	service.</t>
       <t>
-	In the third case, despite the infrastructure providing NAT64, nodes in the stub network can't use it, so the SNAC router MUST provide its own
-	NAT64 service.</t>
+	In the third case, despite the infrastructure providing NAT64, nodes in the stub network can't use it, so the SNAC
+	router MUST provide its own NAT64 service.</t>
       <t>
 	In the fourth case, the SNAC router MUST provide its own NAT64 service.</t>
       <t>
@@ -913,16 +918,23 @@
 	service appears on the stub network, SNAC routers that are not able to advertise an infrastructure NAT64 service MUST
 	NOT do so.</t>
       <t>
+	For stub network technologies that support the advertising of a NAT64 service with an associated preference level,
+	the below rules for preference level selection MUST be used.
+	For stub network technologies that don't support this (for example, technologies using the PREF64 option), these rules do
+	not apply.</t>
+      <t>
 	To differentiate between infrastructure-provided NAT64 service and SNAC router-provided NAT64 service, SNAC routers that
-	advertise infrastructure-provided NAT64 service MUST use a preference of medium for this service. SNAC routers advertising
-	their own service MUST use a preference of low.</t>
+	advertise infrastructure-provided NAT64 service MUST use a preference of 'medium' for this service. SNAC routers advertising
+	their own service MUST use a preference of 'low'.</t>
       <t>
 	In some cases a SNAC router may be administratively configured with a NAT64 prefix. In this situation, the SNAC router
-	MUST advertise the prefix with a preference of high.</t>
+	MUST advertise the prefix with a preference of 'high'.</t>
       <t>
 	SNAC routers must monitor the advertisement of other NAT64 prefixes on the stub network. If a SNAC router is advertising
-	a NAT64 prefix, and a NAT64 prefix is advertised on the stub network with a higher preference, the SNAC router SHOULD
-	deprecate the prefix it is advertising.</t>
+	a NAT64 prefix on a constrained stub network, and another NAT64 prefix is advertised on the stub network with a
+	higher preference, the SNAC router SHOULD deprecate the prefix it is advertising.
+	This rule is based on the assumption that for a constrained stub network technology the size of the network configuration
+	data needs to be minimized. Exceptions specific to a stub network technology may apply.</t>
 
       <section>
 	<name>NAT64 provided by infrastructure</name>
@@ -954,7 +966,7 @@
 	  prefix delegation. In these cases it is necessary for SNAC routers to be able to provide NAT64 service if IPv4 hosts are
 	  to be reachable from the stub network. Therefore, SNAC routers MUST be capable of providing NAT64 service to the stub
 	  network. When infrastructure-provided NAT64 service is not present or is not usable, and when no other NAT64 service is
-	  already advertised on the stub network, SNAC routers MUST, by default, enable their own NAT64 service and advertise it
+	  already advertised on the stub network, SNAC routers MUST enable their own NAT64 service and advertise it
 	  on the stub network.
 	</t><t>
 	  To provide NAT64 service, a SNAC router must allocate a NAT64 prefix. For convenience, the stub network allocates a single
