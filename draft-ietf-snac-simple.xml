@@ -1020,8 +1020,34 @@
       <name>Security Considerations</name>
       <t>
         Because a SNAC router operates as an IPv6 router that sends and receives IPv6 Neighbor Discovery protocol messages,
-        the security considerations of Section 11 of <xref target="RFC4861"/> apply. No additional security considerations are
-        identified.
+        the security considerations of Section 11 of <xref target="RFC4861"/> apply.
+      </t>
+      <t>
+        A SNAC router MUST support DNS-over-TLS as specified in <xref target="RFC9665" section="7" sectionFormat="of"/>
+        for any DNS unicast communication with hosts (acting as DNS clients) in the stub network.
+        This provides opportunistic privacy for SRP Updates as well as for DNS queries.
+      </t>
+      <t>
+        If a SNAC router receives a DNS query protected by TLS from a stub network host, it may happen that the query
+        is forwarded without security to the DNS resolver configured in the infrastructure network.
+        One specific example when this happens is when the configured DNS resolver is inside a CE router and it only
+        supports unsecured DNS. In such cases, the SNAC router is expected to fall back to sending unsecured DNS queries
+        in order to meet the SNAC interoperability and usability goals.
+      </t>
+      <t>
+        This fallback from DNS-over-TLS to unsecured DNS removes the confidentiality and integrity protections provided
+        by TLS and exposes DNS queries and responses to on-path observers. An attacker on the path between the SNAC router
+        and the infrastructure resolver can then eavesdrop on DNS traffic, perform traffic analysis, and inject or modify DNS
+        responses (for example, to redirect stub hosts to attacker-controlled services). To mitigate these risks,
+        SNAC routers MUST prefer infrastructure network resolvers that support DNS-over-TLS or another form of secured DNS
+        when such resolvers are available, and SHOULD log or otherwise surface to device/network administrators when
+        encrypted queries from stub hosts are downgraded to unsecured DNS.
+      </t>
+      <t>
+        Stub network hosts are also RECOMMENDED to perform DNSSEC validation where feasible, in order to detect spoofed DNS responses
+        which may result from DNS queries and responses being forwarded in unsecured DNS messages.
+        Note that DNS records for infrastructure-network-local hosts or services (e.g. records registered via SRP
+        or discovered by the SNAC router using mDNS) do not support DNSSEC protection.
       </t>
     </section>
   </middle>
