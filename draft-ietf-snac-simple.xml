@@ -724,7 +724,7 @@
 	  In case a new OSNR prefix is configured for its stub network (i.e. one which was not previously advertised on the AIL),
 	  a SNAC router SHOULD proactively advertise this new prefix on its AIL as defined in <xref target="RFC4861" section="6.2.4" sectionFormat="of"/>,
 	  fourth paragraph. The exception case is where the SNAC router detects that another router is already advertising a route
-	  to this new OSNR prefix on the AIL: in this case, the SNAC router MAY advertise the new OSNR prefix proactively.
+	  to this new OSNR prefix on the AIL: in this case, the SNAC router is allowed to skip the proactive advertising.
 	</t>
       </section>
       <section anchor="stub-reachability">
