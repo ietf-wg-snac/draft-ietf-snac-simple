@@ -337,8 +337,8 @@
       <t>
 	When a SNAC router sends a Router Advertisement (RA) message as specified in any of the below subsections, it
 	MUST NOT use multiple RA messages with each containing a subset of the options. Such splitting behavior is specified in
-    <xref target="RFC4861" section="6.2.3"/>. Instead, all options are always included in a single RA message.
-    Multiple RA messages with different information contents are only sent to indicate that previously sent information changed.</t>
+	<xref target="RFC4861" section="6.2.3"/>. Instead, all options are always included in a single RA message.
+	Multiple RA messages with different information contents are only sent to indicate that previously sent information changed.</t>
       <t>
 	Support for AILs on networks where neighbor discovery is not supported is out of scope for this document. SNAC routers
 	do not provide routing between AILs when connected to more than one such link.</t>
