@@ -1049,9 +1049,9 @@
 
     <section anchor="net-analysis">
       <name>Analysis of deployment scenarios in which a SNAC router could cause problems</name>
-    <t>
+      <t>
         This appendix is informative.
-    </t>
+      </t>
       <section>
 	<name>Unmanaged home network</name>
 	<t>
