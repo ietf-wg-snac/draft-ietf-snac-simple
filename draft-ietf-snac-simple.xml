@@ -1191,8 +1191,8 @@
 		MTU option: the SNAC router is not managing the link, and hence should not send this option.</li>
               <li> Prefix Information options: when there is no suitable prefix (See <xref target="suitable"/>) on the
 		infrastructure link, some SNAC router will need to send a PIO. However, unless they are able to cooperate in
-		choosing a PIO, only one SNAC routers will send it PIO. How this decision is made is described in
-		<xref target="suitable-prefix-state-machine"/>. When a SNAC router sents this option, the following settings
+		choosing a PIO, only one SNAC router will send a PIO. How this decision is made is described in
+		<xref target="suitable-prefix-state-machine"/>. When a SNAC router sends this option, the following settings
 		apply:</li>
               <li><ul>
                 <li> In the 'L' flag bit (on-link): 1</li>
