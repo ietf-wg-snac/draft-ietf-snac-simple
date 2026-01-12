@@ -879,7 +879,7 @@
 	</li>
       </ol>
       <t>
-	In the first case, infrastructure-provided NAT64 is preferred, and the SNAC router advertise this service
+	In the first case, infrastructure-provided NAT64 is preferred, and the SNAC router MUST advertise this service
 	to the stub network.</t>
       <t>
 	In the second case, there is no way to provide connectivity to the infrastructure: there is no IPv6 routing other than to
