@@ -348,7 +348,8 @@
       <section>
 	<name>Managing addressability on an adjacent infrastructure link</name>
 	<t>
-	  In order to provide IPv6 routing to the stub network, IPv6 addressing must be available on each AIL.
+	  In order to provide IPv6 routing to the stub network, IPv6 addressing must be available on each AIL a SNAC router
+	  is attached to.
 	  Ideally such addressing is already present on these links, and need not be provided. However, if it is not present,
 	  the SNAC router must provide it.
 	</t>
@@ -718,13 +719,13 @@
       <section>
 	<name>Managing reachability on the adjacent infrastructure link</name>
 	<t>
-	  SNAC routers MUST advertise reachability to stub network OSNR prefixes on any AIL to which they are connected. If the SNAC
+	  SNAC routers MUST advertise reachability to stub network OSNR prefixes on each AIL to which they are attached. If the SNAC
 	  router is advertising a suitable prefix on any interface, any such prefixes MUST be advertised on that interface in the same
 	  Router Advertisement message that is advertising the suitable prefix, to avoid unnecessary multicast traffic.
 	</t><t>
 	  Each stub network will have some set of prefixes that are advertised as on-link for that network. A SNAC router connected
-	  to that stub network SHOULD advertise reachability to all such prefixes on any AIL to which it is attached using router
-	  advertisements.
+	  to that stub network SHOULD advertise reachability to all such prefixes on each AIL to which it is attached using Router
+	  Advertisements.
 	</t><t>
 	  A SNAC router MUST NOT advertise itself as a default router on an AIL by setting a non-zero Router Lifetime value in the
 	  header of its Router Advertisements.
@@ -803,7 +804,7 @@
 	  <t>
 	    One limitation of this solution is that it requires that hosts on the stub network use the DNS-SD Service Registration
 	    Protocol (SRP) <xref target="RFC9665"/> to register their DNS-SD advertisements. This means that in the case of a
-	    stub network used for WiFi tethering, hosts on the stub network will not be discoverable by hosts on the infrastructure
+	    stub network used for WiFi tethering, hosts using mDNS on the stub network will not be discoverable by hosts on the infrastructure
 	    network. Any solution to this problem would require that the SNAC router provide a Discovery Proxy <xref target="RFC8766"/>.
 	    However, a discovery proxy is queried using DNS, not mDNS. This requires assistance from the infrastructure network,
 	    and is therefore out of scope for this document.</t>
@@ -818,17 +819,22 @@
 	  <t>
 	    Because the stub network is managed by SNAC routers, any DNS resolver that's available on the stub network will
 	    necessarily be provided by one or more SNAC routers. This means that the SNAC router can enable discovery of hosts
-	    on the infrastructure network by hosts on the stub network using a Discovery Proxy <xref target="RFC8766"/>.
+	    on the AIL by hosts on the stub network using a Discovery Proxy <xref target="RFC8766"/>.
 	    The Discovery Proxy can be advertised as available to hosts on the stub network through the DNS resolver
 	    provided on the stub network, as described in <xref target="RFC6763" section="11"/>.</t>
 	  <t>
-	    By implication, this means that SNAC routers MUST provide a DNS resolver. In addition, SNAC routers MUST provide
-	    a DNS zone for each AIL, and MUST list all these zones in the list of default browsing zones
-	    as defined in <xref target="RFC6763"/>.
-	    [[WG TBD: we need to say how these zones are named. Or refer to the Advertising Proxy doc and have that doc say how they are named.]]</t>
+	    By implication, this means that a SNAC router MUST provide a DNS resolver. In addition, a SNAC router MUST provide
+	    a DNS zone for each AIL it is attached to, and MUST list all these zones in the list of default browsing domains
+	    as defined in <xref target="RFC6763" section="11" sectionFormat="of"/>.
+		For each of these zones, a SNAC router MUST enable a Discovery Proxy on the corresponding AIL.
+	    [[WG TBD: do we need to say how these zones are named? Or refer to the Advertising Proxy doc and have that doc say how they are named? Why would the names matter?
+		   Do we also need to say a client can *query* on the domain "default.service.arpa" and get aggregated results of all AILs back?]]</t>
 	  <t>
 	    The SNAC router MUST also maintain an SRP registrar and use registrations made through that SRP registrar to populate
-	    a DNS zone which is advertised as a default browsing domain, as defined above. This SRP registrar MUST be advertised on the
+	    a DNS zone which is advertised as a default browsing domain, as defined above.
+		Note that per <xref target="RFC9665" section="3.1.2" sectionFormat="of"/> the special-use domain name "default.service.arpa"
+	    is always available for SRP registrations into this default DNS zone.
+		This SRP registrar MUST be advertised on the
 	    stub network either using the dnssd-srp and/or dnssd-srp-tls service names or some stub-network-specific mechanism,
 	    the details of which are out of scope for this document.</t>
 	</section>
@@ -1012,11 +1018,11 @@
 	  the mechanism whereby the DNS resolver is advertised by the SNAC router is specific to that type of stub network.</dd>
 	<dt>DHCPv6 Server:</dt><dd>The use of DHCPv6 on the stub network is NOT RECOMMENDED. In some cases it may be necessary, but should be
 	  disabled by default if the SNAC router provides this capability at all.</dd>
-	<dt>Discovery Proxy:</dt><dd>In order to discover services on the AIL, SNAC routers MUST act as
-	  Discovery Proxies for any AILs to which they are attached.</dd>
+	<dt>Discovery Proxy:</dt><dd>In order to discover services on the AIL, a SNAC router MUST act as a
+	  Discovery Proxy on each AIL to which it is attached.</dd>
 	<dt>SRP Registrar:</dt><dd>SNAC routers MUST provide SRP registrar service. This service MUST be advertised using DNS-SD in
 	  a legacy browsing domain (<xref target="RFC6763" section="11"/>) that is discoverable through the SNAC router's DNS resolver.</dd>
-	<dt>Legacy Browsing Domains:</dt><dd>The DNS resolver in the SNAC router MUST advertise a legacy browsing domain for each AIL,
+	<dt>Legacy Browsing Domains:</dt><dd>The DNS resolver in the SNAC router MUST advertise a legacy browsing domain for each AIL it is attached to,
 	  for the zone that is maintained by its SRP service, and in addition it MUST list the legacy browsing domains provided
 	  by the infrastructure network, if any.</dd>
 	<dt>NAT64:</dt><dd>As mentioned in <xref target="nat64-by-snac"/>, SNAC routers need to provide NAT64 service in particular circumstances so that IPv6 hosts on the stub network
