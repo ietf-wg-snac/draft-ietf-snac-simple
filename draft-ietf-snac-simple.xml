@@ -71,8 +71,8 @@
 	  together would require some way of translating between neighbor discovery and whatever mechanism is used on the stub
 	  network, and hence complicates rather than simplifying the problem of connecting the two networks.</li>
 	<li>
-	  Incompatible framing: if the stub network is a 6lowpan <xref target="RFC4944"/> network, packets on the stub network are
-	  expected to use 6lowpan header compression <xref target="RFC6282"/>. Making this work through a bridge would be very
+	  Incompatible framing: if the stub network is a 6LoWPAN <xref target="RFC4944"/> network, packets on the stub network are
+	  expected to use 6LoWPAN header compression <xref target="RFC6282"/>. Making this work through a bridge would be very
 	  difficult.</li>
 	<li>
 	  Convenience: end users often connect devices to each other in order to extend networks</li>
@@ -348,9 +348,9 @@
       <section>
 	<name>Managing addressability on an adjacent infrastructure link</name>
 	<t>
-	  In order to provide IPv6 routing to the stub network, IPv6 addressing must be available on each AIL a SNAC router
+	  In order to provide IPv6 routing to the stub network, IPv6 addressing must be available on the AIL a SNAC router
 	  is attached to.
-	  Ideally such addressing is already present on these links, and need not be provided. However, if it is not present,
+	  Ideally such addressing is already present on the AIL, and need not be provided. However, if it is not present,
 	  the SNAC router must provide it.
 	</t>
 	<section anchor="suitable">
@@ -719,15 +719,15 @@
       <section>
 	<name>Managing reachability on the adjacent infrastructure link</name>
 	<t>
-	  SNAC routers MUST advertise reachability to stub network OSNR prefixes on each AIL to which they are attached. If the SNAC
+	  SNAC routers MUST advertise reachability to stub network OSNR prefixes on the AIL to which they are attached. If the SNAC
 	  router is advertising a suitable prefix on any interface, any such prefixes MUST be advertised on that interface in the same
 	  Router Advertisement message that is advertising the suitable prefix, to avoid unnecessary multicast traffic.
 	</t><t>
 	  Each stub network will have some set of prefixes that are advertised as on-link for that network. A SNAC router connected
-	  to that stub network SHOULD advertise reachability to all such prefixes on each AIL to which it is attached using Router
+	  to that stub network SHOULD advertise reachability to all such prefixes on the AIL to which it is attached using Router
 	  Advertisements.
 	</t><t>
-	  A SNAC router MUST NOT advertise itself as a default router on an AIL by setting a non-zero Router Lifetime value in the
+	  A SNAC router MUST NOT advertise itself as a default router on its AIL by setting a non-zero Router Lifetime value in the
 	  header of its Router Advertisements.
 	</t><t>
 	  In case a new OSNR prefix is configured for its stub network (i.e. one which was not previously advertised on the AIL),
@@ -744,7 +744,7 @@
 	  router is not required to advertise itself as a default router.
 	</t><t>
 	  If the SNAC router is not advertising itself as a default router on the stub network, it MUST advertise reachability to any
-	  prefixes that are being advertised as on-link on AILs to which it is attached. This is true for prefixes it is advertising,
+	  prefixes that are being advertised as on-link on its AIL. This is true for prefixes it is advertising,
 	  and for other prefixes being advertised on that link.
 	</t><t>
 	  Note that in some stub network configurations, it is possible for more than one SNAC router to be connected to the stub
@@ -753,15 +753,15 @@
 	  case, if the infrastructure is not capable of routing between these two AILs, a packet which could have been delivered by
 	  another SNAC router will be lost by the SNAC router that received it.</t>
 	<t>
-	  Consequently, SNAC routers SHOULD be configurable to not advertise themselves as default routers on the stub network. SNAC
-	  routers SHOULD be configurable to explicitly advertise AIL prefixes on the stub network even if they are advertising as a
-	  default router. The mechanisms by which such configuration can be accomplished are out of scope for this document.
+	  Consequently, a SNAC router SHOULD be configurable to not advertise itself as a default router on the stub network.
+	  A SNAC router SHOULD be configurable to explicitly advertise AIL prefixes on the stub network even if it is advertising as a
+	  default router on the stub network. The mechanisms by which such configuration can be accomplished are out of scope for this document.
 	</t>
 	<t>
 	  It is also possible that SNAC routers for more than one stub network may be connected to the same AIL.
 	  In this case, the SNAC routers will be advertising Route Information Options (RIO) in their Router Advertisement messages for
-	  their OSNR prefixes. SNAC routers MUST track the presence of such routes, and MUST advertise reachability to them on
-	  interfaces connected to stub networks.</t>
+	  their OSNR prefixes. A SNAC router MUST track the presence of such routes, and MUST advertise reachability to them on
+	  its stub network interface.</t>
       </section>
       <section>
 	<name>Providing discoverability between stub network links and infrastructure network links</name>
@@ -824,11 +824,10 @@
 	    provided on the stub network, as described in <xref target="RFC6763" section="11"/>.</t>
 	  <t>
 	    By implication, this means that a SNAC router MUST provide a DNS resolver. In addition, a SNAC router MUST provide
-	    a DNS zone for each AIL it is attached to, and MUST list all these zones in the list of default browsing domains
+	    a DNS zone for the AIL it is attached to, and MUST list this zone in the list of default browsing domains
 	    as defined in <xref target="RFC6763" section="11" sectionFormat="of"/>.
-		For each of these zones, a SNAC router MUST enable a Discovery Proxy on the corresponding AIL.
-	    [[WG TBD: do we need to say how these zones are named? Or refer to the Advertising Proxy doc and have that doc say how they are named? Why would the names matter?
-		   Do we also need to say a client can *query* on the domain "default.service.arpa" and get aggregated results of all AILs back?]]</t>
+		A SNAC router MUST provide a Discovery Proxy that operates with this DNS zone.
+	    [[WG TBD: issue #183 is to define name or name requirements.]]</t>
 	  <t>
 	    The SNAC router MUST also maintain an SRP registrar and use registrations made through that SRP registrar to populate
 	    a DNS zone which is advertised as a default browsing domain, as defined above.
@@ -1019,11 +1018,11 @@
 	<dt>DHCPv6 Server:</dt><dd>The use of DHCPv6 on the stub network is NOT RECOMMENDED. In some cases it may be necessary, but should be
 	  disabled by default if the SNAC router provides this capability at all.</dd>
 	<dt>Discovery Proxy:</dt><dd>In order to discover services on the AIL, a SNAC router MUST act as a
-	  Discovery Proxy on each AIL to which it is attached.</dd>
+	  Discovery Proxy on the AIL to which it is attached.</dd>
 	<dt>SRP Registrar:</dt><dd>SNAC routers MUST provide SRP registrar service. This service MUST be advertised using DNS-SD in
 	  a legacy browsing domain (<xref target="RFC6763" section="11"/>) that is discoverable through the SNAC router's DNS resolver.</dd>
-	<dt>Legacy Browsing Domains:</dt><dd>The DNS resolver in the SNAC router MUST advertise a legacy browsing domain for each AIL it is attached to,
-	  for the zone that is maintained by its SRP service, and in addition it MUST list the legacy browsing domains provided
+	<dt>Legacy Browsing Domains:</dt><dd>The DNS resolver in the SNAC router MUST advertise a legacy browsing domain for its AIL,
+	  for the DNS zone that is maintained by its SRP service, and in addition it MUST list the legacy browsing domains provided
 	  by the infrastructure network, if any.</dd>
 	<dt>NAT64:</dt><dd>As mentioned in <xref target="nat64-by-snac"/>, SNAC routers need to provide NAT64 service in particular circumstances so that IPv6 hosts on the stub network
 	  can communicate with IPv4 hosts on the infrastructure network and the global internet.</dd>
