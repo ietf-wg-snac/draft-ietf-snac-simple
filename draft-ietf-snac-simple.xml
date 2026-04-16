@@ -753,9 +753,9 @@
 	  case, if the infrastructure is not capable of routing between these two AILs, a packet which could have been delivered by
 	  another SNAC router will be lost by the SNAC router that received it.</t>
 	<t>
-	  Consequently, SNAC routers SHOULD be configurable to not advertise themselves as default routers on the stub network. SNAC
-	  routers SHOULD be configurable to explicitly advertise its AIL prefixes on the stub network even if they are advertising as a
-	  default router. The mechanisms by which such configuration can be accomplished are out of scope for this document.
+	  Consequently, a SNAC router SHOULD be configurable to not advertise itself as a default router on the stub network.
+	  A SNAC router SHOULD be configurable to explicitly advertise AIL prefixes on the stub network even if it is advertising as a
+	  default router on the stub network. The mechanisms by which such configuration can be accomplished are out of scope for this document.
 	</t>
 	<t>
 	  It is also possible that SNAC routers for more than one stub network may be connected to the same AIL.
@@ -826,10 +826,10 @@
 	    By implication, this means that a SNAC router MUST provide a DNS resolver. In addition, a SNAC router MUST provide
 	    a DNS zone for the AIL it is attached to, and MUST list this zone in the list of default browsing domains
 	    as defined in <xref target="RFC6763" section="11" sectionFormat="of"/>.
-		A SNAC router MUST enable a Discovery Proxy on its AIL that translates between the name of above DNS zone and the "local." domain on the AIL.
-	    [[WG TBD: do we need to say how the DNS zone is named? Or refer to the Advertising Proxy doc and have that doc say how it is named? Why would the name matter?
-		   Do we also need to say a client can *query* on the domain "default.service.arpa" and get aggregated results of all AILs back?
-		   This is very useful for constrained DNS clients in the stub network.]]</t>
+		A SNAC router MUST enable a Discovery Proxy on its AIL that translates between the name of above DNS zone and
+		the local domain on the AIL.
+	    [[WG TBD: do we need to say how the DNS zone is named?
+		  Or refer to the Advertising Proxy doc and have that doc say how it is named? Why would the name matter?]]</t>
 	  <t>
 	    The SNAC router MUST also maintain an SRP registrar and use registrations made through that SRP registrar to populate
 	    a DNS zone which is advertised as a default browsing domain, as defined above.
