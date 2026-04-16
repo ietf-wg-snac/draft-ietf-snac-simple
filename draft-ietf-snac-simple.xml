@@ -826,10 +826,8 @@
 	    By implication, this means that a SNAC router MUST provide a DNS resolver. In addition, a SNAC router MUST provide
 	    a DNS zone for the AIL it is attached to, and MUST list this zone in the list of default browsing domains
 	    as defined in <xref target="RFC6763" section="11" sectionFormat="of"/>.
-		A SNAC router MUST enable a Discovery Proxy on its AIL that translates between the name of above DNS zone and
-		the local domain on the AIL.
-	    [[WG TBD: do we need to say how the DNS zone is named?
-		  Or refer to the Advertising Proxy doc and have that doc say how it is named? Why would the name matter?]]</t>
+		A SNAC router MUST provide a Discovery Proxy that operates with this DNS zone.
+	    [[WG TBD: issue #183 is to define name or name requirements.]]</t>
 	  <t>
 	    The SNAC router MUST also maintain an SRP registrar and use registrations made through that SRP registrar to populate
 	    a DNS zone which is advertised as a default browsing domain, as defined above.
