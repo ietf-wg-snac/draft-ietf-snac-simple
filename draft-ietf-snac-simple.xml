@@ -624,11 +624,16 @@
 	    (<xref target="RFC4193"/>) are randomly allocated prefixes. A SNAC router MUST allocate a single ULA site prefix for use in
 	    providing on-link prefixes to the stub network and the adjacent infrastructure link as described in <xref target="state-begin-advertising"/>.
 	  </t><t>
-	    Any ULA link prefixes allocated by a SNAC router SHOULD be maintained across reboots, and SHOULD remain stable over time. (TBD:
-            mention the SHOULD exception cases) However, for privacy reasons, a SNAC router that roams from network to network
-            SHOULD allocate a different ULA link prefix each time it connects to a different infrastructure network, unless configured to
-            behave otherwise.
+	    Any ULA link prefixes allocated by a SNAC router SHOULD persist across reboots, and SHOULD remain stable over time.
+        An exception to both these requirements is the following: for privacy reasons, a SNAC router that can detect
+        that its AIL changed, SHOULD allocate a different ULA site prefix each time it connects to a different AIL.
+        On the latter requirement there are two possible exceptions:
 	  </t>
+        <ol>
+            <li>The SNAC router remains connected to the same stub network, and the ULA site prefix value is
+                generated based on properties of the stub network (such as configuration data).</li>
+           <li>The SNAC router is configured by the user or an operator to behave otherwise.</li>
+        </ol>
 	</section>
 	<section anchor="dhcpv6-pd">
 	  <name>Using DHCPv6 Prefix Delegation to acquire a prefix to provide addressability</name>
