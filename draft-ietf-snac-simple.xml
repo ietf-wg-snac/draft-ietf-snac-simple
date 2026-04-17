@@ -8,7 +8,7 @@
     <author initials="T" surname="Lemon" fullname="Ted Lemon">
       <organization>Apple Inc.</organization>
       <address>
-	<postal>
+	    <postal>
           <street>One Apple Park Way</street>
           <city>Cupertino</city>
           <region>California</region>
@@ -30,6 +30,17 @@
           <country>US</country>
         </postal>
         <email>jonhui@google.com</email>
+      </address>
+    </author>
+
+    <author initials="E" surname="Dijk" fullname="Esko Dijk">
+      <organization>IoTconsultancy.nl</organization>
+      <address>
+	    <postal>
+          <city>Utrecht</city>
+          <country>NL</country>
+        </postal>
+        <email>esko.dijk@iotconsultancy.nl</email>
       </address>
     </author>
 
