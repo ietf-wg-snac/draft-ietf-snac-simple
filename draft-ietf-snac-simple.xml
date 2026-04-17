@@ -260,7 +260,7 @@
 	  ULA link prefixes to the stub network and the adjacent infrastructure link.</dd>
 	<dt>ULA Link Prefix:</dt>
 	<dd>A Unique Local Address /64 prefix allocated from the ULA site prefix. SNAC routers can use ULA Link prefixes to provide
-	addressability on the stub network and/or adjacent infrastructure link as needed. If a SNAC router is doing NAT64, the NAT64
+	addressability on the stub network and/or adjacent infrastructure link as needed. If a SNAC router is doing NAT64 <xref target="RFC6146"/>, the NAT64
 	prefix is also a ULA link prefix. A total of 65,536 ULA link prefixes can be allocated from the ULA site prefix.</dd>
       </dl>
     </section>
@@ -854,7 +854,7 @@
 	to establish communications with IPv4-only hosts on the infrastructure network.
       </t>
       <t>
-	Although NAT64 provides IPv6-only hosts with a way to reach IPv4 hosts, there is no easy way for an IPv4 host to
+	Although NAT64 <xref target="RFC6146"/> provides IPv6-only hosts with a way to reach IPv4 hosts, there is no easy way for an IPv4 host to
 	use NAT64 to originate communication with an IPv6 host. Therefore, a SNAC router enables IPv6 hosts on the stub network
 	to discover and reach with IPv4 hosts on infrastructure, but does not provide a way for IPv4-only hosts
 	on infrastructure to communicate to IPv6 hosts on the stub network.
@@ -990,15 +990,10 @@
 	  uses its own NAT64 prefix—there is no common NAT64 prefix. The reason for this is that NAT64 translation is not stateless,
 	  and is tied to the SNAC router&apos;s IPv4 address. Therefore, each NAT64 egress is not equivalent.
 	</t><t>
-	  A SNAC router that services a Wi-Fi stub network SHOULD provide DNS64 translation: IPv6 hosts on the stub network cannot be
-	  assumed to be able to do DNS64 synthesis in their stub resolver. In this case the DNS resolver on the SNAC router MUST honor
-	  the 'CD' and 'DO' flag bits if received in a request, since this indicates that the stub resolver on the requestor intends to do
-	  DNSSEC validation. In this case, the DNS resolver on the SNAC router MUST NOT perform DNS64 synthesis.
-	</t><t>
-	  On specific stub networks it may be desirable to require the stub network host itself to perform DNS64 synthesis. SNAC
-	  routers for such networks do not need to provide DNS64 synthesis. Instead, they MUST provide an ipv4only.arpa answer that
+	  This specification requires the stub network host itself to perform DNS64 <xref target="RFC6147"/> synthesis, as
+	  needed. A SNAC router does not provide DNS64 synthesis. Instead, it MUST provide an ipv4only.arpa answer that
 	  advertises the NAT64 prefix for that SNAC router, and MUST provide an explicit route to that NAT64 prefix on the stub
-	  network using RA or whatever technology is specific to that stub network type.
+	  network using RA or an equivalent protocol for that stub network type.
 	</t><t>
 	  In constrained networks it can be very useful if stub network DNS resolvers provide the information required to do DNS64
 	  translation in the answer to the AAAA query. If the answer to an AAAA query comes back with "no data" (not NXDOMAIN), this
@@ -1085,6 +1080,7 @@
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.4193.xml" />
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.4291.xml" />
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.4861.xml" />
+	  <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.6146.xml" />
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.6762.xml" />
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.6763.xml" />
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.7084.xml" />
@@ -1105,6 +1101,7 @@
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.1256.xml" />
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.2328.xml" />
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.4944.xml" />
+	  <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.6147.xml" />
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.6282.xml" />
     </references>
 
