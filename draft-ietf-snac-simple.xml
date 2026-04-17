@@ -422,7 +422,7 @@
 	    such prefixes in the RAs that it sends on the adjacent infrastructure link.
 	  </t>
       <t>
-		When a SNAC router enables its AIL interface as advertising interface and determines it needs to send unsolicited RAs
+		When a SNAC router enables its AIL interface as an advertising interface and determines it needs to send unsolicited RAs
 		per <xref target="RFC4861" section="6.2.4" sectionFormat="of"/>, it MUST use a random delay between
 		0 and MAX_INITIAL_RTR_ADVERT_INTERVAL, instead of the effectively fixed delay of MAX_INITIAL_RTR_ADVERT_INTERVAL
 		currently specified by <xref target="RFC4861"/>.
