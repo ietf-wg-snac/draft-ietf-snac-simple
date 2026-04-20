@@ -1119,27 +1119,32 @@
         A SNAC router MUST support DNS-over-TLS as specified in <xref target="RFC9665" section="7" sectionFormat="of"/>
         for any DNS unicast communication with hosts (acting as DNS clients) in the stub network.
         This provides opportunistic privacy for SRP Updates as well as for DNS queries.
+		See <xref target="RFC7435"/> for the "opportunistic security" concept and
+	    <xref target="RFC7858" section="3.1" sectionFormat="of"/> for the opportunistic privacy profile as defined for DNS-over-TLS.
+	    This prevents eavesdroppers on the stub network that are not able to intercept the TLS connection from determining
+	    what queries are being made. However, there is no protection against interception on the stub network other than
+	    that it may be difficult to accomplish.
+        Support for non-opportunistic DNS-over-TLS is out of scope for this document.
+      </t><t>
+        There is also no guarantee that privacy-preserving DNS service will be available on the AIL.
+		When such DNS service is present, the SNAC router SHOULD use it, if it is technically capable of doing so.
+		However, there is no way to signal on the stub network that this is being done.
+		Given that the privacy profile supported here is opportunistic, the DNS client has no guarantee of privacy.
+		Aggregation of queries originating from the stub network by the SNAC router provides some degree of anonymization,
+		but in any case because the TLS server's certificate is not being validated by the client, the client should
+		not assume it is getting more privacy than an unauthenticated TLS connection can deliver.
       </t>
       <t>
         If a SNAC router receives a DNS query protected by TLS from a stub network host, it may happen that the query
-        is forwarded without security to the DNS resolver configured in the infrastructure network.
-        For example, if the upstream DNS resolver only supports unsecured DNS. In such cases, the SNAC router falls
-        back to sending unsecured DNS queries, in order to meet the SNAC interoperability and usability goals.
-      </t>
-      <t>
-        This fallback from DNS-over-TLS to unsecured DNS removes the confidentiality and integrity protections provided
-        by TLS and exposes DNS queries and responses to on-path observers. An attacker on the path between the SNAC router
-        and the infrastructure resolver can then eavesdrop on DNS traffic, perform traffic analysis, and inject or modify DNS
-        responses (for example, to redirect stub hosts to attacker-controlled services). To mitigate these risks,
-        SNAC routers MUST prefer upstream DNS resolvers that support DNS-over-TLS or another form of secured DNS
-        when such resolvers are available, and SHOULD log or otherwise surface to device/network administrators when
-        encrypted queries from stub hosts are downgraded to unsecured DNS.
+        is forwarded without TLS security to the upstream DNS resolver as configured by the infrastructure network.
+	    This enables an on-path eavesdropper in the infrastructure network to observe any DNS queries that the SNAC
+	    router forwards to the upstream DNS resolver, or an on-path attacker to spoof DNS responses to such queries.
       </t>
       <t>
         Stub network hosts that implement DNSSEC <xref target="RFC9364"/> can perform DNSSEC validation of DNS responses
-        for non-local domain queries.
-        Note that DNS records for infrastructure-network-local hosts or services (e.g. records registered via SRP
-        or discovered by the SNAC router using mDNS) do not support DNSSEC protection.
+        received from an upstream DNS resolver.
+	    Note that for locally-served zones {{RFC6303}} DNSSEC validation cannot work and is expected
+	    to be skipped by the SNAC router.
       </t>
     </section>
   </middle>
@@ -1156,6 +1161,7 @@
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.6762.xml" />
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.6763.xml" />
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.7084.xml" />
+	  <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.7858.xml" />
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.8174.xml" />
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.8200.xml" />
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.8766.xml" />
@@ -1175,6 +1181,7 @@
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.4944.xml" />
 	  <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.6147.xml" />
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.6282.xml" />
+	  <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.7435.xml" />
 	  <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.9364.xml" />
       <reference anchor="Tethering" target="https://en.wikipedia.org/w/index.php?title=Tethering&amp;oldid=1343931068">
         <front>
