@@ -1113,8 +1113,10 @@
       <name>Security Considerations</name>
       <t>
         Because a SNAC router operates as an IPv6 router that sends and receives IPv6 Neighbor Discovery protocol messages,
-        the security considerations of Section 11 of <xref target="RFC4861"/> apply.
-      </t>
+        the security considerations of Section 11 of <xref target="RFC4861"/> apply.</t>
+      <t>
+        And because a SNAC router operates as an SRP registrar,
+        the security and privacy considerations of Section 6 and 7 of <xref target="RFC4861"/> apply.</t>
       <t>
         A SNAC router MUST support DNS-over-TLS as specified in <xref target="RFC9665" section="7" sectionFormat="of"/>
         for any DNS unicast communication with hosts (acting as DNS clients) in the stub network.
@@ -1133,14 +1135,12 @@
 		Aggregation of queries originating from the stub network by the SNAC router provides some degree of anonymization,
 		but in any case because the TLS server's certificate is not being validated by the client, the client should
 		not assume it is getting more privacy than an unauthenticated TLS connection can deliver.
-      </t>
-      <t>
+      </t><t>
         If a SNAC router receives a DNS query protected by TLS from a stub network host, it may happen that the query
         is forwarded without TLS security to the upstream DNS resolver as configured by the infrastructure network.
 	    This enables an on-path eavesdropper in the infrastructure network to observe any DNS queries that the SNAC
 	    router forwards to the upstream DNS resolver, or an on-path attacker to spoof DNS responses to such queries.
-      </t>
-      <t>
+      </t><t>
         Stub network hosts that implement DNSSEC <xref target="RFC9364"/> can perform DNSSEC validation of DNS responses
         received from an upstream DNS resolver.
 	    Note that for locally-served zones {{RFC6303}} DNSSEC validation cannot work and is expected
