@@ -229,8 +229,10 @@
       </section>
     </section>
 
-    <section>
+    <section anchor="glossary">
       <name>Glossary</name>
+	<t>This section contains a glossary of terms used in this document.
+	   See <xref target="conventions"/> for document conventions and remaining terms and definitions.</t>
       <dl>
 	<dt>Node:</dt>
 	<dd>A device that implements IPv6.</dd>
@@ -344,7 +346,7 @@
       </dl>
     </section>
 
-    <section>
+    <section anchor="conventions">
       <name>Conventions and Terminology Used in This Document</name>
       <t>
 	The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED",
@@ -355,6 +357,9 @@
 	The terms "resolver" and "stub resolver" used in this document are defined in <xref target="RFC9499"/>.
 	"DNS resolver" is used as a synonym for "resolver" to clearly point out the DNS context of this term.
       </t>
+      <t>
+	The term "advertising interface" is used as defined in <xref target="RFC4861" section="6.2.2"/>.
+	  </t>
     </section>
 
     <section anchor="common-maint">
@@ -363,10 +368,9 @@
 	This document assumes that the AIL supports Neighbor Discovery <xref target="RFC4861"/>, and specifically that
 	routers and on-link prefixes can be advertised using Router Advertisement messages and discovered using Router Solicitation messages. The stub
 	network link may also support this, or may use some different mechanism. This section specifies how advertisement of the
-	on-link prefix for such links is managed. In this section the term "advertising interface" is used as defined in
-	<xref target="RFC4861" section="6.2.2"/>.</t>
+	on-link prefix for such links is managed.</t>
       <t>
-	When a SNAC router sends a Router Advertisement (RA) message as specified in any of the below subsections, it
+	When a SNAC router sends a Router Advertisement (RA) message as specified in this document, it
 	MUST NOT use multiple RA messages with each containing a subset of the options. Such splitting behavior is specified in
 	<xref target="RFC4861" section="6.2.3"/>. Instead, all options are always included in a single RA message.
 	Multiple RA messages with different information contents are only sent to indicate that previously sent information changed.</t>
@@ -381,14 +385,14 @@
 	  second SNAC router&apos;s prefix is advertised on the infrastructure link, and therefore does not advertise its own.
 	</t><t>
 	  This behavior can cause problems because the first SNAC router no longer sees the on-link prefix it had been advertising
-	  on infrastructure as on-link. Consequently, if it receives a packet on the stub network with such a destation address, it
+	  on infrastructure as on-link. Consequently, if it receives a packet on the stub network with such a destination address, it
 	  will forward that packet directly to a default router, if one is present; otherwise, it will have no route to the
 	  destination, and will drop the packet.
 	</t><t>
-	  This amounts to a flash renumbering event. There is no easy to prevent this happening: routes and prefixes advertised in
+	  This amounts to a flash renumbering event. There is no easy way to prevent this from happening: routes and prefixes advertised in
 	  router advertisements have lifetimes, and hosts may continue to use such prefixes until they expire. Applications that
 	  are not able to detect the loss of a route or that do not quickly notice that a host is no longer reachable on a particular
-	  address will exhibit poor performance when this happens. For example, if the stub network is an network that supports
+	  address will exhibit poor performance when this happens. For example, if the stub network is a network that supports
 	  IoT devices, the user may experience temporary inability to control such devices, and automations may fail.
 	</t><t>
 	  When possible, it is best if all SNAC routers serving a particular stub network use the same /64 on-link prefix for the
@@ -408,8 +412,8 @@
 	  updated. In this case, if other SNAC routers are present, they can continue to advertise routes to that prefix on the stub
 	  network. If possible, the original OSNR prefix SHOULD be preserved until the SNAC router that advertised it returns. However,
 	  if a host on the stub network multicasts a Router Solicitation message to the link and the SNAC router advertising the OSNR
-	  prefix is still not present, or if the OSNR prefix is in danger of expiring, another SNAC router must take over and
-	  advertise its OSNR prefix. In this situation, SNAC routers that remember the old OSNR prefix should continue advertising a
+	  prefix is still not present, or if the OSNR prefix is in danger of expiring, another SNAC router needs to take over and
+	  advertise its OSNR prefix. In this situation, SNAC routers that remember the old OSNR prefix continue advertising a
 	  route to it on the AIL until the OSNR prefix expires.
         </t>
       </section>
