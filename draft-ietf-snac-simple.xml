@@ -26,7 +26,7 @@
           <street>1600 Amphitheatre Parkway</street>
           <city>Mountain View</city>
           <region>California</region>
-          <code>940432</code>
+          <code>94043</code>
           <country>US</country>
         </postal>
         <email>jonhui@google.com</email>
@@ -164,7 +164,7 @@
 	  that router, it will ultimately reach host (B) on the stub network.</t>
 	<t>
 	  To achieve the reachability goal described above, this document assumes hosts attempting to reach destinations on the stub
-	  network maintain a routing table - Type C hosts as defined in <xref target="RFC4191" section="3.1"/>). Type A and Type B
+	  network maintain a routing table -- Type C hosts as defined in <xref target="RFC4191" section="3.1"/>. Type A and Type B
 	  hosts are out-of-scope for this document.
 	</t>
       </section>
@@ -595,7 +595,7 @@
 	  <section anchor="state-advertising-suitable">
 	    <name>IP addressability not present on adjacent infrastructure link (STATE-ADVERTISING-SUITABLE)</name>
 	    <t>
-	      When entering this state, if the router MUST begin treating the interface as an advertising interface as
+	      When entering this state, the router MUST begin treating the interface as an advertising interface as
 	      described in <xref target="RFC4861" section="6.2.2"/> if it is not already doing so.</t>
 	    <t>
 	      The SNAC router sends a periodic unsolicited multicast Router Advertisement message, as described in
@@ -736,7 +736,7 @@
             a SNAC router MUST select prefixes based on the following criteria, evaluated in order:
           </t>
           <ul>
-            <li>Single OSNR prefix constraint: For constrained stub networks (e.g., 6LoWPAN, Thread mesh networks) that have limited support for multiple OSNR prefixes, a SNAC router MUST select only the single best prefix. Prefix type GUA is MUST be preferred over ULA, then the prefix with the longest preferred and valid lifetimes is chosen for distrubution.</li>
+            <li>Single OSNR prefix constraint: For constrained stub networks (e.g., 6LoWPAN, Thread mesh networks) that have limited support for multiple OSNR prefixes, a SNAC router MUST select only the single best prefix. Prefix type GUA MUST be preferred over ULA, then the prefix with the longest preferred and valid lifetimes is chosen for distribution.</li>
             <li>Multiple OSNR prefix constraint: For stub networks without a single OSNR prefix constraint, the GUA and ULA prefixes with the longest preferred and valid lifetimes are chosen for distribution. Distributing both GUA and ULA prefixes allows hosts to decide how they will communicate.</li>
           </ul>
           <t>
@@ -1023,7 +1023,7 @@
 	In some cases a SNAC router may be administratively configured with a NAT64 prefix. In this situation, the SNAC router
 	MUST advertise the prefix with a preference of 'high'.</t>
       <t>
-	SNAC routers must monitor the advertisement of other NAT64 prefixes on the stub network. If a SNAC router is advertising
+	A SNAC router MUST monitor the advertisement of other NAT64 prefixes on the stub network. If a SNAC router is advertising
 	a NAT64 prefix on a constrained stub network, and another NAT64 prefix is advertised on the stub network with a
 	higher preference, the SNAC router SHOULD deprecate the prefix it is advertising.
 	This rule is based on the assumption that for a constrained stub network technology the size of the network configuration
@@ -1062,7 +1062,7 @@
 	  already advertised on the stub network, SNAC routers MUST enable their own NAT64 service and advertise it
 	  on the stub network.
 	</t><t>
-	  To provide NAT64 service, a SNAC router must allocate a NAT64 prefix. For convenience, the stub network allocates a single
+	  To provide NAT64 service, a SNAC router MUST allocate a NAT64 prefix. For convenience, the stub network allocates a single
 	  prefix out of the ULA site prefix that it maintains. Out of the 2^16 possible subnets of the /48, the SNAC router SHOULD
 	  use the numerically highest /64 prefix.
 	</t><t>
@@ -1126,7 +1126,7 @@
         the security considerations of Section 11 of <xref target="RFC4861"/> apply.</t>
       <t>
         And because a SNAC router operates as an SRP registrar,
-        the security and privacy considerations of Section 6 and 7 of <xref target="RFC4861"/> apply.</t>
+        the security and privacy considerations of Section 6 and 7 of <xref target="RFC9665"/> apply.</t>
       <t>
         A SNAC router MUST support DNS-over-TLS as specified in <xref target="RFC9665" section="7" sectionFormat="of"/>
         for any DNS unicast communication with hosts (acting as DNS clients) in the stub network.
@@ -1316,7 +1316,7 @@
       <section>
 	<name>Use on a managed network without IPv6</name>
 	<t>
-	  In this scenario, there is no IPv6 service being intentionally advertised on a managed network. Operators of such netowrks
+	  In this scenario, there is no IPv6 service being intentionally advertised on a managed network. Operators of such networks
 	  may not be aware of the possibility of configuring RA guard.  In this situation, a SNAC router will connect and advertise
 	  services, which will be reachable just as they would be in a similar unmanaged network. A SNAC router that conforms to
 	  this specification will not advertise an IPv6 default route. Therefore, it should not cause operational problems, just as
