@@ -297,44 +297,45 @@
       <t>
 	This section describes the meaning of and gives default values for various constants used in this document.</t>
       <dl>
-	<dt>STALE_RA_TIME (default: 10 minutes):</dt>
+	<dt anchor="STALE_RA_TIME">STALE_RA_TIME (default: 10 minutes):</dt>
 	<dd>
 	  The amount of time that can pass after the last time a Router Advertisement (RA) message from a particular router has
 	  been received before it is assumed the router is no longer present. This is a stopgap in case the router is reachable but has
 	  silently stopped advertising a prefix; this situation is unlikely, but if it does happen, new devices joining the
 	  infrastructure network will not be able to reach devices on the stub network until the SNAC router decides that the router
 	  that advertised the suitable prefix is stale.</dd>
-	<dt>STUB_PROVIDED_PREFIX_LIFETIME (default: 30 minutes):</dt>
+	<dt anchor="STUB_PROVIDED_PREFIX_LIFETIME">STUB_PROVIDED_PREFIX_LIFETIME (default: 30 minutes):</dt>
 	<dd>
 	  The valid and preferred lifetime the SNAC router will advertise for a prefix on the AIL. This should be long enough that a
 	  host is actually willing to use it, and obviously should also be long enough that a missed RA will not cause the host
 	  to stop using it. The values suggested here allow ten RAs to be missed before the host will stop using the
 	  prefix.</dd>
-	<dt>MinRtrAdvInterval (default: 154 seconds):</dt>
+	<dt anchor="MinRtrAdvInterval">MinRtrAdvInterval (default: 154 seconds):</dt>
 	<dd>
 	  The minimum interval for periodic unsolicited RA message sending (as defined in <xref target="RFC4861"/>) for a SNAC router.
-	  This determines together with MaxRtrAdvInterval how often the SNAC router will transmit these multicast RA messages.
+	  This determines together with <xref target="MaxRtrAdvInterval" format="none">MaxRtrAdvInterval</xref> how often the SNAC
+	  router will transmit these multicast RA messages.
 	  This should be frequent enough that a missed Router Solicitation (RS) message (e.g. due to congestion on a Wi-Fi link)
 	  will not result in an extremely long outage (assuming the congestion passes before the RA is sent, of course).
 	  The default values defined here lead to an RA multicast every 3 minutes, on average.</dd>
-	<dt>MaxRtrAdvInterval (default: 206 seconds):</dt>
+	<dt anchor="MaxRtrAdvInterval">MaxRtrAdvInterval (default: 206 seconds):</dt>
 	<dd>
 	  The maximum interval for periodic unsolicited RA message sending (as defined in <xref target="RFC4861"/>) for a SNAC router.</dd>
-	<dt>MIN_PD_PREFIX_LIFETIME (default: 30 minutes):</dt>
+	<dt anchor="MIN_PD_PREFIX_LIFETIME">MIN_PD_PREFIX_LIFETIME (default: 30 minutes):</dt>
 	<dd>
 	  The minimum preferred lifetime that a prefix, delegated with DHCPv6-PD, must have in order to be suitable as a
       OSNR prefix for the stub network. The minimum lifetime is chosen to be long enough that a reboot of the DHCP
       server or the SNAC router will not prevent the successful renewal of the prefix.</dd>
-	<dt>MAX_SUITABLE_REACHABLE_TIME (default: 60 seconds):</dt>
+	<dt anchor="MAX_SUITABLE_REACHABLE_TIME">MAX_SUITABLE_REACHABLE_TIME (default: 60 seconds):</dt>
 	<dd>
 	  The maximum ReachableTime value that a router can have in the neighbor cache before any suitable
 	  prefixes it has advertised are no longer considered suitable.</dd>
-	<dt>STUB_NETWORK_ROUTE_LIFETIME (default: 30 minutes)</dt>
+	<dt anchor="STUB_NETWORK_ROUTE_LIFETIME">STUB_NETWORK_ROUTE_LIFETIME (default: 30 minutes)</dt>
 	<dd>The Route Lifetime that will be specified in Route Information Options (RIOs) sent by the SNAC router to
         advertise the route to its stub network on the AIL.
         Also, the maximum Route Lifetime that will be specified in Route Information Options sent by the SNAC router
         to its stub network to advertise the route to the AIL.</dd>
-	<dt>MIN_SUITABLE_PREFIX_PREFERRED_LIFETIME (default: 30 minutes):</dt>
+	<dt anchor="MIN_SUITABLE_PREFIX_PREFERRED_LIFETIME">MIN_SUITABLE_PREFIX_PREFERRED_LIFETIME (default: 30 minutes):</dt>
 	<dd>
 	  The minimum preferred lifetime required for an AIL prefix to be considered suitable for use by SNAC routers.
 	  This value ensures that prefixes have sufficient lifetime to be reliably used for address autoconfiguration
@@ -394,7 +395,8 @@
 	    <li>Prefix Length is 64, suitable for IPv6 Stateless Address Autoconfiguration (SLAAC), consistent with current implementations and <xref target="RFC4291" section="2.5.1"/> 64bit Interface Identifiers</li>
             <li>'L' flag bit is set and</li>
 	    <li>either the 'A' flag bit or the 'P' flag bit <xref target="RFC9762"/> is set, and</li>
-	    <li>Preferred Lifetime of MIN_SUITABLE_PREFIX_PREFERRED_LIFETIME or more.</li>
+	    <li>Preferred Lifetime of <xref target="MIN_SUITABLE_PREFIX_PREFERRED_LIFETIME" format="none">MIN_SUITABLE_PREFIX_PREFERRED_LIFETIME</xref>
+	      or more.</li>
 	  </ul>
 	  <t>
 		  A prefix is not considered a suitable on-link prefix if the 'L' flag bit is not set, or if neither
@@ -480,18 +482,21 @@
 	      <t>
 		The SNAC router MUST listen for Router Advertisement messages on the AIL to which the interface is
 		attached, and record the time at which each Router Advertisement was received. The router MUST NOT consider any Router
-		Advertisement that is older than STALE_RA_TIME to be suitable.  When the last non-stale Router Advertisement message containing
+		Advertisement that is older than <xref target="STALE_RA_TIME" format="none">STALE_RA_TIME</xref> to be suitable.  When
+		the last non-stale Router Advertisement message containing
 		a suitable prefix on the link is marked stale, the SNAC router MUST move the interface to STATE-BEGIN-ADVERTISING.</t>
 	    </section>
 	    <section anchor="nud"><name>Router Unreachability Detection</name>
 	      <t>
 		For each suitable prefix, the SNAC router MUST monitor the state of reachability to the router(s) that
 		advertised it as described in (<xref target="RFC4861" section="7.3.1" sectionFormat="comma"/>) using a ReachableTime
-		value of no more than MAX_SUITABLE_REACHABLE_TIME. The reason for this is that if no router providing the on-link
+		value of no more than <xref target="MAX_SUITABLE_REACHABLE_TIME" format="none">MAX_SUITABLE_REACHABLE_TIME</xref>.
+		The reason for this is that if no router providing the on-link
 		prefix on the AIL is reachable, then when a new host joins the network, it will have no suitable on-link
 		prefix to use for autoconfiguration, and thus will be unable to communicate with hosts on the stub network.</t>
 	      <t>
-		Whenever the ReachableTime for a router advertising a suitable prefix exceeds MAX_SUITABLE_REACHABLE_TIME, the SNAC router
+		Whenever the ReachableTime for a router advertising a suitable prefix exceeds <xref format="none" target="MAX_SUITABLE_REACHABLE_TIME">
+		  MAX_SUITABLE_REACHABLE_TIME</xref>, the SNAC router
 		MUST send unicast Neighbor Solicitation messages as described in <xref target="RFC4861" section="7.2.2"/> until either a response
 		is received, which resets ReachableTime to zero, or the maximum number of retransmissions has been sent.</t>
 	      <t>
@@ -499,15 +504,17 @@
 		received, if none of the on-link routers on the AIL are marked reachable, the SNAC router
 		MUST move this interface to the STATE-BEGIN-ADVERTISING state (<xref target="state-begin-advertising"/>).</t>
 	      <t>
-		If the scheduled time for sending a periodic unsolicited multicast RA message arrives, and there are no routers advertising suitable prefixes that have a ReachableTime that is
-		less than MAX_SUITABLE_REACHABLE_TIME, then the router MUST move this interface to the STATE-BEGIN-ADVERTISING state.</t>
+		If the scheduled time for sending a periodic unsolicited multicast RA message arrives, and there are no routers advertising suitable
+		prefixes that have a ReachableTime that is less than <xref target="MAX_SUITABLE_REACHABLE_TIME" format="none">MAX_SUITABLE_REACHABLE_TIME</xref>,
+		then the router MUST move this interface to the STATE-BEGIN-ADVERTISING state.</t>
 	    </section>
 	  </section>
 	  <section anchor="state-begin-advertising">
 	    <name>IP addressability not present on adjacent infrastructure link (STATE-BEGIN-ADVERTISING)</name>
 	    <t>
 	      In this state, the SNAC router generates its own on-link prefix for the interface. This prefix has a valid and
-	      preferred lifetime of STUB_PROVIDED_PREFIX_LIFETIME seconds. The SNAC router sends a Router Advertisement (RA) message containing
+	      preferred lifetime of <xref format="none" target="STUB_PROVIDED_PREFIX_LIFETIME">STUB_PROVIDED_PREFIX_LIFETIME</xref>
+	      seconds. The SNAC router sends a Router Advertisement (RA) message containing
 	      this prefix in a Prefix Information option (PIO). In the PIO, the 'A' flag bit (autonomous address configuration)
 	      <xref target="RFC4861" section="4.6.2"/> MUST be set and the 'L' flag bit (on-link) MUST also be set.
 	      Link-layer technologies that require the 'L' flag bit to be cleared are out of scope of this document.
@@ -538,7 +545,8 @@
 	      described in <xref target="RFC4861" section="6.2.2"/> if it is not already doing so.</t>
 	    <t>
 	      The SNAC router sends a periodic unsolicited multicast Router Advertisement message, as described in
-          <xref target="state-begin-advertising"/>, at a random time between MinRtrAdvInterval and MaxRtrAdvInterval.</t>
+              <xref target="state-begin-advertising"/>, at a random time between <xref target="MinRtrAdvInterval" format="none">MinRtrAdvInterval</xref>
+	      and <xref format="none" target="MaxRtrAdvInterval">MaxRtrAdvInterval</xref>.</t>
 	    <t>
 	      The SNAC router may receive a Router Advertisement message containing one or more suitable on-link prefixes on the AIL.
 	      If any of these prefixes are different from the prefix the SNAC router is advertising as the on-link suitable
@@ -585,13 +593,15 @@
 	    <t>
 	      In this state, the valid lifetime (VALID) is computed based on three values: the current time when a router
 	      advertisement is being generated (NOW), the time at which the new suitable on-link prefix advertisement was received
-	      (DEPRECATE_TIME), and STUB_PROVIDED_PREFIX_LIFETIME. All of these values are in seconds. VALID is computed as follows:
+	      (DEPRECATE_TIME), and <xref format="none" target="STUB_PROVIDED_PREFIX_LIFETIME">STUB_PROVIDED_PREFIX_LIFETIME</xref>. All of these
+	      values are in seconds. VALID is computed as follows:
 	    </t>
 	    <t>
-	      VALID = STUB_PROVIDED_PREFIX_LIFETIME - (NOW - DEPRECATE_TIME)
+	      VALID = <xref format="none" target="STUB_PROVIDED_PREFIX_LIFETIME">STUB_PROVIDED_PREFIX_LIFETIME</xref> - (NOW - DEPRECATE_TIME)
 	    </t>
 	    <t>
-	      If VALID is less than MaxRtrAdvInterval seconds, the SNAC router does not include the deprecated prefix in the router
+	      If VALID is less than <xref target="MaxRtrAdvInterval" format="none">MaxRtrAdvInterval</xref> seconds, the SNAC router
+	      does not include the deprecated prefix in the router
 	      advertisement. Note that VALID could be less than zero. Otherwise, the prefix is provided in the advertisement, but with
 	      a valid lifetime of VALID.
 	    </t>
@@ -706,7 +716,8 @@
           </t>
           <t>
             A SNAC router MUST check in the server's Advertise message that the preferred lifetime a DHCPv6-PD server
-            can offer is at least MIN_PD_PREFIX_LIFETIME prior to requesting a prefix delegation to that
+            can offer is at least <xref format="none" target="MIN_PD_PREFIX_LIFETIME">MIN_PD_PREFIX_LIFETIME</xref>
+	    prior to requesting a prefix delegation to that
             server. If no DHCPv6-PD server can offer this, the SNAC router MUST treat all potential DHCPv6-PD prefixes
             as unsuitable and allocate a ULA link prefix out of its ULA site prefix instead.
           </t>
@@ -865,12 +876,13 @@
 	    By implication, this means that a SNAC router MUST provide a DNS resolver. In addition, a SNAC router MUST provide
 	    a DNS zone for the AIL it is attached to, and MUST list this zone in the list of default browsing domains
 	    as defined in <xref target="RFC6763" section="11" sectionFormat="of"/>.
-		A SNAC router MUST provide a Discovery Proxy that operates with this DNS zone.
+	    A SNAC router MUST provide a Discovery Proxy that operates with this DNS zone.
 	  </t>
 	  <t>
 	    A SNAC router may provide any valid DNS zone for which it can be authoritative. However, in general the allocation
 	    and configuration of such zones is not automatic, and automatic configuration of such zones is out of scope for this
 	    document. Unless otherwise configured, SNAC routers MUST use the 'default.service.arpa' zone for this purpose.
+	  </t>
 	  <t>
 	    The SNAC router MUST also maintain an SRP registrar and use registrations made through that SRP registrar to populate
 	    a DNS zone which is advertised as a default browsing domain, as defined above.
@@ -1314,10 +1326,10 @@
               <li><ul>
                 <li> In the 'L' flag bit (on-link): 1</li>
                 <li> In the 'A' flag bit (autonomous address configuration): 1</li>
-                <li> In the Valid Lifetime field: normally STUB_PROVIDED_PREFIX_LIFETIME (see <xref target="constants"/>), but see
-		  <xref target="state-deprecating"/>.</li>
-                <li> In the Preferred Lifetime field: normally STUB_PROVIDED_PREFIX_LIFETIME (see <xref target="constants"/>), but see
-		  <xref target="state-deprecating"/>.</li>
+                <li> In the Valid Lifetime field: normally <xref format="none" target="STUB_PROVIDED_PREFIX_LIFETIME">STUB_PROVIDED_PREFIX_LIFETIME</xref>,
+		  but see <xref target="state-deprecating"/>.</li>
+                <li> In the Preferred Lifetime field: normally <xref format="none" target="STUB_PROVIDED_PREFIX_LIFETIME">STUB_PROVIDED_PREFIX_LIFETIME</xref>,
+		  but see <xref target="state-deprecating"/>.</li>
               </ul></li>
 	      <li> Route Information Option: an active SNAC router always provides a Route Information Option for each prefix that
 		is valid on the stub network. This provides a route from the infrastructure network to the stub network. The
@@ -1325,7 +1337,8 @@
 	      <li><ul>
 		<li> Prefix Length: 64</li>
 		<li> Route Preference: low</li>
-		<li> Route Lifetime: the remaining valid lifetime of the prefix on the stub network, but no more than STUB_NETWORK_ROUTE_LIFETIME</li>
+		<li> Route Lifetime: the remaining valid lifetime of the prefix on the stub network, but no more than
+		  <xref target="STUB_NETWORK_ROUTE_LIFETIME" format="none">STUB_NETWORK_ROUTE_LIFETIME</xref></li>
 		<li> Prefix: the prefix advertised on the stub network</li>
 	      </ul></li>
 	    <li>Any other RA options: SNAC routers must not send any further RA options, because the SNAC router is not
@@ -1354,8 +1367,9 @@
       </t>
       <ul>
           <li> Router Lifetime: The SNAC router can be a default router on the stub network (see <xref target="stub-reachability"/>).
-		       In this case, the value is the remaining lifetime of the default route that was detected on the AIL with
-			   a maximum of STUB_NETWORK_ROUTE_LIFETIME. If it is not a default router, the value is zero.</li>
+	    In this case, the value is the remaining lifetime of the default route that was detected on the AIL with
+	    a maximum of <xref format="none" target="STUB_NETWORK_ROUTE_LIFETIME">STUB_NETWORK_ROUTE_LIFETIME</xref>.
+	    If it is not a default router, the value is zero.</li>
           <li> SNAC routers do not provide DHCP service on the stub network. Therefore, the 'M' and 'O' flag bits must be zero.</li>
 	      <li> The 'SNAC router' flag (<xref target="I-D.ietf-6man-snac-router-ra-flag"/>): 0</li>
           <li> In the Cur Hop Limit field: 0 ("unspecified by this router")</li>
@@ -1376,10 +1390,10 @@
               <li><ul>
                 <li> In the 'L' flag bit (on-link): 1</li>
                 <li> In the 'A' flag bit (autonomous address configuration): 1</li>
-                <li> In the Valid Lifetime field: normally STUB_PROVIDED_PREFIX_LIFETIME (see <xref target="constants"/>), but see
-		  <xref target="state-deprecating"/>.</li>
-                <li> In the Preferred Lifetime field: normally STUB_PROVIDED_PREFIX_LIFETIME (see <xref target="constants"/>), but see
-		  <xref target="state-deprecating"/>.</li>
+                <li> In the Valid Lifetime field: normally <xref format="none" target="STUB_PROVIDED_PREFIX_LIFETIME">STUB_PROVIDED_PREFIX_LIFETIME</xref>,
+		  but see <xref target="state-deprecating"/>.</li>
+                <li> In the Preferred Lifetime field: normally <xref format="none" target="STUB_PROVIDED_PREFIX_LIFETIME">STUB_PROVIDED_PREFIX_LIFETIME</xref>,
+		  but see <xref target="state-deprecating"/>.</li>
 	      </ul></li>
 	      <li> <t>Route Information Option: when a SNAC router is not advertising a default route, it must include one or more
 		RIO options in Router Advertisement messages on the stub network to provide reachability to infrastructure. This is discussed in
@@ -1387,7 +1401,8 @@
 	      <ul>
 		<li> Prefix Length: the length of the prefix covered by the route, not necessarily 64.</li>
 		<li> Route Preference: low</li>
-		<li> Route Lifetime: The lifetime of the prefix on the infrastructure link, but no more than STUB_NETWORK_ROUTE_LIFETIME</li>
+		<li> Route Lifetime: The lifetime of the prefix on the infrastructure link, but no more than
+		  <xref target="STUB_NETWORK_ROUTE_LIFETIME" format="none">STUB_NETWORK_ROUTE_LIFETIME</xref></li>
 		<li> Prefix: the prefix that is known to be reachable on the infrastructure network</li>
 	      </ul></li>
 	    </ul></li>
