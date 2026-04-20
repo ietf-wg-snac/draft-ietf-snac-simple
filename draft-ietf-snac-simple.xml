@@ -70,7 +70,7 @@
 	  are so dissimilar. So either it must be bridged in a very complicated and careful way to avoid overwhelming the 802.15.4
 	  network with irrelevant traffic, or the 802.15.4 network needs to be a separate subnet.</li>
 	<li>
-	  Incompatible media: for example, a constrained 802.15.4 network connected as a stub network to a Wi-Fi or ethernet
+	  Incompatible media: for example, a constrained 802.15.4 network connected as a stub network to a Wi-Fi or Ethernet
 	  infrastructure network.  In the case of an 802.15.4 network, it is quite possible that the devices used to link the
 	  infrastructure network to the stub network will not be conceived of by the end user as routers.  Consequently, one cannot
 	  assume that these devices will be on all the time. A solution for this use case will require some sort of commissioning
@@ -108,7 +108,7 @@
 	It may be noted that just as one can plug several CE Router devices together in series to form multi-layer NATs, there is
 	nothing preventing the owner of a stub network router from attaching it to a stub network as if that network were its
 	infrastructure network. In the case of an IoT wireless network, there may be no way to do this, nor would it be desirable,
-	but a stub router that uses ethernet on both the infrastructure and stub network sides could be connected this way. Nothing
+	but a stub router that uses Ethernet on both the infrastructure and stub network sides could be connected this way. Nothing
 	in this document is intended to prevent this from being done, but neither does this document attempt to solve the problems that this
 	could create.</t>
       <t>
@@ -181,18 +181,20 @@
       <section anchor="architecture"><name>Sample SNAC Routers Deployment in a Home Network</name>
 
       <t>A stub network is attached via one or more SNAC routers to an infrastructure network.
-		 An infrastructure router in the scope of this specification is an IPv6 (aware) router that provides different services in the network.
-		 It can be a CE router, home gateway or Wi-Fi router. A SNAC router will connect as any another host in the infrastructure network,
+		 An infrastructure router in the scope of this specification is an IPv6 (aware) router that provides various
+		 services in the infrastructure network.
+		 It can be a CE router, home gateway or Wi-Fi router. A SNAC router will connect as any other host in the infrastructure network,
 		 while additionally providing addressability, discoverability and reachability functions for hosts in the stub network.
 	     See <xref target="services-provided"/> for an overview of the specific services that a SNAC router implements to provide
 	     addressability, discoverability and reachability.</t>
 
-      <t>This document describes mechanisms for connecting IPv6 hosts in stub networks to the infrastructure newtork using
-		 SNAC routers as shown in <xref target="snac-rtr"/>. Although the use case depicted below is specific to home networks,
+      <t>This document describes mechanisms for connecting IPv6 hosts in stub networks to the infrastructure network using
+		 SNAC routers as shown in <xref target="snac-rtr"/>. Although the use case depicted there is specific to home networks,
 		 the mechanisms apply for any type of infrastructure network and stub network attachment scenarios.</t>
-      <t>A SNAC router receives and manages a suitable IPv6 prefix for the AIL preferably from the infrastructure router
-		 or from other SNAC routers in the network. In case addressing is not available, SNAC router provides it on the AIL
-		 by sending its own Router Advertisement messages.
+      <t>A SNAC router looks for a suitable IPv6 on-link prefix on the AIL.
+		 This prefix may be already provided by the infrastructure router, or when no IPv6 infrastructure service is present,
+		 by another SNAC router connected to the same AIL. If no suitable IPv6 on-link prefix is advertised on the AIL, the SNAC router
+		 will provide one itself using its own Router Advertisement messages.
       </t>
 
       <figure title="SNAC Router connecting Stub Networks to Infrastructure" anchor="snac-rtr">
@@ -246,15 +248,20 @@
 	<dd>any link to which a stub network router is directly attached, that is part of an infrastructure network and is not the
 	  stub network.</dd>
         <dt>Customer Edge (CE) Router:</dt>
-        <dd>CE Router is defined in <xref target="RFC7084"/>. A CE router is a device that is intended to connect a single uplink network to a
+        <dd>CE Router is defined in <xref target="RFC7084"/>. A CE router is an infrastructure router that is intended
+		  to connect a single uplink network to a
           Local-Area Network. A CE router may be provided by an ISP and only capable of connecting directly to the ISP's
-          means of service delivery, e.g. Cable or DSL, or it may have an ethernet port on the WAN side and one or more ethernet
+          means of service delivery, e.g. Cable or DSL, or it may have an Ethernet port on the WAN side and one or more Ethernet
           ports, plus Wi-Fi, on the LAN side.</dd>
 	<dt>Infrastructure network:</dt>
 	<dd>
 	  the network infrastructure to which a stub router connects. This network can be a single link, or a network of links. The
-	  network is typically formed by a CE router, which may also provide some services, such as a DNS resolver, a DHCPv4
+	  network is formed by one or more infrastructure routers. In a home network, this is typically a CE router, which may
+	  also provide some services, such as a DNS resolver, a DHCPv4
 	  server, and a DHCPv6 prefix delegation server, for example.</dd>
+	<dt>Infrastructure router:</dt>
+	<dd>
+	  An IP router that is part of an infrastructure network. For example, a CE router.</dd>
 	<dt>Off-Stub-Network-Routable (OSNR) Prefix:</dt>
 	<dd>a prefix advertised on the stub network that can be used for communication with hosts not on the stub network.</dd>
 	<dt>Stub Network:</dt>
@@ -353,7 +360,7 @@
       <name>Support for adjacent infrastructure links</name>
       <t>
 	This document assumes that the AIL supports Neighbor Discovery <xref target="RFC4861"/>, and specifically that
-	routers and on-link prefixes can be advertised using Router Advertisement messages and discovered using Neighbor Solicitation messages. The stub
+	routers and on-link prefixes can be advertised using Router Advertisement messages and discovered using Router Solicitation messages. The stub
 	network link may also support this, or may use some different mechanism. This section specifies how advertisement of the
 	on-link prefix for such links is managed. In this section the term "advertising interface" is used as defined in
 	<xref target="RFC4861" section="6.2.2"/>.</t>
