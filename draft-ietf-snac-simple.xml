@@ -377,6 +377,13 @@
 	<t>
 	 As part of standard IPv6 router behavior on the AIL interface, the SNAC router MUST join the All-Routers link-local multicast address (FF02::2) to receive Router Solicitation messages and other host-to-router and router-to-router communications, and MUST join the All-Nodes link-local multicast address (FF02::1) to receive Neighbor Solicitation messages and other host-to-host communications as described in <xref target="RFC4861"/>.
 	</t>
+      <t>
+	Before starting to actively operate as a SNAC router on an AIL, a SNAC router MUST first determine whether an AIL is
+	already in use for its stub network, provided by one or more other SNAC routers. If such an AIL is detected, the SNAC
+	router MUST NOT operate as a SNAC router on the AIL for as long as the AIL provided by the other SNAC routers
+	remains available. The means by which a SNAC router detects the presence of an existing AIL for the stub network
+	are specific to the stub network technology and out of scope of this document.</t>
+
       <section anchor="maintenance-restarts">
 	<name>Maintenance across SNAC router restarts</name>
 	<t>
