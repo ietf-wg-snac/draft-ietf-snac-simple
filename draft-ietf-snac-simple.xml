@@ -688,8 +688,8 @@
 	    providing on-link prefixes to the stub network and the adjacent infrastructure link as described in <xref target="state-begin-advertising"/>.
 	  </t><t>
 	    Any ULA link prefixes allocated by a SNAC router SHOULD persist across reboots, and SHOULD remain stable over time.
-        An exception to both these requirements is the following: for privacy reasons, a SNAC router that can detect
-        that its AIL changed, SHOULD allocate a different ULA site prefix each time it connects to a different AIL.
+        An exception to both these requirements is the following: for privacy reasons, a SNAC router that detects
+        that its AIL changes SHOULD allocate a different ULA site prefix for the new AIL.
         On the latter requirement there are two possible exceptions:
 	  </t>
         <ol>
@@ -698,6 +698,12 @@
 				the Thread Extended PAN ID detailed in <xref target="maintenance-restarts"/>).</li>
            <li>The SNAC router is configured by the user or an operator to behave otherwise.</li>
         </ol>
+	  <t>
+	    One implementation strategy to meet the above privacy requirement is to use the algorithm of
+	    <xref target="RFC7217" section="5" sectionFormat="of"/> to generate "random but stable" bits (RID)
+	    for the ULA site prefix. This will have the property that a SNAC router will reuse its prior ULA site prefix
+	    when it is reattached again to a particular AIL where it had been attached to before.
+	  </t>
 	</section>
 	<section anchor="dhcpv6-pd">
 	  <name>Using DHCPv6 Prefix Delegation to acquire a prefix to provide addressability</name>
@@ -1180,6 +1186,7 @@
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.4944.xml" />
 	  <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.6147.xml" />
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.6282.xml" />
+	  <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.7217.xml" />
 	  <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.7435.xml" />
 	  <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.9364.xml" />
       <reference anchor="Tethering" target="https://en.wikipedia.org/w/index.php?title=Tethering&amp;oldid=1343931068">
