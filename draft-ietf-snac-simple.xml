@@ -1133,8 +1133,8 @@
 		However, there is no way to signal on the stub network that this is being done.
 		Given that the privacy profile supported here is opportunistic, the DNS client has no guarantee of privacy.
 		Aggregation of queries originating from the stub network by the SNAC router provides some degree of anonymization,
-		but in any case because the TLS server's certificate is not being validated by the client, the client should
-		not assume it is getting more privacy than an unauthenticated TLS connection can deliver.
+		but in any case because the TLS server's certificate is not being validated by the client, the client can't
+		assume it is getting more privacy than an unauthenticated TLS connection can deliver.
       </t><t>
         If a SNAC router receives a DNS query protected by TLS from a stub network host, it may happen that the query
         is forwarded without TLS security to the upstream DNS resolver as configured by the infrastructure network.
@@ -1142,9 +1142,7 @@
 	    router forwards to the upstream DNS resolver, or an on-path attacker to spoof DNS responses to such queries.
       </t><t>
         Stub network hosts that implement DNSSEC <xref target="RFC9364"/> can perform DNSSEC validation of DNS responses
-        received from an upstream DNS resolver.
-	    Note that for locally-served zones {{RFC6303}} DNSSEC validation cannot work and is expected
-	    to be skipped by the SNAC router.
+        received from the DNS recursive resolver on the SNAC router.
       </t>
     </section>
   </middle>
