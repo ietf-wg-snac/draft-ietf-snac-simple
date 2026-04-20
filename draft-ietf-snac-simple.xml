@@ -199,7 +199,7 @@
               |                               |
      +--------+-----------+             +-----+--------------+
      |    Stub Network    |             |    Stub Network    |
-     +--------------------+             +--------------------+             
+     +--------------------+             +--------------------+
       ]]>
       </artwork> </figure>
 
@@ -832,7 +832,11 @@
 	    a DNS zone for the AIL it is attached to, and MUST list this zone in the list of default browsing domains
 	    as defined in <xref target="RFC6763" section="11" sectionFormat="of"/>.
 		A SNAC router MUST provide a Discovery Proxy that operates with this DNS zone.
-	    [[WG TBD: issue #183 is to define name or name requirements.]]</t>
+	  </t>
+	  <t>
+	    A SNAC router may provide any valid DNS zone for which it can be authoritative. However, in general the allocation
+	    and configuration of such zones is not automatic, and automatic configuration of such zones is out of scope for this
+	    document. Unless otherwise configured, SNAC routers MUST use the 'default.service.arpa' zone for this purpose.
 	  <t>
 	    The SNAC router MUST also maintain an SRP registrar and use registrations made through that SRP registrar to populate
 	    a DNS zone which is advertised as a default browsing domain, as defined above.
@@ -849,7 +853,7 @@
       <name>Providing reachability to IPv4-only services to hosts on the stub network</name>
       <t>
 	Stub networks rely on IPv6 to enable routing between links, which would not be possible with IPv4 due to the limited
-	availability and functionality of IPv4 router discovery mechanisms (such as ICMP Router Discovery Messages 
+	availability and functionality of IPv4 router discovery mechanisms (such as ICMP Router Discovery Messages
 	<xref target="RFC1256"/>) compared to IPv6 Router Advertisements. However, it can still be useful for hosts on the stub network
 	to establish communications with IPv4-only hosts on the infrastructure network.
       </t>
@@ -1032,7 +1036,10 @@
     <section>
       <name>IANA Considerations</name>
       <t>
-        This document has no IANA actions.
+	This document updates the default.service.arpa entry in the IANA service.arpa subdomain registry by adding a second
+	entry for that domain. The new entry has the description "default Discovery Proxy browsing domain for SNAC routers."
+	The reference is to this document. These two uses are mutually complementary; the reason for using a second entry
+	is to make it clear which use case is described in which document.
       </t>
     </section>
 
