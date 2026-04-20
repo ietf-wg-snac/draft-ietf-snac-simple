@@ -391,26 +391,26 @@
 	  address will exhibit poor performance when this happens. For example, if the stub network is an network that supports
 	  IoT devices, the user may experience temporary inability to control such devices, and automations may fail.
 	</t><t>
-	  When possible, it is best if all SNAC routers serving a particular stub network use the same 64-bit prefix on the
+	  When possible, it is best if all SNAC routers serving a particular stub network use the same /64 on-link prefix for the
 	  AIL. For example, Thread <xref target="Thread"/> SNAC routers use bits from the Thread Extended PAN ID to generate the ULA prefix's Global ID
 	  and Subnet ID. The Global ID generation conforms to <xref target="RFC4193"/> because the Extended PAN ID is generated
 	  randomly using the same mechanism that is specified in RFC 4193 for the ULA prefix bits.
 	</t>
 	<t>
 	  Because the Extended PAN ID is a stable value that identifies the Thread network, it can be safely used to number the
-	  infrastructure link when no other sutable prefix is available, and since it can be maintained by all Thread routers, there
-	  is no problem with changes to the on-link prefix. Of course, when SNAC routers supporting more than one such network are
-	  present, the problem still exists in principle, but as long as all SNAC routers supporting a single link do not restart at
-	  the same time, the prefix can be expected to remain stable.
+	  infrastructure link when no other suitable on-link prefix is available, and since it can be maintained by all Thread SNAC routers, there
+	  are no problems due to a change of the AIL on-link prefix. Of course, when SNAC routers supporting more than one such stub network are
+	  present, the problem still exists in principle, but as long as all SNAC routers supporting a single stub network do not restart at
+	  the same time, the AIL on-link prefix can be expected to remain stable.
 	</t>
 	<t>
-	  Similarly, it can be the case while a SNAC router is advertising the OSNR prefix on the stub network, it is rebooted or
+	  Similarly, it can be the case that while a SNAC router is advertising the OSNR prefix on the stub network, it is rebooted or
 	  updated. In this case, if other SNAC routers are present, they can continue to advertise routes to that prefix on the stub
-	  network. If possible, the original prefix SHOULD be preserved until the SNAC router that advertised it returns. However,
-	  if a host on the stub network multicasts a Router Solicitation message to the link and the router advertising the OSNR
+	  network. If possible, the original OSNR prefix SHOULD be preserved until the SNAC router that advertised it returns. However,
+	  if a host on the stub network multicasts a Router Solicitation message to the link and the SNAC router advertising the OSNR
 	  prefix is still not present, or if the OSNR prefix is in danger of expiring, another SNAC router must take over and
-	  advertise its OSNR prefix. In this situation, SNAC routers that remember the old prefix should continue advertising a
-	  route to on the AIL until it expires.
+	  advertise its OSNR prefix. In this situation, SNAC routers that remember the old OSNR prefix should continue advertising a
+	  route to it on the AIL until the OSNR prefix expires.
         </t>
       </section>
     </section>
