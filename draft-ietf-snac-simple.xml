@@ -840,10 +840,10 @@
 	  <t>
 	    The SNAC router MUST also maintain an SRP registrar and use registrations made through that SRP registrar to populate
 	    a DNS zone which is advertised as a default browsing domain, as defined above.
-		Note that per <xref target="RFC9665" section="3.1.2" sectionFormat="of"/> the special-use domain name "default.service.arpa"
+		Note that per <xref target="RFC9665" section="3.1.2" sectionFormat="of"/> the special-use domain name 'default.service.arpa'
 	    is always available for SRP registrations into this default DNS zone.
 		This SRP registrar MUST be advertised on the
-	    stub network either using the dnssd-srp and/or dnssd-srp-tls service names or some stub-network-specific mechanism,
+	    stub network either using the 'dnssd-srp' and/or 'dnssd-srp-tls' service names or some stub-network-specific mechanism,
 	    the details of which are out of scope for this document.</t>
 	</section>
       </section>
@@ -1036,7 +1036,7 @@
     <section>
       <name>IANA Considerations</name>
       <t>
-	This document updates the default.service.arpa entry in the IANA service.arpa subdomain registry by adding a second
+	This document updates the 'default.service.arpa' entry in the IANA service.arpa subdomain registry by adding a second
 	entry for that domain. The new entry has the description "default Discovery Proxy browsing domain for SNAC routers."
 	The reference is to this document. These two uses are mutually complementary; the reason for using a second entry
 	is to make it clear which use case is described in which document.
