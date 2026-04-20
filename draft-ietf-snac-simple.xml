@@ -374,7 +374,7 @@
 	MUST NOT use multiple RA messages with each containing a subset of the options. Such splitting behavior is specified in
 	<xref target="RFC4861" section="6.2.3"/>. Instead, all options are always included in a single RA message.
 	Multiple RA messages with different information contents are only sent to indicate that previously sent information changed.</t>
-      <section>
+      <section anchor="maintenance-restarts">
 	<name>Maintenance across SNAC router restarts</name>
 	<t>
 	  SNAC routers may restart from time to time; when a restart occurs, the SNAC router may have been advertising state to the
@@ -694,7 +694,8 @@
 	  </t>
         <ol>
             <li>The SNAC router remains connected to the same stub network, and the ULA site prefix value is
-                generated based on properties of the stub network (such as configuration data).</li>
+                generated based on properties of the stub network (such as configuration data - an example is
+				the Thread Extended PAN ID detailed in <xref target="maintenance-restarts"/>).</li>
            <li>The SNAC router is configured by the user or an operator to behave otherwise.</li>
         </ol>
 	</section>
