@@ -71,7 +71,11 @@
 	  network with irrelevant traffic, or the 802.15.4 network needs to be a separate subnet.</li>
 	<li>
 	  Incompatible media: for example, a constrained 802.15.4 network connected as a stub network to a Wi-Fi or Ethernet
-	  infrastructure network.  In the case of an 802.15.4 network, it is quite possible that the devices used to link the
+	  infrastructure network. In this situation bridging between the two media is not possible because the layer two
+	  framing and addressing is incompatible.
+	</li>
+	<li>
+	  Inconsistent availability of individual routers. In the case of an 802.15.4 network, it is quite possible that the devices used to link the
 	  infrastructure network to the stub network will not be conceived of by the end user as routers.  Consequently, one cannot
 	  assume that these devices will be on all the time. A solution for this use case will require some sort of commissioning
 	  process for stub routers, and can't assume that any particular stub router will always be available; rather, any stub
