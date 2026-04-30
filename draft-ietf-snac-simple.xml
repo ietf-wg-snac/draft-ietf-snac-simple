@@ -380,6 +380,7 @@
 	Multiple RA messages with different information contents are only sent to indicate that previously sent information changed.</t>
 	<t>
 	 As part of standard IPv6 router behavior on the AIL interface, the SNAC router MUST join the All-Routers link-local multicast address (FF02::2) to receive Router Solicitation messages and other host-to-router and router-to-router communications, and MUST join the All-Nodes link-local multicast address (FF02::1) to receive Neighbor Solicitation messages and other host-to-host communications as described in <xref target="RFC4861"/>.
+	  If neighbor discovery, including router advertisements, is being used on the stub network, the SNAC router MUST similarly join these two multicast groups on the stub network interface as well.
 	</t>
       <t>
 	Before starting to actively operate as a SNAC router on an AIL, a SNAC router MUST first determine whether an AIL is
