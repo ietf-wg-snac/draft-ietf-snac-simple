@@ -75,7 +75,7 @@
 	  framing and addressing is incompatible.
 	</li>
 	<li>
-	  Inconsistent availability of individual routers. In the case of an 802.15.4 network, it is quite possible that the devices used to link the
+	  Inconsistent availability of individual routers: In the case of an 802.15.4 network, it is quite possible that the devices used to link the
 	  infrastructure network to the stub network will not be conceived of by the end user as routers.  Consequently, one cannot
 	  assume that these devices will be on all the time. A solution for this use case will require some sort of commissioning
 	  process for stub routers, and can't assume that any particular stub router will always be available; rather, any stub
