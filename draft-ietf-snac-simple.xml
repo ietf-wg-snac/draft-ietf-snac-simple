@@ -380,7 +380,7 @@
 	Multiple RA messages with different information contents are only sent to indicate that previously sent information changed.</t>
 	<t>
 	 As part of standard IPv6 router behavior on the AIL interface, the SNAC router MUST join the All-Routers link-local multicast address (FF02::2) to receive Router Solicitation messages and other host-to-router and router-to-router communications, and MUST join the All-Nodes link-local multicast address (FF02::1) to receive Neighbor Solicitation messages and other host-to-host communications as described in <xref target="RFC4861"/>.
-	  If neighbor discovery, including router advertisements, is being used on the stub network, the SNAC router MUST similarly join these two multicast groups on the stub network interface as well.
+	  If neighbor discovery, including Router Advertisements, is being used on the stub network, the SNAC router MUST similarly join these two multicast groups on the stub network interface as well.
 	</t>
       <t>
       A network topology of a single stub network connected via SNAC routers to more than one AIL is explicitly out of scope of this document;
@@ -407,7 +407,7 @@
 	  destination, and will drop the packet.
 	</t><t>
 	  This amounts to a flash renumbering event. There is no easy way to prevent this from happening: routes and prefixes advertised in
-	  Router Advertisement messages have lifetimes, and hosts may continue to use such prefixes until they expire. Applications that
+	  Router Advertisement messages have lifetimes, and hosts may continue to use the included prefixes until they expire. Applications that
 	  are not able to detect the loss of a route or that do not quickly notice that a host is no longer reachable on a particular
 	  address will exhibit poor performance when this happens. For example, if the stub network is a network that supports
 	  IoT devices, the user may experience temporary inability to control such devices, and automations may fail.
@@ -670,9 +670,13 @@
 	    </t>
 	    <t>
 	      If VALID is less than <xref target="MaxRtrAdvInterval" format="none">MaxRtrAdvInterval</xref> seconds, the SNAC router
-	      does not include the deprecated prefix in the router
-	      advertisement. Note that VALID could be less than zero. Otherwise, the prefix is provided in the advertisement, but with
+	      does not include the deprecated prefix in the Router Advertisement.
+	      Note that VALID could be less than zero. Otherwise, the prefix is provided in the advertisement, but with
 	      a valid lifetime of VALID.
+	    </t>
+	    <t>
+	      If no more deprecated prefix(es) are included in its Router Advertisements, the deprecation is complete and
+	      the SNAC router returns to the state STATE-SUITABLE (<xref target="state-suitable"/>).
 	    </t>
 	  </section>
 	</section>
