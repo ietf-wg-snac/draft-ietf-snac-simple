@@ -383,11 +383,13 @@
 	  If neighbor discovery, including router advertisements, is being used on the stub network, the SNAC router MUST similarly join these two multicast groups on the stub network interface as well.
 	</t>
       <t>
-	Before starting to actively operate as a SNAC router on an AIL, a SNAC router MUST first determine whether an AIL is
-	already in use for its stub network, provided by one or more other SNAC routers. If such an AIL is detected, the SNAC
-	router MUST NOT operate as a SNAC router on the AIL for as long as the AIL provided by the other SNAC routers
-	remains available. The means by which a SNAC router detects the presence of an existing AIL for the stub network
-	are specific to the stub network technology and out of scope of this document.</t>
+      A network topology of a single stub network connected via SNAC routers to more than one AIL is explicitly out of scope of this document;
+	  such a topology will likely have a negative effect on the reachability and discoverability of hosts.
+      If a SNAC router is able to determine that an AIL (other than its own) is already in use for its stub network, for example provided by
+	  one or more other SNAC routers or by other router types, it is advised that the SNAC router takes appropriate actions such as warning
+	  the user or ceasing to operate as a SNAC router until the situation is resolved.
+	  How a stub router might detect this situation is however out of scope for this document.
+	  </t>
 
       <section anchor="maintenance-restarts">
 	<name>Maintenance across SNAC router restarts</name>
