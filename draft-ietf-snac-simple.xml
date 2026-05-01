@@ -831,9 +831,18 @@
       <section anchor="stub-reachability">
 	<name>Managing reachability on the stub network</name>
 	<t>
-	  The SNAC router MAY advertise itself as a default router on the stub network, if it itself detects that a default route is
-	  present on the AIL. In some cases it may not be desirable to advertise reachability to the Internet as a whole; in this case the SNAC
-	  router is not required to advertise itself as a default router.
+	  The SNAC router SHOULD advertise itself as a default router on the stub network, if it detects that a default route is
+	  present on the AIL. In some cases it may not be desirable to advertise reachability to the Internet as a whole; for such cases the SNAC
+	  router MAY be administratively configured to not advertise itself as a default router, or it MAY use an automated
+	  policy to make such a decision.
+	</t><t>
+	  A SNAC router MUST NOT advertise a longer default route lifetime on its stub network than the default router lifetime
+	  detected on the AIL.
+	  Also, when a SNAC router detects that the default route on the AIL is not available anymore (e.g. based on a received
+	  Router Advertisement message, or detecting that the default router is no longer available), it MUST stop advertising itself
+	  as a default router on the stub network.
+	  On a stub network that supports IPv6 ND, this is done by sending its Router Advertisement messages with a zero value in
+	  the Router Lifetime field.
 	</t><t>
 	  If the SNAC router is not advertising itself as a default router on the stub network, it MUST advertise reachability to any
 	  prefixes that are being advertised as on-link on its AIL. This is true for prefixes it is advertising,
