@@ -1207,6 +1207,7 @@
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.6282.xml" />
 	  <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.7217.xml" />
 	  <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.7435.xml" />
+	  <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.8305.xml" />
 	  <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.9364.xml" />
       <reference anchor="Tethering" target="https://en.wikipedia.org/w/index.php?title=Tethering&amp;oldid=1343931068">
         <front>
@@ -1326,7 +1327,7 @@
 	    The one scenario where a communication problem can actually be expected is when there is a GUA prefix advertised by
 	    infrastructure but no ULA prefix, but there is a ULA destination to reach. In this case, the longest-matching-prefix
 	    algorithm could choose the SNAC-router-provided ULA prefix as a source address to reach the site-provided ULA
-	    destination, and in this case communication would fail. Only happy eyeballs can correct this situation.
+	    destination, and in this case communication would fail. Only "Happy Eyeballs" <xref target="RFC8305"/> can correct this situation.
 	  </t>
 	</section>
       <section>
