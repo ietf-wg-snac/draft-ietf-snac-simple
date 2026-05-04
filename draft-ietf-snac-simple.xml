@@ -1352,7 +1352,8 @@
       <ul>
           <li> Router Lifetime: A SNAC router never advertises itself as a default router on infrastructure. Therefore, the router lifetime is always zero
 	    in a SNAC router's Router Advertisements sent on the AIL.</li>
-          <li> For the 'M' and 'O' flag bits, section <xref target="state-begin-advertising"/> specifies that they must be zero.</li>
+          <li> For the 'M' and 'O' flag bits, <xref target="state-begin-advertising"/> specifies how the values are set.
+			   In case that no other router (excluding SNAC routers) on the AIL has set these flags, they are both set to zero.</li>
 	      <li> The 'SNAC router' flag (<xref target="I-D.ietf-6man-snac-router-ra-flag"/>): 1</li>
           <li> In the Cur Hop Limit field: 0 ("unspecified by this router")</li>
           <li> In the Reachable Time field: 0 ("unspecified by this router")</li>
