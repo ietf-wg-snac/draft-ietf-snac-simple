@@ -972,8 +972,12 @@
       </t>
       <t>
 	All the normative requirements in the remainder of this section (including subsections) apply to the default operation
-	of a SNAC router. In case that the NAT64 function in a SNAC router is administratively disabled, these
+	of a SNAC router.
+    A SNAC router SHOULD be administratively configurable to disable and re-enable its NAT64 function.
+    In case that the NAT64 function in a SNAC router is administratively disabled, these
 	requirements do not apply as long as the NAT64 function remains disabled.
+    Note that if NAT64 is disabled, the SNAC router's discovery and use of NAT64 service on the infrastructure network
+    is also disabled.
       </t>
       <t>There are four possible combinations of circumstances in which to consider how to provide NAT64 service:</t>
       <ol>
