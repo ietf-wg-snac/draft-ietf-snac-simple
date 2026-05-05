@@ -836,8 +836,8 @@
 	  router MAY be administratively configured to not advertise itself as a default router, or it MAY use an automated
 	  policy to make such a decision.
 	</t><t>
-	  A SNAC router MUST NOT advertise a longer default route lifetime on its stub network than the default router lifetime
-	  detected on the AIL.
+	  A SNAC router MUST NOT advertise a default route lifetime on its stub network that is higher than the remaining default
+	  router lifetime on the AIL.
 	  Also, when a SNAC router detects that the default route on the AIL is not available anymore (e.g. based on a received
 	  Router Advertisement message, or detecting that the default router is no longer available), it MUST stop advertising itself
 	  as a default router on the stub network.
