@@ -848,12 +848,16 @@
 	  and for other prefixes being advertised on that link.
 	</t><t>
 	  Note that in some stub network configurations, it is possible for more than one SNAC router to be connected to the stub
-	  network, and each SNAC router may be connected to a different AIL. In this case, a SNAC router advertising a default route
+	  network, and each SNAC router may be inadvertently connected to a different AIL. In this case, a SNAC router advertising a default route
 	  may receive a packet destined for a link that is not an AIL for that router, but is an AIL for a different router. In such a
 	  case, if the infrastructure is not capable of routing between these two AILs, a packet which could have been delivered by
-	  another SNAC router will be lost by the SNAC router that received it.</t>
+	  another SNAC router will be dropped by the SNAC router that received it.
+    </t>
 	<t>
-	  Consequently, a SNAC router SHOULD be configurable to not advertise itself as a default router on the stub network.
+	  As indicated in <xref target="common-maint"/>, support for multiple AILs connected to the same stub network is out of scope of
+	  this specification.
+	  Nevertheless, to support future versions of this specification or related extensions, a SNAC router SHOULD be configurable
+	  to not advertise itself as a default router on the stub network.
 	  A SNAC router SHOULD be configurable to explicitly advertise AIL prefixes on the stub network even if it is advertising as a
 	  default router on the stub network. The mechanisms by which such configuration can be accomplished are out of scope for this document.
 	</t>
@@ -1066,9 +1070,10 @@
 	  In this situation, if there are multiple SNAC routers, each connected to the same AIL, there is
 	  no need for special behavior—each SNAC router can advertise a default route, and any SNAC router may be used to route NAT64
 	  traffic. If some SNAC routers are connected to different AILs than others, some of which support
-	  NAT64 and some of which do not, then the default route may not carry traffic to the correct link for NAT64 service. In
-	  this case, a more specific address to the infrastructure NAT64 prefix(es) MUST be advertised by those SNAC routers that
-	  are able to discover it.
+	  NAT64 and some of which do not, then the default route may not carry traffic to the correct link for NAT64 service.
+	  Advertising (on the stub network) a specific route to the NAT64 prefix would resolve this issue.
+	  However, given that support for multiple AILs connected to the same stub network is out of scope (see <xref target="common-maint"/>),
+	  there are no normative requirements related to this for a SNAC router.
 	</t>
 	<t>
 	  In order for infrastructure-provided NAT64 to work, the stub network must have an OSNR prefix that is known to the
