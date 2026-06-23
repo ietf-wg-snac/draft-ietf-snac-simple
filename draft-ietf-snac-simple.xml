@@ -1195,7 +1195,7 @@
 	    router forwards to the upstream DNS resolver, or an on-path attacker to spoof DNS responses to such queries.
       </t><t>
         Stub network hosts that implement DNSSEC <xref target="RFC9364"/> can perform DNSSEC validation of DNS responses
-        received from the DNS resolver on the SNAC router.
+        received from the DNS recursive resolver on the SNAC router.
       </t>
     </section>
   </middle>
