@@ -202,11 +202,72 @@
       </t>
 
       <figure title="SNAC Router connecting Stub Networks to Infrastructure" anchor="snac-rtr">
-      <artwork> <![CDATA[
+      <artset>
+      <artwork type="svg">
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" height="400" width="536" viewBox="0 0 536 400" class="diagram" text-anchor="middle" font-family="monospace" font-size="13px">
+<path d="M 24,160 L 24,192" fill="none" stroke="black"/>
+<path d="M 24,336 L 24,368" fill="none" stroke="black"/>
+<path d="M 32,256 L 32,288" fill="none" stroke="black"/>
+<path d="M 72,160 L 72,192" fill="none" stroke="black"/>
+<path d="M 80,224 L 80,256" fill="none" stroke="black"/>
+<path d="M 96,176 L 96,208" fill="none" stroke="black"/>
+<path d="M 96,304 L 96,336" fill="none" stroke="black"/>
+<path d="M 120,64 L 120,112" fill="none" stroke="black"/>
+<path d="M 144,256 L 144,288" fill="none" stroke="black"/>
+<path d="M 168,272 L 168,304" fill="none" stroke="black"/>
+<path d="M 192,336 L 192,368" fill="none" stroke="black"/>
+<path d="M 216,184 L 216,224" fill="none" stroke="black"/>
+<path d="M 224,112 L 224,128" fill="none" stroke="black"/>
+<path d="M 304,336 L 304,368" fill="none" stroke="black"/>
+<path d="M 312,256 L 312,288" fill="none" stroke="black"/>
+<path d="M 328,64 L 328,112" fill="none" stroke="black"/>
+<path d="M 352,288 L 352,336" fill="none" stroke="black"/>
+<path d="M 360,224 L 360,256" fill="none" stroke="black"/>
+<path d="M 424,256 L 424,288" fill="none" stroke="black"/>
+<path d="M 472,336 L 472,368" fill="none" stroke="black"/>
+<path d="M 120,64 L 328,64" fill="none" stroke="black"/>
+<path d="M 120,112 L 328,112" fill="none" stroke="black"/>
+<path d="M 24,160 L 72,160" fill="none" stroke="black"/>
+<path d="M 72,176 L 96,176" fill="none" stroke="black"/>
+<path d="M 24,192 L 72,192" fill="none" stroke="black"/>
+<path d="M 96,192 L 208,192" fill="none" stroke="black"/>
+<path d="M 48,208 L 96,208" fill="none" stroke="black"/>
+<path d="M 80,224 L 360,224" fill="none" stroke="black"/>
+<path d="M 32,256 L 144,256" fill="none" stroke="black"/>
+<path d="M 312,256 L 424,256" fill="none" stroke="black"/>
+<path d="M 144,272 L 168,272" fill="none" stroke="black"/>
+<path d="M 32,288 L 144,288" fill="none" stroke="black"/>
+<path d="M 312,288 L 424,288" fill="none" stroke="black"/>
+<path d="M 56,304 L 168,304" fill="none" stroke="black"/>
+<path d="M 24,336 L 192,336" fill="none" stroke="black"/>
+<path d="M 304,336 L 472,336" fill="none" stroke="black"/>
+<path d="M 24,368 L 192,368" fill="none" stroke="black"/>
+<path d="M 304,368 L 472,368" fill="none" stroke="black"/>
+<polygon class="arrowhead" points="216,192 204,186.4 204,197.6" fill="black" transform="rotate(0,208,192)"/>
+<path d="M 48,192 L 48,208" fill="none" stroke="black"/>
+<path d="M 56,288 L 56,304" fill="none" stroke="black"/>
+<path d="M 184,184 A 20,20 0 0 1 192,150 A 26,26 0 0 1 240,140 A 18,18 0 0 1 272,156 A 16,16 0 0 1 268,184 Z" fill="white" stroke="black"/>
+<g class="text">
+<text x="228" y="36">(Internet)</text>
+<path d="M 224,40 L 224,64" fill="none" stroke="black"/>
+<text x="204" y="84">home Wi-Fi or CE</text>
+<text x="224" y="100">Infrastructure Router</text>
+<text x="92" y="148">infrastructure devices</text>
+<text x="380" y="212">(AIL - Adjacent Infrastructure Link)</text>
+<text x="184" y="244">(multiple SNAC Routers)</text>
+<text x="452" y="244">(single SNAC Router)</text>
+<text x="88" y="276">SNAC Router</text>
+<text x="368" y="276">SNAC Router</text>
+<text x="108" y="356">Stub Network</text>
+<text x="388" y="356">Stub Network</text>
+</g>
+</svg>
+      </artwork>
+      <artwork type="ascii-art"> <![CDATA[
 
                           (Internet)
                               |
-                 +-------------------------+
+                 +------------+------------+
                  |  home Wi-Fi or CE       |
                  |  Infrastructure Router  |
                  +------------+------------+
@@ -215,19 +276,21 @@
      +-----+              _(     )__
      |     |--+          (__________)
      +-----+  +------------->|
-        +-----+              |  (AIL - Adjacent Infrastructure Link)
+       '+-----+              |  (AIL - Adjacent Infrastructure Link)
             +----------------------------------+
             | (multiple SNAC Routers)          | (single SNAC Router)
       +-----+-------+                    +-----+-------+
       | SNAC Router |--+                 | SNAC Router |
       +-------------+  |                 +----+--------+
-         +----+--------+                      |
+        '+----+--------+                      |
               |                               |
      +--------+-----------+             +-----+--------------+
      |    Stub Network    |             |    Stub Network    |
      +--------------------+             +--------------------+
       ]]>
-      </artwork> </figure>
+      </artwork>
+      </artset>
+      </figure>
 
 
       </section>
