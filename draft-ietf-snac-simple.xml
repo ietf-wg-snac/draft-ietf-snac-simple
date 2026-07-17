@@ -446,16 +446,22 @@
 	  If neighbor discovery, including Router Advertisements, is being used on the stub network, the SNAC router MUST similarly join these two multicast groups on the stub network interface as well.
 	</t>
       <t>
-      A network topology of a single stub network connected via SNAC routers to more than one AIL is explicitly out of scope of this document;
+      A network topology of a single stub network connected via multiple SNAC routers to more than one AIL is explicitly out of scope of this document;
 	  such a topology will likely have a negative effect on the reachability and discoverability of hosts.
       If a SNAC router is able to determine that an AIL (other than its own) is already in use for its stub network, for example provided by
 	  one or more other SNAC routers or by other router types, it is advised that the SNAC router takes appropriate actions such as warning
 	  the user or ceasing to operate as a SNAC router until the situation is resolved.
 	  How a stub router might detect this situation is however out of scope for this document.
 	  </t>
+      <t>
+      Similarly, a SNAC router that is simultaneously active on more than one AIL is explicitly out of scope of this
+      document. This means that a SNAC router also never provides routing between AILs when connected to more than one such link.</t>
+      <t>
+      A SNAC router MAY during its operation select a different AIL interface to operate on.
+      For example, switching from Wi-Fi to Ethernet when its Ethernet AIL interface gets connected.</t>
 
-      <section anchor="maintenance-restarts">
-	<name>Maintenance across SNAC router restarts</name>
+    <section anchor="maintenance-restarts">
+	<name>Handling SNAC router restarts</name>
 	<t>
 	  SNAC routers may restart from time to time; when a restart occurs, the SNAC router may have been advertising state to the
 	  network which, following the restart, is no longer required.
@@ -500,10 +506,11 @@
     </section>
 
     <section anchor="support-ail">
-      <name>Support for adjacent infrastructure links</name>
+      <name>SNAC router functions</name>
       <t>
-	Support for AILs on networks where Neighbor Discovery is not supported is out of scope for this document. SNAC routers
-	do not provide routing between AILs when connected to more than one such link.</t>
+	This section specifies the SNAC router functions to manage the addressability, reachability and discoverability
+    on both the adjacent infrastructure link (AIL) and on the stub network.
+    The reachability to IPv4-only hosts and services is separately specified in <xref target="nat64"/>.</t>
       <section>
 	<name>Managing addressability on an adjacent infrastructure link</name>
 	<t>
@@ -550,7 +557,7 @@
 	    response which contains a Prefix Information option (<xref target="RFC4861" section="4.6.2" sectionFormat="comma"/>)
 	    for that prefix.
 	  </t><t>
-	    After an RA message containing a suitable prefix has been received, it can be assumed for some period of time thereafter that that prefix
+	    After an RA message containing a suitable on-link prefix has been received, it can be assumed for the indicated period of time (Valid Lifetime in the Prefix Information Option) thereafter that that prefix
 	    is still valid on the link. However, prefix lifetimes and router lifetimes are often quite long. In addition to knowing that
 	    a prefix has been advertised on the link in the past, and is still valid, it must therefore be ensured
 	    that at least one router that has advertised this prefix is still alive to respond to Router Solicitation messages.</t>
@@ -558,29 +565,35 @@
 	<section anchor="suitable-prefix-state-machine">
 	  <name>State Machine for maintaining a suitable on-link prefix on an adjacent infrastructure link</name>
 	  <t>
-	    The possible states of an interface connected to an AIL are described here, along with actions
+	    The possible states of the SNAC router's AIL interface are described here, along with actions
 	    required to be taken to monitor the state. The purpose of the state machine described here is to ensure that at all
 	    times, when a new host arrives on the AIL, it is able to acquire an IPv6 address on that
-	    link.</t>
+	    link using SLAAC.</t>
 	  <t>
-	    During all of the states mentioned here except for state-unknown, the SNAC router is expected to treat the
+        While in any of the states mentioned here except for state-unknown, the SNAC router is expected to treat its
 	    infrastructure interface as an advertising interface as described in <xref target="RFC4861" section="6.2.2"/>.
-	    There are two sets of information that need to be sent in an RA; if neither is present, then the SNAC router
-	    SHOULD NOT send an RA even if it is treating the infrastructure interface as an advertising interface.
+	    There are two sets of information that need to be sent in RA messages in general.
+	    The first is the on-link prefix, if any, that is to be advertised on the AIL. Whether or not such a prefix is
+	    advertised, and what exactly is advertised regarding that prefix, is determined by the state machine. The second set of
+	    information is a set of routes to (OSNR) prefixes on the stub network. Whenever the SNAC router knows of a reachable (scope is not
+	    link-local and not realm-local) prefix on the stub network, it includes an RIO option in the RA sent on the AIL indicating that
+	    that prefix is reachable through the SNAC router.
 	  </t>
 	  <t>
-	    These two sets of information are the on-link prefix, if any, that is to be advertised. Whether or not such a prefix is
-	    advertised, and what exactly is advertised regarding that prefix, is determined by the state machine. The other set of
-	    information is a set of routes to prefixes on the stub network. Whenever the SNAC router knows of a reachable (scope is not
-	    link-local and not realm-local) prefix on the stub network, it includes an RIO option in the RA on the infrastructure network indicating that
-	    that prefix is reachable through the SNAC router.
+        In case neither of the two sets of information is present, the SNAC router
+	    SHOULD NOT send the RA message even if it is treating the infrastructure interface as an advertising interface.
+        The exception cases to deviate from this requirement are 1) when a future protocol specification requires a SNAC router to
+        make its presence known on the AIL, by sending RA messages with the 'SNAC Router' flag bit set, and
+        2) when a future protocol specification requires the SNAC router to send particular RA option(s), other than the
+        options defined in this specification, which would warrant sending RA messages.
 	  </t>
 	  <t>
 	    It is important to note that it is possible for an OSNR prefix to be advertised and then withdrawn on the
 	    stub network, but for it to still be valid, and for there to still be some communication occurring using that prefix.
-	    In order to avoid prematurely interrupting such communication, the SNAC router MUST maintain a list of prefixes known
-	    to be valid on the stub network, even if those prefixes have been deprecated, and MUST include RIO options for all
+	    In order to avoid prematurely interrupting such communication, the SNAC router maintains a list of OSNR prefixes known
+	    to be valid on the stub network, even if those prefixes have been deprecated, and includes RIO options for all
 	    such prefixes in the RAs that it sends on the adjacent infrastructure link.
+        This is specified in <xref target="managing-reachability-ail"/>.
 	  </t>
       <t>
 		When a SNAC router enables its AIL interface as an advertising interface and determines it needs to send unsolicited RAs
@@ -591,9 +604,11 @@
 	  <section anchor="state-unknown">
 	    <name>Status of IP addressability on adjacent infrastructure link unknown (STATE-UNKNOWN)</name>
 	    <t>
-	      When the SNAC router interface first connects to the AIL, it MUST begin router discovery.</t>
+	      When the SNAC router interface first connects to the AIL, it MUST begin router discovery as defined in
+          <xref target="RFC4861" sectionFormat="of" section="6"/>.</t>
 	    <t>
-	      If, after router discovery has completed, no suitable on-link prefix has been found, the router moves this interface to
+	      If, after router discovery concludes (by sending up to MAX_RTR_SOLICITATIONS as defined in
+            <xref target="RFC4861" sectionFormat="of" section="6.3.7"/>) and no suitable on-link prefix has been found, the router moves this interface to
 	      STATE-BEGIN-ADVERTISING (<xref target="state-begin-advertising"/>).</t>
 	    <t>
 	      If, during router discovery, a suitable on-link prefix is found, the router moves the interface to
@@ -821,12 +836,12 @@
             a SNAC router MUST select prefixes based on the following criteria, evaluated in order:
           </t>
           <ul>
-            <li>Single OSNR prefix constraint: For constrained stub networks (e.g., 6LoWPAN, Thread mesh networks) that have limited support for multiple OSNR prefixes, a SNAC router MUST select only the single best prefix. Prefix type GUA MUST be preferred over ULA, then the prefix with the longest preferred and valid lifetimes is chosen for distribution.</li>
-            <li>Multiple OSNR prefix constraint: For stub networks without a single OSNR prefix constraint, the GUA and ULA prefixes with the longest preferred and valid lifetimes are chosen for distribution. Distributing both GUA and ULA prefixes allows hosts to decide how they will communicate.</li>
+            <li>Single OSNR prefix constraint: For constrained stub networks (e.g., 6LoWPAN, Thread mesh networks) that have limited support for multiple OSNR prefixes, a SNAC router MUST select only the single best prefix. Prefix type GUA MUST be preferred over ULA, then the prefix with the longest preferred lifetime is chosen for distribution.</li>
+            <li>Multiple OSNR prefix constraint: For stub networks without a single OSNR prefix constraint, the GUA and ULA prefixes with the longest preferred lifetimes are chosen for distribution. Distributing both GUA and ULA prefixes allows hosts to decide how they will communicate.</li>
           </ul>
           <t>
             The timeout/lifetime-based selection ensures that the stub network avoids frequent renumbering events that can
-            disrupt ongoing communications and create excessive maintenance overhead. A SNAC router SHOULD monitor delegated
+            disrupt ongoing communications and create excessive maintenance overhead. A SNAC router MUST monitor delegated
             prefix lifetimes and re-evaluate prefix selection when lifetimes are renewed or when new prefixes become available.
           </t>
           <t>
@@ -858,8 +873,15 @@
 	    </ul>
 	    <t>
 	      The SNAC router MUST NOT use a prefix once the DHCPv6-PD client has determined that it is no longer valid. If the
-	      DHCPv6-PD client provides a new prefix, and the old prefix is still valid, the SNAC router SHOULD explicitly deprecate
-	      the old prefix at the same time that it first advertises the new prefix.</t>
+          DHCPv6-PD client provides a new prefix, and the old prefix is still valid, then:</t>
+          <ul>
+          <li>in a stub network where a single OSNR prefix constraint applies, the SNAC router MUST deprecate
+              the old OSNR prefix at the same time that it first advertises the new OSNR prefix.</li>
+          <li>in a stub network where a multiple OSNR prefixes constraint applies, the SNAC router MAY deprecate
+              the old OSNR prefix at the same time that it first advertises the new OSNR prefix. The decision to
+              deprecate immediately or later depends on the number of OSNR prefixes supported by the stub network
+              technology and the number of valid OSNR prefixes already allocated; this is implementation-specific.</li>
+          </ul>
 	    <t>
 	      If the DHCPv6-PD client determines that the prefix it provided to use as the OSNR prefix is no longer valid, and no
 	      replacement prefix is provided by the DHCPv6 server, then the SNAC router MUST switch to the ULA link prefix that it
@@ -883,17 +905,15 @@
         </section>
       </section>
       </section>
-      <section>
+      <section anchor="managing-reachability-ail">
 	<name>Managing reachability on the adjacent infrastructure link</name>
 	<t>
-	  A SNAC router MUST advertise reachability to stub network OSNR prefixes on its AIL interface using Router
-	  Advertisement messages. If the SNAC router is also advertising a suitable on-link prefix for the AIL, it MUST
-	  combine the OSNR route advertisements (RIOs) and the on-link prefix advertisement (PIO) in the same Router
-	  Advertisement message, to avoid unnecessary multicast traffic.
+	  A SNAC router MUST advertise reachability to stub network OSNR prefixes on its AIL interface using Route Information Options (RIOs) in Router
+	  Advertisement (RA) messages. As specified in <xref target="common-maint"/>, these options are combined with other RA options, to avoid unnecessary multicast traffic.
 	</t><t>
 	  Each stub network will have some set of prefixes that are advertised as on-link for that network. A SNAC router connected
-	  to that stub network SHOULD advertise reachability to all such prefixes on the AIL to which it is attached using Router
-	  Advertisements.
+	  to that stub network SHOULD advertise reachability to all such prefixes on the AIL to which it is attached.
+      The exception case for this requirement is where the number of prefixes becomes too high to fit into a Router Advertisement message: then, a SNAC router can leave out deprecated prefixes and/or prefixes that become invalid soonest.
 	</t><t>
 	  A SNAC router MUST NOT advertise itself as a default router on its AIL by setting a non-zero Router Lifetime value in the
 	  header of its Router Advertisements.
@@ -923,6 +943,9 @@
 	  If the SNAC router is not advertising itself as a default router on the stub network, it MUST advertise reachability to any
 	  prefixes that are being advertised as on-link on its AIL. This is true for prefixes it is advertising,
 	  and for other prefixes being advertised on that link.
+      For stub networks supporting IPv6 Neighbor Discovery, reachability is advertised by Route Information Options (RIOs) in Router Advertisement messages.
+      These RIOs are constructed such that they cover all the on-link prefixes on the AIL.
+      For stub networks that support another method, the respective other method is used.
 	</t><t>
 	  Note that in some stub network configurations, it is possible for more than one SNAC router to be connected to the stub
 	  network, and each SNAC router may be inadvertently connected to a different AIL. In this case, a SNAC router advertising a default route
@@ -1021,12 +1044,14 @@
 	    is always available for SRP registrations into this default DNS zone.
 		This SRP registrar MUST be advertised on the
 	    stub network either using the 'dnssd-srp' and/or 'dnssd-srp-tls' service names or some stub-network-specific mechanism,
-	    the details of which are out of scope for this document.</t>
+	    the details of which are out of scope for this document.
+        For example, Thread <xref target="Thread"/> SNAC routers advertise the IPv6 address of their SRP registrar through
+        network-wide configuration data.</t>
 	</section>
       </section>
     </section>
 
-    <section>
+    <section anchor="nat64">
       <name>Providing reachability to IPv4-only services to hosts on the stub network</name>
       <t>
 	Stub networks rely on IPv6 to enable routing between links, which would not be possible with IPv4 due to the limited
@@ -1133,7 +1158,7 @@
 	This rule is based on the assumption that for a constrained stub network technology the size of the network configuration
 	data needs to be minimized. Exceptions specific to a stub network technology may apply.</t>
 
-      <section>
+      <section anchor="nat64-infra">
 	<name>NAT64 provided by infrastructure</name>
 	<t>
 	  Stub networks are defined to be IPv6-only because it would be difficult to implement a stub network using IPv4
