@@ -49,9 +49,9 @@
     <workgroup>Internet Engineering Task Force</workgroup>
     <abstract>
       <t>
-	This document describes a set of practices for connecting stub networks to adjacent infrastructure networks. This is
+	This document specifies a set of practices for automatically connecting IPv6 stub networks to adjacent infrastructure networks. This is
 	applicable in cases such as constrained (Internet of Things) networks where there is a need to provide functional parity of
-	service discovery and reachability between devices on the stub network and devices on an adjacent infrastructure link (for
+	service discovery and reachability between devices on the IPv6 stub network and devices on an adjacent infrastructure link (for
 	example, a home network).</t>
     </abstract>
   </front>
@@ -60,42 +60,8 @@
     <section>
       <name>Introduction</name>
       <t>
-	This document describes a set of practices for automatically connecting IPv6 stub networks to adjacent infrastructure networks.
-    The connection is enabled through a Stub Network Auto-Configuring router, or SNAC router.
-	There are several use cases for stub networks. Motivating factors include:
-      </t>
-      <ul>
-	<li>
-	  Incompatible speed: for example, an IEEE 802.15.4 network could not be easily bridged to a Wi-Fi network because the data rates
-	  are so dissimilar. So either it must be bridged in a very complicated and careful way to avoid overwhelming the 802.15.4
-	  network with irrelevant traffic, or the 802.15.4 network needs to be a separate subnet.</li>
-	<li>
-	  Incompatible media: for example, a constrained 802.15.4 network connected as a stub network to a Wi-Fi or Ethernet
-	  infrastructure network. In this situation bridging between the two media is not possible because the layer two
-	  framing and addressing is incompatible.
-	</li>
-	<li>
-	  Inconsistent availability of individual routers: In the case of an 802.15.4 network, it is quite possible that the devices used to link the
-	  infrastructure network to the stub network will not be conceived of by the end user as routers.  Consequently, one cannot
-	  assume that these devices will be on all the time. A solution for this use case will require some sort of commissioning
-	  process for stub routers, and can't assume that any particular stub router will always be available; rather, any stub
-	  router that is available must be able to adapt to current network conditions to provide reachability.</li>
-	<li>
-	  Incompatible mechanisms: the medium of the stub network may not, for example, use IPv6 Neighbor Discovery to populate a
-	  neighbor cache. If the infrastructure network (as is typical) does use Neighbor Discovery, then bridging the two networks
-	  together would require some way of translating between Neighbor Discovery and whatever mechanism is used on the stub
-	  network, and hence complicates rather than simplifies the problem of connecting the two networks.</li>
-	<li>
-	  Incompatible framing: if the stub network is a 6LoWPAN <xref target="RFC4944"/> network, packets on the stub network are
-	  expected to use 6LoWPAN header compression <xref target="RFC6282"/>. Making this work through a bridge would be very
-	  difficult.</li>
-	<li>
-	  Convenience: end users often connect devices to each other in order to extend networks.</li>
-	<li>
-	  Transitory connectivity: a mobile device acting as a stub router for a set of co-located devices could connect to an infrastructure network
-	  and gain access to services for itself and for the co-located devices.  Such a stub network is unlikely to have more
-	  than one stub router.</li>
-      </ul>
+	This document specifies a set of practices for automatically connecting IPv6 stub networks to adjacent infrastructure networks.
+          The connection is enabled through a Stub Network Auto-Configuring router, or SNAC router.</t>
       <t>
 	What makes stub networks a distinct type of network is simply that a stub network never provides transit between networks to
 	which it is connected. The term "stub" refers to the way the network is seen by the link to which it is connected: there is
@@ -116,12 +82,48 @@
 	in this document is intended to prevent this from being done, but neither does this document attempt to solve the problems that this
 	could create.</t>
       <t>
-	The goal of this document is to describe the minimal set of changes or behaviors required to use existing IETF
-	specifications to support the stub network use case. The result is intended to be deployable on existing infrastructure networks without
+	There are several use cases for stub networks. Motivating factors in these use cases include:</t>
+      <ul>
+	<li>
+	  Incompatible speed: for example, an IEEE 802.15.4 <xref target="IEEE802.15.4"/> network could not be easily bridged to a Wi-Fi network because the data rates
+	  are so dissimilar. So either it must be bridged in a very complicated and careful way to avoid overwhelming the 802.15.4
+	  network with irrelevant traffic, or the 802.15.4 network needs to be a separate subnet.</li>
+	<li>
+	  Incompatible media: for example, a constrained 802.15.4 network connected as a stub network to a Wi-Fi or Ethernet
+	  infrastructure network. In this situation bridging between the two media is not possible because the layer-two
+	  framing and addressing is incompatible.
+      While 802.15.4 may use both 16-bit and 64-bit MAC addresses, the stub network uses 48-bit MAC addresses.
+	</li>
+	<li>
+	  Inconsistent availability of individual routers: in the case of an 802.15.4 network, it is quite possible that the devices used to link the
+	  infrastructure network to the stub network will not be conceived of by the end user as routers.  Consequently, one cannot
+	  assume that these devices will be on all the time. A solution for this use case will require some sort of commissioning
+	  process for stub routers, and can't assume that any particular stub router will always be available; rather, any stub
+	  router that is available must be able to adapt to current network conditions to provide reachability.</li>
+	<li>
+	  Incompatible ND mechanisms: the stub network may not use IPv6 Neighbor Discovery (ND) to populate an IPv6
+	  neighbor cache, but instead a more optimized alternative.
+      If the infrastructure network (as is typical) does use ND, then bridging the two networks
+	  together would require some way of translating between ND and the alternate mechanism used on the stub
+	  network, and hence complicates rather than simplifies the problem of connecting the two networks.</li>
+	<li>
+	  Incompatible framing: if the stub network is a 6LoWPAN <xref target="RFC4944"/> network, packets on the stub network are
+	  expected to use 6LoWPAN header compression <xref target="RFC6282"/>. Making this work through a bridge would be very
+	  difficult.</li>
+	<li>
+	  Convenience: in various use cases, end users need to connect devices to each other in a "plug and play" fashion in order to extend networks without requiring any network administration actions.</li>
+	<li>
+	  Transitory connectivity: a mobile device acting as a stub router for a set of co-located devices may need to connect to an infrastructure network
+	  and gain access to services for itself and for the co-located devices.
+      In such use cases, the stub network is temporary and contains exactly one stub router.</li>
+      </ul>
+      <t>
+	The goal of this document is to specify the minimal set of changes or behaviors required to use existing IETF
+	specifications to support the stub network use cases. The result is intended to be deployable on existing IPv4/IPv6 infrastructure networks without
 	requiring changes to those networks.</t>
       <section anchor="interop-goals"><name>Interoperability Goals</name>
 	<t>
-	  The specific goal is for hosts on the stub network to be able to interoperate with hosts on the adjacent infrastructure
+	  The specific goal of this specification is for hosts on the IPv6 stub network to be able to interoperate with hosts on the adjacent infrastructure
 	  link. What is meant by "interoperate" is that a host on a stub network:
 	</t>
 	<ul>
@@ -132,7 +134,7 @@
 	  <li>
 	    is able to discover hosts on the Internet</li>
 	  <li>
-	    is able to acquire an IP address that can be used to communicate with hosts attached to the adjacent
+	    is able to acquire an IPv6 address that can be used to communicate with hosts attached to the adjacent
 	    infrastructure link</li>
 	  <li>
 	    has reachability to the hosts attached to the adjacent infrastructure link</li>
@@ -185,9 +187,10 @@
       <section anchor="architecture"><name>Sample SNAC Routers Deployment in a Home Network</name>
 
       <t>A stub network is attached via one or more SNAC routers to an infrastructure network.
-		 An infrastructure router in the scope of this specification is an IPv6 (aware) router that provides various
+		 An infrastructure router in the scope of this specification is an IPv4, IPv6 or IPv6/IPv4 router that provides various
 		 services in the infrastructure network.
-		 It can be a CE router, home gateway or Wi-Fi router. A SNAC router will connect as any other host in the infrastructure network,
+		 It can be a CE router, home gateway or Wi-Fi router.</t>
+      <t>A SNAC router will connect as any other host in the infrastructure network,
 		 while additionally providing addressability, discoverability and reachability functions for hosts in the stub network.
 	     See <xref target="services-provided"/> for an overview of the specific services that a SNAC router implements to provide
 	     addressability, discoverability and reachability.</t>
@@ -196,9 +199,9 @@
 		 SNAC routers as shown in <xref target="snac-rtr"/>. Although the use case depicted there is specific to home networks,
 		 the mechanisms apply for any type of infrastructure network and stub network attachment scenarios.</t>
       <t>A SNAC router looks for a suitable IPv6 on-link prefix on the adjacent infrastructure link (AIL) to which it is connected.
-		 This prefix may be already provided by the infrastructure router, or when no IPv6 infrastructure service is present,
+		 This prefix may be already provided by the infrastructure router, or when no infrastructure IPv6 service is present,
 		 by another SNAC router connected to the same AIL. If no suitable IPv6 on-link prefix is advertised on the AIL, the SNAC router
-		 will provide one itself using its own Router Advertisement messages.
+		 will provide one itself by including a Prefix Information Option (PIO) in the Router Advertisement (RA) messages it transmits on the AIL.
       </t>
 
       <figure title="SNAC Router connecting Stub Networks to Infrastructure" anchor="snac-rtr">
@@ -356,8 +359,8 @@
 	  ULA link prefixes to the stub network and the adjacent infrastructure link.</dd>
 	<dt>ULA Link Prefix:</dt>
 	<dd>A Unique Local Address /64 prefix allocated from the ULA site prefix. SNAC routers can use ULA link prefixes to provide
-	addressability on the stub network and/or adjacent infrastructure link as needed. If a SNAC router is doing NAT64 <xref target="RFC6146"/>, the NAT64
-	prefix is also a ULA link prefix. A total of 65,536 ULA link prefixes can be allocated from the ULA site prefix.</dd>
+	addressability on the stub network and/or adjacent infrastructure link as needed. If a SNAC router is providing NAT64 <xref target="RFC6146"/>, the NAT64
+	prefix is also a ULA link prefix.</dd>
       </dl>
     </section>
 
@@ -1307,6 +1310,17 @@
           </author>
           <date month="3" year="2026"/>
         </front>
+      </reference>
+      <reference anchor="IEEE802.15.4" target="https://standards.ieee.org/ieee/802.15.4/11041/">
+        <front>
+          <title>IEEE Standard for Low-Rate Wireless Networks</title>
+          <author>
+            <organization>IEEE</organization>
+          </author>
+          <date month="12" year="2024"/>
+        </front>
+        <seriesInfo name="IEEE Std" value="802.15.4-2024"/>
+        <seriesInfo name="DOI" value="10.1109/IEEESTD.2024.10794632"/>
       </reference>
       <reference anchor="Thread" target="https://www.threadgroup.org/ThreadSpec">
         <front>
