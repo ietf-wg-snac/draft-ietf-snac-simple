@@ -317,7 +317,7 @@
 	<dd>any link to which a stub router is directly attached, that is part of an infrastructure network and is not the
 	  stub network.</dd>
         <dt>Customer Edge (CE) Router:</dt>
-        <dd>CE Router is defined in <xref target="RFC7084"/>. A CE router is an infrastructure router that is intended
+        <dd>CE Router is defined in <xref target="I-D.ietf-v6ops-rfc7084bis"/>. A CE router is an infrastructure router that is intended
 		  to connect a single uplink network to a
           Local-Area Network. A CE router may be provided by an ISP and only capable of connecting directly to the ISP's
           means of service delivery, e.g. Cable or DSL, or it may have an Ethernet port on the WAN side and one or more Ethernet
@@ -1274,7 +1274,6 @@
 	  <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.6146.xml" />
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.6762.xml" />
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.6763.xml" />
-      <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.7084.xml" />
 	  <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.7858.xml" />
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.8174.xml" />
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.8200.xml" />
@@ -1287,6 +1286,8 @@
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.9915.xml" />
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml3/reference.I-D.ietf-dnssd-advertising-proxy.xml" />
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml3/reference.I-D.ietf-6man-snac-router-ra-flag.xml" />
+      <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml3/reference.I-D.ietf-v6ops-rfc7084bis.xml" />
+
     </references>
     <references>
       <name>Informative References</name>
