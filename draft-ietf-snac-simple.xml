@@ -1062,12 +1062,12 @@
 	  <t>
 	    A SNAC router may provide any valid DNS zone for which it can be authoritative. However, in general the allocation
 	    and configuration of such zones is not automatic, and automatic configuration of such zones is out of scope for this
-	    document. Unless otherwise configured, a SNAC router MUST use the 'default.service.arpa' zone for this purpose.
+	    document. Unless otherwise configured, a SNAC router MUST use the '`default.service.arpa`' zone for this purpose.
 	  </t>
 	  <t>
 	    The SNAC router MUST also maintain an SRP registrar and use registrations made through that SRP registrar to populate
 	    a DNS zone which is advertised as a default browsing domain, as defined above.
-		Note that per <xref target="RFC9665" section="3.1.2" sectionFormat="of"/> the special-use domain name 'default.service.arpa'
+		Note that per <xref target="RFC9665" section="3.1.2" sectionFormat="of"/> the special-use domain name '`default.service.arpa`'
 	    is always available for SRP registrations into this default DNS zone.
 		This SRP registrar MUST be advertised on the
 	    stub network either using the 'dnssd-srp' and/or 'dnssd-srp-tls' service names or some stub-network-specific mechanism,
@@ -1087,15 +1087,15 @@
 	to establish communications with IPv4-only hosts on the infrastructure network or the Internet.
       </t>
       <t>
-	Although NAT64 <xref target="RFC6146"/> provides IPv6-only hosts with a way to reach IPv4 hosts, there is no easy way for an IPv4 host to
-	use NAT64 to originate communication with an IPv6 host. Therefore, a SNAC router enables IPv6 hosts on the stub network
+	Although NAT64 <xref target="RFC6146"/> provides IPv6-only hosts with a way to reach IPv4-only hosts, there is no easy way for an IPv4-only host to
+	use NAT64 to originate communication with a host using IPv6. Therefore, a SNAC router enables IPv6 hosts on the stub network
 	to discover and reach IPv4 hosts on infrastructure, but does not provide a way for IPv4-only hosts
 	on infrastructure to communicate to IPv6 hosts on the stub network.
       </t>
       <t>
-	This should be acceptable, because hosts on the infrastructure network that need to access stub network IPv6 hosts should
-    not be IPv4-only. A SNAC router provides IPv6 addressability on the AIL, suitable for IPv6 communication with hosts on the stub
-	network -- infrastructure network hosts without an IPv6 stack are explicitly not in scope of this solution.
+    This should be acceptable, because hosts on the infrastructure network that need to communicate with hosts on the stub network
+    are expected to be capable of using IPv6 to do so, and of course it is necessary that hosts on the stub network be capable of
+    communicating using IPv6 since SNAC routers do not provide IPv4 service on their stub networks.
       </t>
       <t>
 	So the purpose of providing IPv4 connectivity for stub network hosts is to enable communication with arbitrary IPv4 hosts which
@@ -1163,7 +1163,7 @@
       <t>
 	A further complication is that in some cases, some SNAC routers connected to the stub network may not be able to
 	advertise an infrastructure-provided NAT64 prefix, while others may.
-    This can happen for example due to a stub network technology limitation on the number of (NAT64) prefixes that can
+    This can happen, for example, due to a stub network technology limitation on the number of (NAT64) prefixes that can
     be advertised simultaneously at any given time.
     In such cases, when at least one infrastructure-provided NAT64
 	service is already advertised on the stub network, a SNAC router that was initially not able to advertise a NAT64 service
@@ -1174,7 +1174,7 @@
 	the below rules for preference level selection MUST be used.
     Although the details of such a stub network technology's service advertisements are out of scope of this document,
     it is assumed that at least the three levels of 'low', 'medium', and 'high' can be distinguished with it.
-	For stub network technologies that don't support NAT64 preference level (for example, technologies using the PREF64 option),
+	For stub network technologies that don't support NAT64 preference levels (for example, technologies using the PREF64 option),
     these rules do not apply.</t>
       <t>
 	To differentiate between infrastructure-provided NAT64 service and SNAC router-provided NAT64 service, a SNAC router that
@@ -1235,17 +1235,21 @@
 	  This specification requires the stub network host itself to perform local IPv6 address synthesis, as needed,
 	  analogous to the customer-side translator (CLAT) function of 464XLAT <xref target="RFC6877"/>. This is the
 	  host-side equivalent of the network-based DNS64 <xref target="RFC6147"/> function. A SNAC router does not
-	  provide DNS64. Instead, it MUST provide an ipv4only.arpa answer <xref target="RFC7050"/> <xref target="RFC8880"/>
+	  provide DNS64. Instead, it MUST provide an '`ipv4only.arpa`' answer <xref target="RFC7050"/> <xref target="RFC8880"/>
 	  that advertises the NAT64 prefix for that SNAC router, and MUST provide an explicit route to that NAT64 prefix
 	  on the stub network using RA or an equivalent protocol for that stub network type.
 	</t><t>
-	  In constrained networks it can be very useful if stub network DNS resolvers provide the information required to do DNS64
-	  translation in the answer to the AAAA query. If the answer to an AAAA query comes back with "no data" (not NXDOMAIN), this
-	  suggests that there may be an A record. In this case, the DNS resolver in the SNAC router SHOULD attempt to look up an A record on
-	  the same name. If such a record exists, the DNS resolver SHOULD return no data in the Answer section of the DNS response, and
-	  SHOULD provide any CNAME records that were involved in returning the "no data" answer to the AAAA query, and SHOULD
-	  provide any A records that were ultimately returned, both in the Additional section. The response message SHOULD also include an
-	  ipv4only.arpa record in the Additional section.
+	  In constrained networks it can be useful if a SNAC router's DNS resolver provides the information required to do DNS64
+	  translation already in the answer to an AAAA query. If the answer to an AAAA query has zero AAAA records (but not
+      the NXDOMAIN response code), this suggests that there may still be an A record for the name.
+      In this case, the DNS resolver in the SNAC router MUST attempt to look up A record(s) on the same name, unless it is
+      explicitly configured to disable such lookups.
+      If such A record(s) exist, the DNS resolver MUST provide these in the Additional section of the DNS response.
+      If the queried name is an alias, the chain of CNAME records leading from the queried name to the canonical name
+      is already present in the Answer section of the response, per standard CNAME processing
+      (<xref target="RFC1034" section="3.6.2" sectionFormat="of"/>); the A record(s) provided in the Additional
+      section are in that case the A record(s) of the canonical name.
+      The response message MUST also include an '`ipv4only.arpa`' A record in the Additional section.
 	</t>
       </section>
     </section>
@@ -1277,7 +1281,7 @@
     <section>
       <name>IANA Considerations</name>
       <t>
-	This document updates the 'default.service.arpa' entry in the IANA service.arpa Subdomain registry
+	This document updates the '`default.service.arpa`' entry in the IANA service.arpa Subdomain registry
 	<xref target="IANA-SERVICE-ARPA"/> by adding a second
 	entry for that domain. The new entry has the description "default Discovery Proxy browsing domain for SNAC routers."
 	The reference is to this document. These two uses are mutually complementary; the reason for using a second entry
@@ -1326,6 +1330,7 @@
   <back>
     <references>
       <name>Normative References</name>
+      <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.1034.xml" />
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.2119.xml" />
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.4191.xml" />
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.4193.xml" />
@@ -1360,6 +1365,7 @@
 	  <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.6147.xml" />
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.6282.xml" />
 	  <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.6877.xml" />
+      <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.7113.xml" />
 	  <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.7217.xml" />
 	  <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.7435.xml" />
 	  <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.8305.xml" />
@@ -1448,13 +1454,13 @@
 	<name>Use on a managed network</name>
 	<t>
 	  In this scenario, a non-expert user attaches a SNAC router to an infrastructure network that's managed and provides both IPv6 and IPv4.
-	  This network has correctly deployed RA guard and/or port-based access control.
+	  This network has correctly deployed RA-Guard (<xref target="RFC7113"/>) and/or port-based access control.
 	  As a result, the SNAC router won't succeed in advertising a prefix on the managed network.
 	  Communications originating on the stub network that are able to communicate using NAT64 will still work.
 	</t>
 	<t>
 	  In the managed network case, it's possible that the network operator is willing to permit SNAC routers to be attached to the network by
-	  users. In this case, they might either not deploy RA guard, or they might deploy working DHCPv6 prefix delegation. This could be
+	  users. In this case, they might either not deploy RA-Guard, or they might deploy working DHCPv6 prefix delegation. This could be
 	  PD-per-host (where hosts are encouraged to use prefix delegation) or just ordinary prefix delegation (where hosts are given prefix
 	  delegation if they ask for it, but not encouraged to ask for it).
 	</t>
@@ -1463,25 +1469,25 @@
 	  will be correctly routed.
 	</t>
 	<t>
-      It's worth noting that devices which behave like SNAC routers already exist: they attach to the infrastructure network as
+      It's worth noting that devices that behave like SNAC routers already exist: they attach to the infrastructure network as
       regular IPv4 hosts, and offer IPv6 connectivity to an internal stub network which may not even be apparent to the user.
       Such a device is not relying on RA messages to function because it's using its IPv4 address and NAT64 to provide Internet connectivity,
-      so there is no management issue even if RA messages are blocked by RA guard on the infrastructure network.
+      so there is no management issue even if RA messages are blocked by RA-Guard on the infrastructure network.
       This is a reasonable use case, and this specification does in fact enable it.
 	</t>
 	<t>
-	  When a SNAC router is attached to an infrastructure network that has deployed RA guard and does not support DHCPv6 prefix delegation, and
+	  When a SNAC router is attached to an infrastructure network that has deployed RA-Guard and does not support DHCPv6 prefix delegation, and
 	  where that infrastructure network does allow the use of multicast DNS, services advertised on the stub network will be discoverable on the
 	  infrastructure network, but will not be reachable, by default.
     </t><t>
-      If the RA guard implementation allows an administrator to disable the RA guard function on a specific Ethernet port
+      If the RA-Guard implementation allows an administrator to disable the RA-Guard function on a specific Ethernet port
       or for a specific MAC address, this feature can be used to allow full SNAC router functionality in this managed
       network case.
 	</t>
 	<section>
-	  <name>Managed networks where DHCPv6 is required but RA guard is not present</name>
+	  <name>Managed networks where DHCPv6 is required but RA-Guard is not present</name>
 	  <t>
-	    There can be a case where an infrastructure network does not implement RA guard, does not advertise what a SNAC router considers
+	    There can be a case where an infrastructure network does not implement RA-Guard, does not advertise what a SNAC router considers
 	    to be a "suitable" prefix, and does provide addressing using DHCPv6 IA_NA. In this situation, it could be the case that
 	    two ULA prefixes are being advertised as on-link on the AIL and one is being advertised as permitting autonomous address configuration.
 		The latter is the ULA on-link prefix being provided by a SNAC router.
@@ -1499,7 +1505,7 @@
 	  </t>
 	  <t>
 	    In such scenarios there is no way to actually know based on the network configuration what the operator's intention was. An operator
-	    that sees a problem with this can react by implementing RA guard or by blocking unknown source addresses at the router, and in so
+	    that sees a problem with this can react by implementing RA-Guard or by blocking unknown source addresses at the router, and in so
 	    doing they would be expressing their intention. This configuration would not cause any new problem: a host that could communicate would
 	    still be able to communicate, and a host that could not communicate would not become able to communicate.
 	  </t>
@@ -1514,7 +1520,7 @@
 	<name>Use on a managed network without IPv6</name>
 	<t>
 	  In this scenario, there is no IPv6 service being intentionally advertised on a managed network. Operators of such networks
-	  may not be aware of the possibility of configuring RA guard.  In this situation, a SNAC router will connect and advertise
+	  may not be aware of the possibility of configuring RA-Guard.  In this situation, a SNAC router will connect and advertise
 	  services, which will be reachable just as they would be in a similar unmanaged network. A SNAC router that conforms to
 	  this specification will not advertise an IPv6 default route on any interface. Therefore, it should not cause operational problems, just as
 	  connecting an IPv4 NAT gateway in the same scenario would not cause operational problems.
