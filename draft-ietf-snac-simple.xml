@@ -460,7 +460,7 @@
       If a SNAC router is able to determine that an AIL (other than its own) is already in use for its stub network, for example provided by
 	  one or more other SNAC routers or by other router types, it is advised that the SNAC router takes appropriate actions such as warning
 	  the user or ceasing to operate as a SNAC router until the situation is resolved.
-	  How a stub router might detect this situation is however out of scope for this document.
+	  How a SNAC router might detect this situation is however out of scope for this document.
 	  </t>
       <t>
       Similarly, a SNAC router that is simultaneously active on more than one AIL is explicitly out of scope of this
@@ -862,7 +862,7 @@
           </t>
           <ul>
             <li>Single OSNR prefix constraint: For constrained stub networks (e.g., 6LoWPAN, Thread mesh networks) that have limited support for multiple OSNR prefixes, a SNAC router MUST select only the single best prefix. Prefix type GUA MUST be preferred over ULA, then the prefix with the longest preferred lifetime is chosen for distribution.</li>
-            <li>Multiple OSNR prefix constraint: For stub networks without a single OSNR prefix constraint, the GUA and ULA prefixes with the longest preferred lifetimes are chosen for distribution. Distributing both GUA and ULA prefixes allows hosts to decide how they will communicate.</li>
+            <li>Multiple OSNR prefix constraint: For stub networks without a "single OSNR prefix constraint", the GUA and ULA prefixes with the longest preferred lifetimes are chosen for distribution. Distributing both GUA and ULA prefixes allows hosts to decide how they will communicate.</li>
           </ul>
           <t>
             The timeout/lifetime-based selection ensures that the stub network avoids frequent renumbering events that can
@@ -900,9 +900,9 @@
 	      The SNAC router MUST NOT use a prefix once the DHCPv6-PD client has determined that it is no longer valid. If the
           DHCPv6-PD client provides a new prefix, and the old prefix is still valid, then:</t>
           <ul>
-          <li>in a stub network where a single OSNR prefix constraint applies, the SNAC router MUST deprecate
+          <li>in a stub network where the "single OSNR prefix constraint" applies, the SNAC router MUST deprecate
               the old OSNR prefix at the same time that it first advertises the new OSNR prefix.</li>
-          <li>in a stub network where a multiple OSNR prefixes constraint applies, the SNAC router MAY deprecate
+          <li>in a stub network where the "multiple OSNR prefix constraint" applies, the SNAC router MAY deprecate
               the old OSNR prefix at the same time that it first advertises the new OSNR prefix. The decision to
               deprecate immediately or later depends on the number of OSNR prefixes supported by the stub network
               technology and the number of valid OSNR prefixes already allocated; this is implementation-specific.</li>
@@ -938,7 +938,9 @@
 	</t><t>
 	  Each stub network will have some set of prefixes that are advertised as on-link for that network. A SNAC router connected
 	  to that stub network SHOULD advertise reachability to all such prefixes on the AIL to which it is attached.
-      The exception case for this requirement is where the number of prefixes becomes too high to fit into a Router Advertisement message: then, a SNAC router can leave out deprecated prefixes and/or prefixes that become invalid soonest.
+      The exception case for this requirement is where the number of prefixes becomes too high to fit into a Router Advertisement message: then, a SNAC router MAY leave out deprecated prefixes and/or prefixes that become invalid soonest.
+      The consequence of leaving out a prefix is that this particular SNAC router won't be selected anymore as a new ingress
+      router for IPv6 packets (with that prefix) that are destined towards the stub network.
 	</t><t>
 	  A SNAC router MUST NOT advertise itself as a default router on its AIL by setting a non-zero Router Lifetime value in the
 	  header of its Router Advertisements.
