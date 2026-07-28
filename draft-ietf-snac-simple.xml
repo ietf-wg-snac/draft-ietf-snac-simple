@@ -92,7 +92,7 @@
 	  Incompatible media: for example, a constrained 802.15.4 network connected as a stub network to a Wi-Fi or Ethernet
 	  infrastructure network. In this situation bridging between the two media is not possible because the layer-two
 	  framing and addressing is incompatible.
-      While 802.15.4 may use both 16-bit and 64-bit MAC addresses, the stub network uses 48-bit MAC addresses.
+      While 802.15.4 may use both 16-bit and 64-bit MAC addresses, the infrastructure network uses 48-bit MAC addresses.
 	</li>
 	<li>
 	  Inconsistent availability of individual routers: in the case of an 802.15.4 network, it is quite possible that the devices used to link the
@@ -187,7 +187,7 @@
       <section anchor="architecture"><name>Sample SNAC Routers Deployment in a Home Network</name>
 
       <t>A stub network is attached via one or more SNAC routers to an infrastructure network.
-		 An infrastructure router in the scope of this specification is an IPv4, IPv6 or IPv6/IPv4 router that provides various
+		 An infrastructure router in the scope of this specification is an IPv4, IPv6 or dual-stack (IPv6/IPv4) router that provides various
 		 services in the infrastructure network.
 		 It can be a CE router, home gateway or Wi-Fi router.</t>
       <t>A SNAC router will connect as any other host in the infrastructure network,
