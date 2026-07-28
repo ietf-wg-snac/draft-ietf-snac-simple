@@ -436,7 +436,7 @@
     <section>
       <name>Support for IPv6 Neighbor Discovery</name>
       <t>
-	This specification requires that the AIL can support IPv6 Neighbor Discovery (ND) <xref target="RFC4861"/>, and specifically that
+	This specification requires that the AIL is able to support IPv6 Neighbor Discovery (ND) <xref target="RFC4861"/>, and specifically that
 	IPv6 routers and on-link prefixes can be advertised using Router Advertisement messages and discovered using Router Solicitation messages. The stub
 	network link may also support Neighbor Discovery, or may use some different mechanism.</t>
       <t>
@@ -515,7 +515,7 @@
       to the stub network link and the SNAC router (that was previously advertising the OSNR prefix) is still not present,
       or if the OSNR prefix is in danger of expiring, another SNAC router will eventually take over and
 	  advertise its own OSNR prefix. In this situation, all SNAC routers that remember the old OSNR prefix continue
-      advertising a route to it on the AIL until the OSNR prefix expires.
+      advertising a route to it on the AIL until the old OSNR prefix expires.
         </t>
     </section>
       </section>
