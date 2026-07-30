@@ -343,7 +343,7 @@
 	  the network infrastructure to which a stub router connects. This network can be a single link, or a network of links. The
 	  network is formed by one or more infrastructure routers. In a home network, this is typically a CE router, which may
 	  also provide some services, such as a DNS resolver, a DHCPv4
-	  server, and a DHCPv6 prefix delegation (<xref target="RFC9915"/>) server, for example.</dd>
+	  server, and a DHCPv6 prefix delegation (DHCPv6-PD, <xref target="RFC9915"/>) server, for example.</dd>
 	<dt>Infrastructure router:</dt>
 	<dd>An IP router that is part of an infrastructure network. For example, a CE router.</dd>
 	<dt>Off-Stub-Network-Routable (OSNR) Prefix:</dt>
@@ -489,7 +489,8 @@
 	  will forward that packet directly to a default router, if one is present; otherwise, it will have no route to the
 	  destination, and will drop the packet.
 	</t><t>
-	  This amounts to a flash renumbering event. There is no easy way to prevent this from happening: routes and prefixes advertised in
+	  This amounts to a flash-renumbering event (<xref target="RFC8978"/>).
+      There is no easy way to prevent this from happening: routes and prefixes advertised in
 	  Router Advertisement messages have lifetimes, and hosts may continue to use the included prefixes until they expire. Applications that
 	  are not able to detect the loss of a route or that do not quickly notice that a host is no longer reachable on a particular
 	  address will exhibit poor performance when this happens. For example, if the stub network is a network that supports
@@ -613,6 +614,8 @@
         make its presence known on the AIL, by sending RA messages with the 'SNAC Router' flag bit set, and
         2) when a future protocol specification requires the SNAC router to send particular RA option(s), other than the
         options defined in this specification, which would warrant sending RA messages.
+        The consequence of not adhering to this recommendation is that the AIL is needlessly burdened with additional
+        (multicast) RA messages from the SNAC router, decreasing the link's effective capacity.
 	  </t>
 	  <t>
 	    It is important to note that it is possible for an OSNR prefix to be advertised and then withdrawn on the
@@ -754,11 +757,11 @@
 	    </t>
 	    <ul>
 	      <li>
-		the preferred lifetime for its prefix should be set to zero in subsequent Router Advertisement messages.</li>
+		the preferred lifetime for its prefix is set to zero in subsequent Router Advertisement messages.</li>
 	      <li>
-		the valid lifetime for its prefix should be reduced with each subsequent Router Advertisement message.</li>
+		the valid lifetime for its prefix is reduced with each subsequent Router Advertisement message.</li>
 	      <li>
-		the usability of the infrastructure-provided on-link prefix should be monitored as in the STATE-SUITABLE state; if
+		the usability of the infrastructure-provided on-link prefix is monitored as in the STATE-SUITABLE state; if
 		during the deprecation period, the SNAC router detects that there are no longer any suitable prefixes on the link, as
 		described in <xref target="staleness"/> or in <xref target="nud"/>, it MUST return the interface to the
 		STATE-BEGIN-ADVERTISING (<xref target="state-begin-advertising"/>) state and resume advertising its prefix with the
@@ -815,9 +818,15 @@
 	    providing on-link prefixes to the stub network and the adjacent infrastructure link as described in <xref target="state-begin-advertising"/>.
 	  </t><t>
 	    Any ULA link prefixes allocated by a SNAC router SHOULD persist across reboots, and SHOULD remain stable over time.
-        An exception to both these requirements is the following: for privacy reasons, a SNAC router that detects
+        The consequence of not following either of these recommendations is that the stub network is effectively renumbered
+        each time the SNAC router reboots, or the prefix changes otherwise: addresses configured from the previous prefix
+        on the stub network become deprecated, established IP connections using those addresses break, and addresses cached
+        by peers (e.g., in DNS records, or in application state) become stale until refreshed.
+        This hampers a timely and predictable operation of devices on the stub network.
+      </t><t>
+        An allowed exception to both these requirements is the following: for privacy reasons, a SNAC router that detects
         that its AIL changes SHOULD allocate a different ULA site prefix for the new AIL.
-        On the latter requirement there are two possible exceptions:
+        On this recommendation there are two possible exceptions:
 	  </t>
         <ol>
             <li>The SNAC router remains connected to the same stub network, and the ULA site prefix value is
@@ -853,7 +862,7 @@
             A SNAC router MUST request one or more delegated prefixes of length 64. It does so by sending an IA_PD option for each prefix,
             each with a different IAID, containing an IA Prefix option with a hint for length 64 as described in
             <xref target="RFC9915" section="18.2.1" sectionFormat="of"/>. If the SNAC router obtains a prefix with length less
-            than 64, it SHOULD generate a /64 from the obtained prefix by padding with zeros. If the SNAC router obtains a prefix
+            than 64, it generates a /64 from the obtained prefix by padding with zeros. If the SNAC router obtains a prefix
             with length greater than 64, the SNAC router MUST treat the prefix as unsuitable.
             If no suitable prefix is obtained using DHCPv6-PD, it MUST use the allocated ULA link prefix for the stub
             network instead.
@@ -928,6 +937,10 @@
 	      to replace it prior to this normal timeout process, because there is no benefit to changing the OSNR prefix on the
 	      stub network in such a situation, and it's possible that the SNAC router will return to the other link before the
 	      OSNR prefix expires.
+          The consequence of not following this recommendation is an unnecessary early renumbering of the stub network:
+          the still-valid OSNR prefix is replaced by the ULA link prefix without any gain in reachability of stub network
+          nodes. It also risks introducing a second renumbering event, that is, back to the DHCPv6-PD-provided prefix.
+          Each renumbering event incurs the disruptions described in <xref target="ula-site-prefix"/>.
 	    </t>
         </section>
       </section>
@@ -951,13 +964,21 @@
 	  a SNAC router SHOULD proactively advertise this new prefix on its AIL as defined in <xref target="RFC4861" section="6.2.4" sectionFormat="of"/>,
 	  fourth paragraph. The exception case is where the SNAC router detects that another router is already advertising a route
 	  to this new OSNR prefix on the AIL: in this case, the SNAC router is allowed to skip the proactive advertising.
+      The consequence of not following this recommendation (when no other SNAC router is advertising a route to this new
+      OSNR prefix on the AIL) is that existing hosts on the AIL only learn the route to the new OSNR prefix from the SNAC
+      router's next scheduled unsolicited periodic RA message, which may be up to <xref target="MaxRtrAdvInterval" format="none">MaxRtrAdvInterval</xref>
+      later. Until then, devices on the stub network are unreachable from the AIL by these hosts at their OSNR addresses
+      that are based on the new prefix.
 	</t>
       </section>
       <section anchor="stub-reachability">
 	<name>Managing reachability on the stub network</name>
 	<t>
 	  The SNAC router SHOULD advertise itself as a default router on the stub network, if it detects that a default route is
-	  present on the AIL. In some cases it may not be desirable to advertise reachability to the Internet as a whole; for such cases the SNAC
+	  present on the AIL.
+      The consequence for not following this recommendation is that some hosts on the infrastructure network and/or hosts
+      on the Internet potentially cannot be reached by a host on the stub network.
+      As an exception, in some cases it may not be desirable to advertise reachability to the Internet as a whole; for such cases the SNAC
 	  router MAY be administratively configured to not advertise itself as a default router, or it MAY use an automated
 	  policy to make such a decision.
 	</t><t>
@@ -985,10 +1006,20 @@
 	<t>
 	  As indicated in <xref target="common-maint"/>, support for multiple AILs connected to the same stub network is out of scope of
 	  this specification.
-	  Nevertheless, to support future versions of this specification or related extensions, a SNAC router SHOULD be configurable
-	  to not advertise itself as a default router on the stub network.
-	  A SNAC router SHOULD be configurable to explicitly advertise AIL prefixes on the stub network even if it is advertising as a
-	  default router on the stub network. The mechanisms by which such configuration can be accomplished are out of scope for this document.
+	  Nevertheless, to support future versions of this specification or related extensions, which may provide support
+      for multiple AILs, a SNAC router:
+    </t>
+      <ul>
+        <li>SHOULD be configurable to not advertise itself as a default router on the stub network; and</li>
+	    <li>SHOULD be configurable to explicitly advertise AIL prefixes on the stub network even if it is advertising as a
+	  default router on the stub network.</li>
+      </ul>
+    <t>
+      The mechanisms by which such configuration can be accomplished are out of scope for this document.
+      The consequence of not following either one of these recommendations is that the SNAC router most likely cannot
+      operate in combination with newer SNAC router(s) that implement a future version/extension of this specification as
+      defined above. Instead, the SNAC router will likely have to be removed from operation before the newer SNAC router(s)
+      can fully perform their functions that support multiple AILs.
 	</t>
 	<t>
 	  It is also possible that SNAC routers for more than one stub network are connected to the same AIL.
@@ -1195,7 +1226,11 @@
 	a NAT64 prefix on a constrained stub network, and another NAT64 prefix is advertised on the stub network with a
 	higher preference level, the SNAC router SHOULD deprecate the NAT64 prefix it is advertising.
 	This rule is based on the assumption that for a constrained stub network technology the size of the network configuration
-	data needs to be minimized. Exceptions to this rule specific to a stub network technology may apply.</t>
+	data needs to be minimized. Exceptions to this rule specific to a stub network technology may apply.
+    The consequence of not following this rule depends on the stub network technology. For a constrained stub network,
+    it can be the case that a prefix entry is needlessly occupied (by the NAT64 prefix) in the network configuration data,
+    potentially preventing another prefix entry to be advertised.
+      </t>
 
       <section anchor="nat64-infra">
 	<name>NAT64 provided by infrastructure</name>
@@ -1234,6 +1269,8 @@
 	  To provide NAT64 service, a SNAC router MUST allocate a NAT64 prefix. For convenience, the SNAC router allocates a single
 	  prefix out of the ULA site prefix that it maintains. Out of the 2^16 possible subnets of the /48, the SNAC router SHOULD
 	  use the numerically highest /64 prefix.
+      The consequence of not following this recommendation is that the NAT64 prefix and addresses derived from it are
+      harder to identify in stub network diagnostic/debugging/logging operations.
 	</t><t>
 	  If there are multiple SNAC routers providing connectivity between the stub network and infrastructure, each stub network
 	  uses its own NAT64 prefix; there is no common NAT64 prefix. The reason for this is that NAT64 translation is not stateless,
@@ -1270,8 +1307,14 @@
 	<dt>DNS Resolver:</dt><dd>The SNAC router MUST provide a DNS resolver. If RA messages are in use on the stub network, the DNS resolver
 	  is advertised in the Router Advertisement Recursive DNS Server (RDNSS) option. If RA messages are not in use on the stub network, then
 	  the mechanism whereby the DNS resolver is advertised by the SNAC router is specific to that type of stub network.</dd>
-	<dt>DHCPv6 Server:</dt><dd>The use of DHCPv6 on the stub network is NOT RECOMMENDED. In some cases it may be necessary, but should be
-	  disabled by default if the SNAC router provides this capability at all.</dd>
+	<dt>DHCPv6 Server:</dt><dd>The use of DHCPv6 on the stub network is NOT RECOMMENDED. In some cases it may be necessary
+      to support DHCPv6, but this MUST be disabled by default if the SNAC router provides this capability at all.
+      The consequence of nevertheless enabling DHCPv6, on one or more SNAC routers, is that any DHCPv6-assigned address
+      may remain active on stub network hosts even when the DHCPv6-PD delegated prefix from which it ultimately derives
+      has become invalid: an incorrect situation to be avoided.
+      This can happen when a DHCPv6 client in the stub network is unwilling to accept DHCPv6 Reconfigure messages, such
+      that the DHCPv6 server in the SNAC router has no way to trigger this client to renew or release its address.
+      See <xref target="RFC9915" sectionFormat="of" section="21.20"/> for more details.</dd>
 	<dt>Discovery Proxy:</dt><dd>In order to discover services on the AIL, a SNAC router MUST act as a
 	  Discovery Proxy on the AIL to which it is attached.</dd>
 	<dt>SRP Registrar:</dt><dd>A SNAC router MUST provide SRP registrar service. This service MUST be advertised using DNS-SD in
@@ -1317,7 +1360,12 @@
       </t><t>
         There is also no guarantee that privacy-preserving DNS service will be available on the AIL.
 		When such DNS service is present, the SNAC router SHOULD use it, if it is technically capable of doing so.
-		However, there is no way to signal on the stub network that this is being done.
+        The exception to this recommendation is when the SNAC router is administratively configured to use another DNS
+        service. The consequence of not following this recommendation is that DNS queries originating from stub network
+        hosts are forwarded over the infrastructure network possibly without encryption, so that the opportunistic privacy provided by
+        DNS-over-TLS on the stub network is lost on the AIL: an on-path observer can see which names stub network devices
+        are querying.
+		However, there is no way to signal on the stub network that privacy-preserving DNS lookups are being done.
 		Given that the privacy profile supported here is opportunistic, the DNS client has no guarantee of privacy.
 		Aggregation of queries originating from the stub network by the SNAC router provides some degree of anonymization,
 		but in any case because the TLS server's certificate is not being validated by the client, the client can't
@@ -1375,6 +1423,7 @@
 	  <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.7217.xml" />
 	  <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.7435.xml" />
 	  <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.8305.xml" />
+      <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.8978.xml" />
 	  <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.9364.xml" />
       <reference anchor="IANA-SERVICE-ARPA" target="https://www.iana.org/assignments/locally-served-dns-zones/locally-served-dns-zones.xhtml#service-arpa-subdomain">
         <front>
