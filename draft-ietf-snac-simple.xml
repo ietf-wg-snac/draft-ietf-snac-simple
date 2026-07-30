@@ -823,7 +823,7 @@
             <li>The SNAC router remains connected to the same stub network, and the ULA site prefix value is
                 generated based on properties of the stub network (such as configuration data - an example is
 				the Thread Extended PAN ID detailed in <xref target="maintenance-restarts"/>).</li>
-           <li>The SNAC router is configured by the user or an operator to behave otherwise.</li>
+           <li>The SNAC router is configured by the user or an administrator to behave otherwise.</li>
         </ol>
 	  <t>
 	    One implementation strategy to meet the above privacy requirement is to use the algorithm of
@@ -1450,7 +1450,7 @@
 	  <name>Use on an unmanaged (non-home) IPv6 network</name>
 	  <t>
 	    In this scenario there is a site that is not a home, so perhaps a restaurant or business, where there is no network
-	    operator per se, and the network is deployed similarly to a home network. There is little difference between this
+	    administrator per se, and the network is deployed similarly to a home network. There is little difference between this
 	    scenario and an unmanaged home network, but expectations may be different. In particular, it is very common in such
 	    settings for there to be a guest network for visitors, or for the network to enforce isolation between all nodes
 	    connected to it.
@@ -1465,7 +1465,7 @@
 	  Communications originating on the stub network that are able to communicate using NAT64 will still work.
 	</t>
 	<t>
-	  In the managed network case, it's possible that the network operator is willing to permit SNAC routers to be attached to the network by
+	  In the managed network case, it's possible that the network administrator is willing to permit SNAC routers to be attached to the network by
 	  users. In this case, they might either not deploy RA-Guard, or they might deploy working DHCPv6 prefix delegation. This could be
 	  PD-per-host (where hosts are encouraged to use prefix delegation) or just ordinary prefix delegation (where hosts are given prefix
 	  delegation if they ask for it, but not encouraged to ask for it).
@@ -1510,7 +1510,7 @@
 	    response.
 	  </t>
 	  <t>
-	    In such scenarios there is no way to actually know based on the network configuration what the operator's intention was. An operator
+	    In such scenarios there is no way to actually know based on the network configuration what the administrator's intention was. An administrator
 	    that sees a problem with this can react by implementing RA-Guard or by blocking unknown source addresses at the router, and in so
 	    doing they would be expressing their intention. This configuration would not cause any new problem: a host that could communicate would
 	    still be able to communicate, and a host that could not communicate would not become able to communicate.
@@ -1525,7 +1525,7 @@
       <section>
 	<name>Use on a managed network without IPv6</name>
 	<t>
-	  In this scenario, there is no IPv6 service being intentionally advertised on a managed network. Operators of such networks
+	  In this scenario, there is no IPv6 service being intentionally advertised on a managed network. Administrators of such networks
 	  may not be aware of the possibility of configuring RA-Guard.  In this situation, a SNAC router will connect and advertise
 	  services, which will be reachable just as they would be in a similar unmanaged network. A SNAC router that conforms to
 	  this specification will not advertise an IPv6 default route on any interface. Therefore, it should not cause operational problems, just as
