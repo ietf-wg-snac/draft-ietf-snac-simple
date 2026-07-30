@@ -65,7 +65,7 @@
       <t>
 	What makes stub networks a distinct type of network is simply that a stub network never provides transit between networks to
 	which it is connected. The term "stub" refers to the way the network is seen by the link to which it is connected: there is
-	reachability through a stub router to devices on the stub network from the adjacent infrastructure link, but there is no
+	reachability through a stub router to nodes on the stub network from the adjacent infrastructure link, but there is no
 	reachability through the stub network to any link beyond that one.</t>
       <t>
 	Eliminating transit routing is not intended to be seen as a virtue in itself, but rather as a simplifying assumption that
@@ -255,7 +255,7 @@
 <path d="M 224,40 L 224,64" fill="none" stroke="black"/>
 <text x="204" y="84">home Wi-Fi or CE</text>
 <text x="224" y="100">Infrastructure Router</text>
-<text x="92" y="148">infrastructure devices</text>
+<text x="92" y="148">infrastructure hosts</text>
 <text x="380" y="212">(AIL - Adjacent Infrastructure Link)</text>
 <text x="184" y="244">(multiple SNAC Routers)</text>
 <text x="452" y="244">(single SNAC Router)</text>
@@ -275,7 +275,7 @@
                  |  Infrastructure Router  |
                  +------------+------------+
                               |
-   infrastructure devices   .-~-.
+   infrastructure hosts     .-~-.
      +-----+              _(     )__
      |     |--+          (__________)
      +-----+  +------------->|
@@ -322,7 +322,16 @@
 	<dt>Router:</dt>
 	<dd>A node that forwards IPv6 packets not explicitly addressed to itself.  (See Note in <xref target="RFC8200" section="2" sectionFormat="of"/>.)</dd>
 	<dt>Host:</dt>
-	<dd>Any node that is not a router.  (See Note in <xref target="RFC8200" section="2" sectionFormat="of"/>.)</dd>
+    <dd>A node that is acting in a host (<xref target="RFC8200"/>) role for the purposes of the discussion: as an endpoint of a communication and not
+        as a router of IP packets. In this document, the term 'host' is not meant to exclude nodes that also act as routers
+        on the same network interface.
+        Although <xref target="RFC8200"/> makes a clear distinction between hosts and routers, in this document specifically
+        the host role exercised by a node to perform a specific function or task is emphasized and not the complete set of
+        functions which the node may provide.
+        For example, a SNAC router performs various functions in a host role while it is also a router.
+	    (Also, see the Note in <xref target="RFC8200" section="2" sectionFormat="of"/>.)</dd>
+    <dt>IPv4-only Host:</dt>
+    <dd>A device that implements IPv4, but not IPv6; acting as an endpoint of IPv4 communication.</dd>
 	<dt>Addressability:</dt>
 	<dd>The ability to associate each node on a link with its own IPv6 address.</dd>
 	<dt>Reachability:</dt>
@@ -391,8 +400,8 @@
 	<dd>
 	  The amount of time that can pass after the last time a Router Advertisement (RA) message from a particular IPv6 router has
 	  been received before it is assumed the router is no longer present. This is a stopgap in case the router is reachable but has
-	  silently stopped sending RA messages; this situation is unlikely, but if it does happen, new devices joining the
-	  infrastructure network will not be able to reach devices on the stub network until the SNAC router decides that the router
+	  silently stopped sending RA messages; this situation is unlikely, but if it does happen, new hosts joining the
+	  infrastructure network will not be able to reach hosts on the stub network until the SNAC router decides that the router
 	  that previously advertised the suitable on-link prefix on the AIL is stale.</dd>
 	<dt anchor="STUB_PROVIDED_PREFIX_LIFETIME">STUB_PROVIDED_PREFIX_LIFETIME (default: 30 minutes):</dt>
 	<dd>
@@ -551,7 +560,7 @@
 	  <name>Suitable On-Link Prefixes</name>
 	  <t>
 	    SNAC routers must evaluate prefixes that are advertised on-link on the AIL as to their suitability for use in communicating with
-	    devices on the stub network. If no suitable prefix is found, a SNAC router MUST advertise one on the AIL.
+	    hosts on the stub network. If no suitable prefix is found, a SNAC router MUST advertise one on the AIL.
 	  </t><t>
 	    An on-link prefix is considered suitable if it is advertised on the link in a Prefix Information option
 	    (<xref target="RFC4861" section="4.6.2" sectionFormat="comma" />) with the following Prefix Information option header
@@ -669,7 +678,7 @@
 		advertised it as described in (<xref target="RFC4861" section="7.3.1" sectionFormat="comma"/>) using a ReachableTime
 		value of no more than <xref target="MAX_SUITABLE_REACHABLE_TIME" format="none">MAX_SUITABLE_REACHABLE_TIME</xref>.
 		The reason for this is that if no router providing the on-link
-		prefix on the AIL is reachable, then when a new host joins the network, it will have no suitable on-link
+		prefix on the AIL is reachable, then when a new host joins on the AIL, it will have no suitable on-link
 		prefix to use for autoconfiguration, and thus will be unable to communicate with hosts on the stub network.</t>
 	      <t>
 		Whenever the ReachableTime for a router advertising a suitable prefix exceeds <xref format="none" target="MAX_SUITABLE_REACHABLE_TIME">
@@ -822,7 +831,7 @@
         each time the SNAC router reboots, or the prefix changes otherwise: addresses configured from the previous prefix
         on the stub network become deprecated, established IP connections using those addresses break, and addresses cached
         by peers (e.g., in DNS records, or in application state) become stale until refreshed.
-        This hampers a timely and predictable operation of devices on the stub network.
+        This hampers a timely and predictable operation of hosts on the stub network.
       </t><t>
         An allowed exception to both these requirements is the following: for privacy reasons, a SNAC router that detects
         that its AIL changes SHOULD allocate a different ULA site prefix for the new AIL.
@@ -967,7 +976,7 @@
       The consequence of not following this recommendation (when no other SNAC router is advertising a route to this new
       OSNR prefix on the AIL) is that existing hosts on the AIL only learn the route to the new OSNR prefix from the SNAC
       router's next scheduled unsolicited periodic RA message, which may be up to <xref target="MaxRtrAdvInterval" format="none">MaxRtrAdvInterval</xref>
-      later. Until then, devices on the stub network are unreachable from the AIL by these hosts at their OSNR addresses
+      later. Until then, hosts on the stub network are unreachable from the AIL by these AIL hosts via the OSNR addresses
       that are based on the new prefix.
 	</t>
       </section>
@@ -1041,14 +1050,14 @@
 	    the infrastructure network, and can be assumed to provide a local DNS resolver. Therefore, this document does not
 	    define a stub-network-specific mechanism for providing these services on the infrastructure network.</t>
 	  <t>
-	    In some cases it will be necessary for hosts on the AIL to be able to discover devices on the
+	    In some cases it will be necessary for hosts on the AIL to be able to discover hosts on the
 	    stub network. In other cases, this will be unnecessary or even undesirable. For example, it may be undesirable for
-	    devices on an AIL to be able to discover devices on a Wi-Fi tether provided by a
+	    hosts on an AIL to be able to discover devices on a Wi-Fi tether provided by a
 	    mobile phone.</t>
 	  <t>
 	    One example of a use case for stub networks where such discovery is desirable is the constrained network use case. In this
 	    case a low-power, low-cost stub network provides connectivity for IoT devices that provide services to the infrastructure. For
-	    such networks, it is necessary that devices on the infrastructure network are able to discover devices on the stub network.</t>
+	    such networks, it is necessary that hosts on the infrastructure network are able to discover these devices on the stub network.</t>
 	  <t>
 	    The most basic use case for this is to provide feature parity with existing solutions like multicast DNS (mDNS). For
 	    example, a light bulb with built-in Wi-Fi connectivity might be discoverable on the adjacent infrastructure link to which it is
@@ -1121,9 +1130,9 @@
       </t>
       <t>
 	Although NAT64 <xref target="RFC6146"/> provides IPv6-only hosts with a way to reach IPv4-only hosts, there is no easy way for an IPv4-only host to
-	use NAT64 to originate communication with a host using IPv6. Therefore, a SNAC router enables IPv6 hosts on the stub network
-	to discover and reach IPv4 hosts on infrastructure, but does not provide a way for IPv4-only hosts
-	on infrastructure to communicate to IPv6 hosts on the stub network.
+	use NAT64 to originate communication with a host using IPv6. Therefore, a SNAC router enables hosts on the stub network
+	to discover and reach IPv4-only hosts on infrastructure, but does not provide a way for IPv4-only hosts
+	on infrastructure to communicate to (IPv6-only) hosts on the stub network.
       </t>
       <t>
     This should be acceptable, because hosts on the infrastructure network that need to communicate with hosts on the stub network
@@ -1131,7 +1140,7 @@
     communicating using IPv6 since SNAC routers do not provide IPv4 service on their stub networks.
       </t>
       <t>
-	So the purpose of providing IPv4 connectivity for stub network hosts is to enable communication with arbitrary IPv4 hosts which
+	So the purpose of providing IPv4 connectivity for stub network hosts is to enable communication with arbitrary IPv4-only hosts which
 	may be on the AIL, elsewhere on the infrastructure network, or on the Internet. This is accomplished by providing NAT64 address translation in the SNAC router, and by enabling
 	service discovery using a Discovery Proxy in the SNAC router.
       </t>
@@ -1235,7 +1244,7 @@
       <section anchor="nat64-infra">
 	<name>NAT64 provided by infrastructure</name>
 	<t>
-	  Stub networks are defined to be IPv6-only in this specification, while enabling IPv6 stub network devices to use
+	  Stub networks are defined to be IPv6-only in this specification, while enabling IPv6 stub network hosts to use
       IPv4-only services and to communicate with IPv4-only hosts.
 	  Ideally, the infrastructure network also fully supports IPv6, and all
 	  services on the infrastructure network are IPv6-capable. In this case, perhaps the infrastructure network provides NAT64
@@ -1260,7 +1269,7 @@
 	<name>NAT64 provided by SNAC router(s)</name>
 	<t>
 	  Most infrastructure networks at present do not provide NAT64 service. Many infrastructure networks do not provide DHCPv6
-	  prefix delegation. In these cases it is necessary for SNAC routers to be able to provide NAT64 service if IPv4 hosts are
+	  prefix delegation. In these cases it is necessary for SNAC routers to be able to provide NAT64 service if IPv4-only hosts are
 	  to be reachable from the stub network. Therefore, a SNAC router MUST be capable of providing NAT64 service to the stub
 	  network. When infrastructure-provided NAT64 service is not present or is not usable, and when no other NAT64 service is
 	  already advertised on the stub network, a SNAC router MUST enable its own NAT64 service and advertise it
@@ -1322,8 +1331,8 @@
 	<dt>Legacy Browsing Domains:</dt><dd>The DNS resolver in the SNAC router MUST advertise a legacy browsing domain for its AIL,
 	  for the DNS zone that is maintained by its SRP service, and in addition it MUST list the legacy browsing domains provided
 	  by the infrastructure network, if any.</dd>
-	<dt>NAT64:</dt><dd>A SNAC router needs to provide NAT64 service in particular circumstances so that IPv6 hosts on the stub network
-	  can communicate with IPv4 hosts on the infrastructure network and the global Internet.
+	<dt>NAT64:</dt><dd>A SNAC router needs to provide NAT64 service in particular circumstances so that (IPv6-only) hosts on the stub network
+	  can communicate with IPv4-only hosts on the infrastructure network and the global Internet.
 	  See <xref target="nat64-by-snac"/> for detailed requirements.</dd>
       </dl>
     </section>
@@ -1363,7 +1372,7 @@
         The exception to this recommendation is when the SNAC router is administratively configured to use another DNS
         service. The consequence of not following this recommendation is that DNS queries originating from stub network
         hosts are forwarded over the infrastructure network possibly without encryption, so that the opportunistic privacy provided by
-        DNS-over-TLS on the stub network is lost on the AIL: an on-path observer can see which names stub network devices
+        DNS-over-TLS on the stub network is lost on the AIL: an on-path observer can see which names stub network hosts
         are querying.
 		However, there is no way to signal on the stub network that privacy-preserving DNS lookups are being done.
 		Given that the privacy profile supported here is opportunistic, the DNS client has no guarantee of privacy.
@@ -1525,7 +1534,7 @@
 	</t>
 	<t>
       It's worth noting that devices that behave like SNAC routers already exist: they attach to the infrastructure network as
-      regular IPv4 hosts, and offer IPv6 connectivity to an internal stub network which may not even be apparent to the user.
+      regular IPv4-only hosts, and offer IPv6 connectivity to an internal stub network which may not even be apparent to the user.
       Such a device is not relying on RA messages to function because it's using its IPv4 address and NAT64 to provide Internet connectivity,
       so there is no management issue even if RA messages are blocked by RA-Guard on the infrastructure network.
       This is a reasonable use case, and this specification does in fact enable it.
@@ -1548,14 +1557,14 @@
 		The latter is the ULA on-link prefix being provided by a SNAC router.
 	  </t>
 	  <t>
-	    In case a host on the AIL attempts to communicate with a device using a site ULA prefix on a different link, it may
+	    In case a host on the AIL attempts to communicate with a host using a site ULA prefix on a different link, it may
 	    choose a ULA address as its source address.  If it were to choose the autonomously-configured ULA address as its source
 	    address, this would fail, because there is no route back from the different link to the SNAC-router-provided ULA prefix.
 	  </t>
 	  <t>
 	    However, this can only happen in practice if the host did not receive an address from DHCPv6.  In this case, the host
 	    would not be able to communicate anyway. The problem that might occur here is that a series of IPv6 packets with an
-	    unexpected source address are sent to a device on another link, and that device would be unable to send a
+	    unexpected source address are sent to a node on another link, and that node would be unable to send a
 	    response.
 	  </t>
 	  <t>
