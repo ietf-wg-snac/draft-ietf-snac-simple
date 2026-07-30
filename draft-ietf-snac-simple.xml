@@ -299,11 +299,24 @@
       </section>
     </section>
 
+  <section anchor="conventions">
+      <name>Conventions and Terminology</name>
+      <section>
+      <name>Requirements language</name>
+      <t>
+	The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED",
+	"MAY", and "OPTIONAL" in this document are to be interpreted as described in BCP 14 <xref target="RFC2119"/>
+        <xref target="RFC8174"/> when, and only when, they appear in all capitals, as shown here.
+      </t>
+    </section>
+
     <section anchor="glossary">
-      <name>Glossary</name>
+      <name>Glossary of Terms</name>
 	<t>This section contains a glossary of terms used in this document.
 	   See <xref target="conventions"/> for document conventions and remaining terms and definitions.</t>
       <dl>
+    <dt>Advertising Interface:</dt>
+    <dd>As defined in <xref target="RFC4861" section="6.2.2"/>.</dd>
 	<dt>Node:</dt>
 	<dd>A device that implements IPv6.</dd>
 	<dt>Router:</dt>
@@ -312,19 +325,19 @@
 	<dd>Any node that is not a router.  (See Note in <xref target="RFC8200" section="2" sectionFormat="of"/>.)</dd>
 	<dt>Addressability:</dt>
 	<dd>The ability to associate each node on a link with its own IPv6 address.</dd>
-	<dt>
-	  Reachability:</dt><dd>Given an IPv6 destination address that is not on-link for any link to which a node is attached, the
+	<dt>Reachability:</dt>
+    <dd>Given an IPv6 destination address that is not on-link for any link to which a node is attached, the
 	  information required that allows the node to send packets to a router that can forward those packets towards a link where
 	  the destination address is on-link.</dd>
 	<dt>Adjacent Infrastructure Link (AIL):</dt>
 	<dd>any link to which a stub router is directly attached, that is part of an infrastructure network and is not the
 	  stub network.</dd>
-        <dt>Customer Edge (CE) Router:</dt>
-        <dd>CE Router is defined in <xref target="I-D.ietf-v6ops-rfc7084bis"/>. A CE router is an infrastructure router that is intended
-		  to connect a single uplink network to a
-          Local-Area Network. A CE router may be provided by an ISP and only capable of connecting directly to the ISP's
-          means of service delivery, e.g. Cable or DSL, or it may have an Ethernet port on the WAN side and one or more Ethernet
-          ports, plus Wi-Fi, on the LAN side.</dd>
+    <dt>Customer Edge (CE) Router:</dt>
+    <dd>As defined in <xref target="I-D.ietf-v6ops-rfc7084bis"/>. A CE router is an infrastructure router that is intended
+      to connect a single uplink network to a
+      Local-Area Network. A CE router may be provided by an ISP and only capable of connecting directly to the ISP's
+      means of service delivery, e.g. Cable or DSL, or it may have an Ethernet port on the WAN side and one or more Ethernet
+      ports, plus Wi-Fi, on the LAN side.</dd>
 	<dt>Infrastructure network:</dt>
 	<dd>
 	  the network infrastructure to which a stub router connects. This network can be a single link, or a network of links. The
@@ -332,11 +345,15 @@
 	  also provide some services, such as a DNS resolver, a DHCPv4
 	  server, and a DHCPv6 prefix delegation (<xref target="RFC9915"/>) server, for example.</dd>
 	<dt>Infrastructure router:</dt>
-	<dd>
-	  An IP router that is part of an infrastructure network. For example, a CE router.</dd>
+	<dd>An IP router that is part of an infrastructure network. For example, a CE router.</dd>
 	<dt>Off-Stub-Network-Routable (OSNR) Prefix:</dt>
 	<dd>an IPv6 prefix advertised on the stub network that can be used for communication with hosts not on the stub network.</dd>
-	<dt>Stub Network:</dt>
+    <dt>DNS Resolver / Resolver:</dt>
+    <dd>A resolver as defined in <xref target="RFC9499" section="6" sectionFormat="of"/>.
+	    "DNS resolver" is used as a synonym for "resolver" to clearly point out the DNS context of this term.</dd>
+    <dt>Stub Resolver:</dt>
+    <dd>As defined in <xref target="RFC9499" section="6" sectionFormat="of"/>.</dd>
+    <dt>Stub Network:</dt>
 	<dd>A network link that is connected by one or more stub routers to an AIL in an infrastructure network, but
 	  is not used for transit between that link and any other link. <xref target="RFC2328" section="2.1" sectionFormat="of"/>
 	  describes the distinction between stub networks and transit networks from a topological perspective: a stub network is
@@ -363,6 +380,7 @@
 	prefix is also a ULA link prefix.</dd>
       </dl>
     </section>
+  </section>
 
     <section anchor="constants">
       <name>Constants</name>
@@ -413,22 +431,6 @@
 	  and communication establishment.
 	</dd>
       </dl>
-    </section>
-
-    <section anchor="conventions">
-      <name>Conventions and Terminology Used in This Document</name>
-      <t>
-	The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED",
-	"MAY", and "OPTIONAL" in this document are to be interpreted as described in BCP 14 <xref target="RFC2119"/>
-        <xref target="RFC8174"/> when, and only when, they appear in all capitals, as shown here.
-      </t>
-      <t>
-	The terms "resolver" and "stub resolver" used in this document are defined in <xref target="RFC9499"/>.
-	"DNS resolver" is used as a synonym for "resolver" to clearly point out the DNS context of this term.
-      </t>
-      <t>
-	The term "advertising interface" is used as defined in <xref target="RFC4861" section="6.2.2"/>.
-	  </t>
     </section>
 
     <section anchor="common-maint">
@@ -1062,12 +1064,12 @@
 	  <t>
 	    A SNAC router may provide any valid DNS zone for which it can be authoritative. However, in general the allocation
 	    and configuration of such zones is not automatic, and automatic configuration of such zones is out of scope for this
-	    document. Unless otherwise configured, a SNAC router MUST use the '`default.service.arpa`' zone for this purpose.
+	    document. Unless otherwise configured, a SNAC router MUST use the '<tt>default.service.arpa</tt>' zone for this purpose.
 	  </t>
 	  <t>
 	    The SNAC router MUST also maintain an SRP registrar and use registrations made through that SRP registrar to populate
 	    a DNS zone which is advertised as a default browsing domain, as defined above.
-		Note that per <xref target="RFC9665" section="3.1.2" sectionFormat="of"/> the special-use domain name '`default.service.arpa`'
+		Note that per <xref target="RFC9665" section="3.1.2" sectionFormat="of"/> the special-use domain name '<tt>default.service.arpa</tt>'
 	    is always available for SRP registrations into this default DNS zone.
 		This SRP registrar MUST be advertised on the
 	    stub network either using the 'dnssd-srp' and/or 'dnssd-srp-tls' service names or some stub-network-specific mechanism,
@@ -1240,7 +1242,7 @@
 	  This specification requires the stub network host itself to perform local IPv6 address synthesis, as needed,
 	  analogous to the customer-side translator (CLAT) function of 464XLAT <xref target="RFC6877"/>. This is the
 	  host-side equivalent of the network-based DNS64 <xref target="RFC6147"/> function. A SNAC router does not
-	  provide DNS64. Instead, it MUST provide an '`ipv4only.arpa`' answer <xref target="RFC7050"/> <xref target="RFC8880"/>
+          provide DNS64. Instead, it MUST provide an '<tt>ipv4only.arpa</tt>' answer <xref target="RFC7050"/> <xref target="RFC8880"/>
 	  that advertises the NAT64 prefix for that SNAC router, and MUST provide an explicit route to that NAT64 prefix
 	  on the stub network using RA or an equivalent protocol for that stub network type.
 	</t><t>
@@ -1254,7 +1256,7 @@
       is already present in the Answer section of the response, per standard CNAME processing
       (<xref target="RFC1034" section="3.6.2" sectionFormat="of"/>); the A record(s) provided in the Additional
       section are in that case the A record(s) of the canonical name.
-      The response message MUST also include an '`ipv4only.arpa`' A record in the Additional section.
+      The response message MUST also include an '<tt>ipv4only.arpa</tt>' A record in the Additional section.
 	</t>
       </section>
     </section>
@@ -1286,7 +1288,7 @@
     <section>
       <name>IANA Considerations</name>
       <t>
-	This document updates the '`default.service.arpa`' entry in the IANA service.arpa Subdomain registry
+	This document updates the '<tt>default.service.arpa</tt>' entry in the IANA service.arpa Subdomain registry
 	<xref target="IANA-SERVICE-ARPA"/> by adding a second
 	entry for that domain. The new entry has the description "default Discovery Proxy browsing domain for SNAC routers."
 	The reference is to this document. These two uses are mutually complementary; the reason for using a second entry
@@ -1345,7 +1347,6 @@
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.6762.xml" />
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.6763.xml" />
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.7050.xml" />
-      <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.7084.xml" />
 	  <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.7858.xml" />
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.8174.xml" />
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.8200.xml" />
