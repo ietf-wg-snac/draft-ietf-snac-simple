@@ -477,8 +477,9 @@
       Similarly, a SNAC router that is simultaneously active on more than one AIL is explicitly out of scope of this
       document. This means that a SNAC router also never provides routing between AILs when connected to more than one such link.</t>
       <t>
-      A SNAC router MAY during its operation select a different AIL interface to operate on.
-      For example, switching from Wi-Fi to Ethernet when its Ethernet AIL interface gets connected.</t>
+      A SNAC router that during its operation switches from its current AIL interface to a different AIL interface is
+      explicitly out of scope of this specification.
+      For example, such a switch could be from Wi-Fi AIL to Ethernet AIL when its Ethernet AIL interface gets connected.</t>
     </section>
     <section anchor="maintenance-restarts">
 	<name>Handling SNAC router restarts</name>
