@@ -49,9 +49,10 @@
     <workgroup>Internet Engineering Task Force</workgroup>
     <abstract>
       <t>
-	This document specifies a set of practices for automatically connecting IPv6 stub networks to adjacent infrastructure networks. This is
+	This document specifies a set of practices for using IPv6 networking to automatically connect stub networks to adjacent
+	infrastructure networks, even if they do not otherwise use IPv6. This is
 	applicable in cases such as constrained (Internet of Things) networks where there is a need to provide functional parity of
-	service discovery and reachability between devices on the IPv6 stub network and devices on an adjacent infrastructure link (for
+	service discovery and reachability between devices on the stub network and devices on an adjacent infrastructure link (for
 	example, a home network).</t>
     </abstract>
   </front>
