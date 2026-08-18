@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<rfc category="std" submissionType="IETF" docName="draft-ietf-snac-simple-10" ipr="trust200902"
+<rfc category="std" submissionType="IETF" docName="draft-ietf-snac-simple-11" ipr="trust200902"
      xmlns:xi="http://www.w3.org/2001/XInclude" version="3"
      scripts="Common,Latin" sortRefs="false" consensus="true"
      symRefs="true" tocDepth="3" tocInclude="true" xml:lang="en">
@@ -314,8 +314,7 @@
 
     <section anchor="glossary">
       <name>Glossary of Terms</name>
-	<t>This section contains a glossary of terms used in this document.
-	   See <xref target="conventions"/> for document conventions and remaining terms and definitions.</t>
+	<t>This section contains a glossary of terms used in this document.</t>
       <dl>
     <dt>Advertising Interface:</dt>
     <dd>As defined in <xref target="RFC4861" section="6.2.2"/>.</dd>
@@ -324,8 +323,8 @@
 	<dt>Router:</dt>
 	<dd>A node that forwards IPv6 packets not explicitly addressed to itself.  (See Note in <xref target="RFC8200" section="2" sectionFormat="of"/>.)</dd>
 	<dt>Host:</dt>
-    <dd>A node that is acting in a host (<xref target="RFC8200"/>) role for the purposes of the discussion: as an endpoint of a communication and not
-        as a router of IP packets. In this document, the term 'host' is not meant to exclude nodes that also act as routers
+    <dd>A node that is acting in a host <xref target="RFC8200"/> role for the purposes of the discussion: as an endpoint of a communication and not
+        as a router of IP packets. In this document, the term 'host' does not exclude nodes that also act as routers
         on the same network interface.
         Although <xref target="RFC8200"/> makes a clear distinction between hosts and routers, in this document specifically
         the host role exercised by a node to perform a specific function or task is emphasized and not the complete set of
@@ -352,8 +351,8 @@
 	<dt>Infrastructure network:</dt>
 	<dd>
 	  the network infrastructure to which a stub router connects. This network can be a single link, or a network of links. The
-	  network is formed by one or more infrastructure routers. In a home network, this is typically a CE router, which may
-	  also provide some services, such as a DNS resolver, a DHCPv4
+	  network (in case of a network of links) is formed by one or more infrastructure routers.
+      In a home network, this is typically a CE router, which may also provide some services, such as a DNS resolver, a DHCPv4
 	  server, and a DHCPv6 prefix delegation (DHCPv6-PD, see <xref target="RFC9915" section="6.3" sectionFormat="of"/>) server, for example.</dd>
 	<dt>Infrastructure router:</dt>
 	<dd>An IP router that is part of an infrastructure network. For example, a CE router.</dd>
@@ -504,7 +503,7 @@
 	  will forward that packet directly to a default router, if one is present; otherwise, it will have no route to the
 	  destination, and will drop the packet.
 	</t><t>
-	  This amounts to a flash-renumbering event (<xref target="RFC8978"/>).
+	  This amounts to a flash-renumbering event <xref target="RFC8978"/>.
       There is no easy way to prevent this from happening: routes and prefixes advertised in
 	  Router Advertisement messages have lifetimes, and hosts may continue to use the included prefixes until they expire. Applications that
 	  are not able to detect the loss of a route or that do not quickly notice that a host is no longer reachable on a particular
@@ -584,7 +583,7 @@
 		  A prefix is not considered a suitable on-link prefix if the 'L' flag bit is not set, or if neither
 		  the 'A' flag bit nor the 'P' flag bit are set.
 		  When the 'A' flag bit is not set, this indicates that individual node addresses cannot be configured with SLAAC.
-		  In this case, typically addresses are managed using DHCPv6 (<xref target="RFC9915"/>), or (in rare cases) another method.
+		  In this case, typically addresses are managed using DHCPv6 <xref target="RFC9915"/>, or (in rare cases) another method.
 		  If the 'P' flag bit is set, then hosts that wish to allocate their own addresses can do so by
 		  acquiring a prefix from which to allocate them using DHCPv6 prefix delegation <xref target="RFC9663"/>.
 		  Nodes are not required to use DHCPv6 to acquire individual addresses, so a
@@ -624,7 +623,7 @@
 	  </t>
 	  <t>
         In case neither of the two sets of information is present, the SNAC router
-	    MUST NOT send the RA message even if it is treating the infrastructure interface as an advertising interface.
+	    MUST NOT send any RA message even if it is treating the infrastructure interface as an advertising interface.
 	  </t>
 	  <t>
 	    It is important to note that it is possible for an OSNR prefix to be advertised and then withdrawn on the
@@ -820,7 +819,7 @@
 	  <t>
 	    In order to be able to provide addressability either on the stub network or on the adjacent infrastructure link, a SNAC
 	    router MUST allocate its own ULA site prefix. ULA prefixes, described in Unique Local IPv6 Unicast Addresses
-	    (<xref target="RFC4193"/>) are randomly allocated prefixes. A SNAC router MUST allocate a single ULA site prefix for use in
+	    <xref target="RFC4193"/> are randomly allocated prefixes. A SNAC router MUST allocate a single ULA site prefix for use in
 	    providing on-link prefixes to the stub network and the adjacent infrastructure link as described in <xref target="state-begin-advertising"/>.
 	  </t><t>
 	    Any ULA link prefixes allocated by a SNAC router SHOULD persist across reboots, and SHOULD remain stable over time.
@@ -1282,6 +1281,7 @@
 	  analogous to the customer-side translator (CLAT) function of 464XLAT <xref target="RFC6877"/>. This is the
 	  host-side equivalent of the network-based DNS64 <xref target="RFC6147"/> function. A SNAC router does not
 	  provide DNS64.
+	</t><t>
 	  A SNAC router MUST provide an explicit route to its NAT64 prefix
 	  on the stub network using RA or an equivalent protocol for that stub network type.
 	</t><t>
@@ -1366,6 +1366,7 @@
         hosts are forwarded over the infrastructure network possibly without encryption, so that the opportunistic privacy provided by
         DNS-over-TLS on the stub network is lost on the AIL: an on-path observer can see which names stub network hosts
         are querying.
+      </t><t>
 		However, there is no way to signal on the stub network that privacy-preserving DNS lookups are being done.
 		Given that the privacy profile supported here is opportunistic, the DNS client has no guarantee of privacy.
 		Aggregation of queries originating from the stub network by the SNAC router provides some degree of anonymization,
@@ -1600,7 +1601,7 @@
 	    in a SNAC router's Router Advertisements sent on the AIL.</li>
           <li> For the 'M' and 'O' flag bits, <xref target="state-begin-advertising"/> specifies how the values are set.
 			   In case that no other router (excluding SNAC routers) on the AIL has set these flags, they are both set to zero.</li>
-	      <li> The 'SNAC router' flag (<xref target="I-D.ietf-6man-snac-router-ra-flag"/>): 1</li>
+	      <li> The 'SNAC router' flag <xref target="I-D.ietf-6man-snac-router-ra-flag"/>: 1</li>
           <li> In the Cur Hop Limit field: 0 ("unspecified by this router")</li>
           <li> In the Reachable Time field: 0 ("unspecified by this router")</li>
           <li> In the Retrans Timer field: 0 ("unspecified by this router")</li>
@@ -1666,7 +1667,7 @@
 	    a maximum of <xref format="none" target="STUB_NETWORK_ROUTE_LIFETIME">STUB_NETWORK_ROUTE_LIFETIME</xref>.
 	    If it is not a default router, the value is zero.</li>
           <li> SNAC routers do not provide DHCPv6 service on the stub network. Therefore, the 'M' and 'O' flag bits must be zero.</li>
-	      <li> The 'SNAC router' flag (<xref target="I-D.ietf-6man-snac-router-ra-flag"/>): 0.
+	      <li> The 'SNAC router' flag <xref target="I-D.ietf-6man-snac-router-ra-flag"/>: 0.
 		       Note that this flag is only set by the SNAC router in RA messages sent on its AIL interface.</li>
           <li> In the Cur Hop Limit field: 0 ("unspecified by this router")</li>
           <li> In the Reachable Time field: 0 ("unspecified by this router")</li>
