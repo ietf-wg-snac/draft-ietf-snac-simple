@@ -806,8 +806,14 @@
 	  routers may be present and be providing addressability and reachability.
 	</t><t>
 	  In either case, one SNAC router connected to the stub network MUST provide a suitable on-link prefix (the OSNR prefix) for
-	  the stub network.  If the stub network is a multicast-capable medium where Router Advertisement messages are used for router
-	  discovery, the same mechanism as described in <xref target="suitable-prefix-state-machine"/> is used.
+	  the stub network.
+	  <xref target="dhcpv6-pd"/> details how a SNAC router satisfies this requirement by providing an OSNR prefix for
+	  its stub network if none is detected.
+	  Any method for SNAC routers to coordinate who provides the OSNR prefix is out of scope of this specification.
+	</t><t>
+	  If the stub network is a multicast-capable medium where Router Advertisement messages are used for router
+	  discovery, the same mechanism as described in <xref target="suitable-prefix-state-machine"/> is used to provide
+	  the OSNR prefix.
 	</t><t>
 	  Stub networks that do not support the use of Router Advertisements for router discovery need to use some similar
 	  mechanism that is compatible with that type of network. Describing the process of establishing a common OSNR prefix on
