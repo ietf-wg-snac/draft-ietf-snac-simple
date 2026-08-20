@@ -361,8 +361,6 @@
     <dt>DNS Resolver / Resolver:</dt>
     <dd>A resolver as defined in <xref target="RFC9499" section="6" sectionFormat="of"/>.
 	    "DNS resolver" is used as a synonym for "resolver" to clearly point out the DNS context of this term.</dd>
-    <dt>Stub Resolver:</dt>
-    <dd>As defined in <xref target="RFC9499" section="6" sectionFormat="of"/>.</dd>
     <dt>Stub Network:</dt>
 	<dd>A network link that is connected by one or more stub routers to an AIL in an infrastructure network, but
 	  is not used for transit between that link and any other link. <xref target="RFC2328" section="2.1" sectionFormat="of"/>
