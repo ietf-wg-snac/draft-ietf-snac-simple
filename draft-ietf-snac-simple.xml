@@ -1345,7 +1345,83 @@
       </t>
     </section>
 
-    <section>
+
+    <section anchor="implementation-status" removeInRFC="true">
+      <name>Implementation Status</name>
+      <t>
+	This section records the status of known implementations of the protocol defined by this specification at the time of
+	posting of this Internet-Draft, and is based on <xref target="RFC7942"/>.
+    Note that other implementations than the ones described here may exist.
+      </t>
+
+      <section anchor="impl-openthread">
+	<name>OpenThread</name>
+	<dl newline="true" spacing="normal">
+	  <dt>Organization:</dt>
+	  <dd>The OpenThread project. OpenThread was released by Google and is developed as an open-source project with
+	    contributions from a range of silicon vendors and product vendors.</dd>
+
+	  <dt>Name and location:</dt>
+	  <dd>OpenThread. Documentation is at <eref target="https://openthread.io"/>; the source code is at
+	    <eref target="https://github.com/openthread/openthread"/> (the protocol stack, including the Border Routing Manager,
+	    the SRP server and the DNS-SD server) and at <eref target="https://github.com/openthread/ot-br-posix"/>
+	    (the OpenThread Border Router (OTBR) application for POSIX-based platforms).</dd>
+
+	  <dt>Description:</dt>
+	  <dd>OpenThread is an implementation of Thread <xref target="Thread"/>. A Thread Border Router built from OpenThread
+	    and OTBR is a SNAC router: the Thread mesh network is the stub network and the Wi-Fi or Ethernet link to which the
+	    border router is also attached is the adjacent infrastructure link (AIL). The SNAC router functions are implemented
+	    mainly by the Border Routing Manager (<tt>src/core/border_router/</tt>), the SRP server, the DNS-SD server and the
+	    NAT64 translator (<tt>src/core/net/</tt>), and by the mDNS-based Advertising Proxy and Discovery Proxy of OTBR that
+	    operate on the AIL.</dd>
+
+	  <dt>Level of maturity:</dt>
+	  <dd>Production; widely used. OpenThread is used in certified Thread products that implement the features defined in the
+	    Thread 1.4 specification <xref target="Thread"/>, which includes the Thread Border Router features that implement
+	    the SNAC router functions.</dd>
+
+	  <dt>Version compatibility:</dt>
+	  <dd>The Thread 1.4 specification <xref target="Thread"/> references revision -06 of this document.
+          Support for the 'SNAC router' flag was added to OpenThread in September 2024.</dd>
+
+	  <dt>Licensing:</dt>
+	  <dd>Open source, using the BSD 3-Clause license.</dd>
+
+	  <dt>Implementation experience:</dt>
+	  <dd>
+	    <ul>
+	      <li>The default values of several constants in <xref target="constants"/> correspond to values that were already
+		in use in deployed OpenThread-based border routers; the specification and the implementation have converged on
+		these values over time.</li>
+	      <li>Thread is an example of a stub network technology that does not use RA messages on the stub network link:
+		the OSNR prefix, the routes and the addresses of the DNS resolver and SRP registrar are distributed using
+		Thread Network Data. This supports the approach of <xref target="stub-addressability"/> to leave the mechanism
+		used on the stub network to the stub network technology.</li>
+	      <li>Thread is a stub network technology that explicitly supports operating multiple SNAC routers of the same
+        stub network on one AIL. This lead to some Thread-specific functions in the implementation, such as the use of
+        stub-network-wide shared configuration data to help detect OSNR prefixes and coordinate tasks among the
+        multiple SNAC routers. These functions are out of scope of this document.</li>
+	    </ul>
+	  </dd>
+
+	  <dt>Interoperability:</dt>
+	  <dd>The behavior of the SNAC router on the AIL is covered by test cases included in the automated test suite of
+        OpenThread; they verify,
+	    among other things, that the 'SNAC router' flag is set and that a Route Information Option for the OSNR prefix is
+	    advertised on the AIL. Scenarios with multiple SNAC routers on one AIL are regularly tested in simulation.</dd>
+
+	  <dt>Contact information:</dt>
+	  <dd>The OpenThread community discussion forum at
+	    <eref target="https://github.com/openthread/openthread/discussions"/>, and the issue trackers of the repositories
+	    listed above.</dd>
+
+	  <dt>Date of last update:</dt>
+	  <dd>2026-08-20</dd>
+	</dl>
+      </section>
+    </section>
+
+    <section anchor="security-considerations">
       <name>Security Considerations</name>
       <t>
         Because a SNAC router operates as an IPv6 router that sends and receives IPv6 Neighbor Discovery protocol messages,
@@ -1428,6 +1504,7 @@
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.7113.xml" />
 	  <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.7217.xml" />
 	  <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.7435.xml" />
+	  <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.7942.xml" />
 	  <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.8305.xml" />
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.8978.xml" />
 	  <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.9364.xml" />
@@ -1461,11 +1538,11 @@
       </reference>
       <reference anchor="Thread" target="https://www.threadgroup.org/ThreadSpec">
         <front>
-          <title>Thread 1.4.0 Specification</title>
+          <title>Thread 1.4.1 Specification</title>
           <author>
             <organization>Thread Group</organization>
           </author>
-          <date month="9" year="2024"/>
+          <date month="1" year="2026"/>
         </front>
       </reference>
     </references>
