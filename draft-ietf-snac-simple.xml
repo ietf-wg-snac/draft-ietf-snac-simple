@@ -1689,7 +1689,7 @@
               <li>
 		MTU option: the SNAC router is managing its stub network link, and hence may send this option.</li>
               <li>
-	    Prefix Information option: Some SNAC router will need to send a PIO. Normally, only one SNAC router on the same stub network will send a PIO. How this decision is made is described in
+	    Prefix Information option: Some SNAC router will need to send a PIO with the OSNR prefix. Normally, only one SNAC router on the same stub network will send a PIO. How this decision is made is described in
 		<xref target="stub-addressability"/>. When a SNAC router sends this option, the following settings
 		apply:</li>
               <li><ul>
