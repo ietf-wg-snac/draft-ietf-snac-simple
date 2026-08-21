@@ -637,6 +637,10 @@
 		0 and MAX_INITIAL_RTR_ADVERT_INTERVAL, instead of the effectively fixed delay of MAX_INITIAL_RTR_ADVERT_INTERVAL
 		currently specified by <xref target="RFC4861"/>.
 	  </t>
+      <t>
+        See <xref target="appendix-ra-ail"/> for more details on the contents of the RA message sent on the AIL.
+      </t>
+
 	  <section anchor="state-unknown">
 	    <name>Status of IP addressability on adjacent infrastructure link unknown (STATE-UNKNOWN)</name>
 	    <t>
@@ -1667,7 +1671,7 @@
       </section>
     </section>
 
-    <section>
+    <section anchor="appendix-ra-ail">
       <name>Router Advertisements on the Infrastructure Network</name>
       <t>
         This appendix is informative only. Any values provided here are based on the normative requirements in this
@@ -1675,7 +1679,7 @@
       </t>
       <t>
         An active SNAC router sends periodic unsolicited multicast Router Advertisements as well as unicast Router Advertisements
-        on the adjacent infrastructure link.  These Router Advertisements are filled with the following values consistent with the message format
+        on the adjacent infrastructure link (AIL).  These Router Advertisements are filled with the following values consistent with the message format
         given in Section 4.2 of <xref target="RFC4861"/>:
       </t>
       <ul>
