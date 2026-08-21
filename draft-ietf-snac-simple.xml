@@ -1005,7 +1005,8 @@
 	  If the SNAC router is not advertising itself as a default router on the stub network, it MUST advertise reachability to any
 	  prefixes that are being advertised as on-link on its AIL. This is true for prefixes it is advertising,
 	  and for other prefixes being advertised on that link.
-      For stub networks supporting IPv6 Neighbor Discovery, reachability is advertised by Route Information Options (RIOs) in Router Advertisement messages.
+      For stub networks supporting IPv6 Neighbor Discovery, reachability is advertised by Route Information Options (RIOs)
+      in Router Advertisement messages (as detailed in <xref target="appendix-ra-stub"/>).
       These RIOs are constructed such that they cover all the on-link prefixes on the AIL.
       For stub networks that support another method, the respective other method is used.
 	</t><t>
