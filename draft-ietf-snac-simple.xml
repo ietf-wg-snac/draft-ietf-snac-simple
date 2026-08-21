@@ -819,7 +819,7 @@
 	  <xref target="appendix-ra-stub"/> describes the contents of the RA messages for this case.
       The arbitration mechanism of <xref target="state-advertising-suitable"/> is then used to converge on a single
       SNAC router advertising the numerically lowest OSNR prefix, with the difference that the value of the 'SNAC router'
-      flag bit in received RA messages is disregarded.
+      flag bit in received RA messages is disregarded and is assumed to be always set ('1').
 	</t><t>
 	  Stub networks that do not support the use of Router Advertisements for router discovery need to use some similar
 	  mechanism that is compatible with that type of network. Describing the process of establishing a common OSNR prefix on
