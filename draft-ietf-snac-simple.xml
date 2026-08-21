@@ -610,7 +610,7 @@
 	    times, when a new host arrives on the AIL, it is able to acquire an IPv6 address on that
 	    link using SLAAC.</t>
 	  <t>
-        While in any of the states mentioned here except for state-unknown, the SNAC router is expected to treat its
+        While in any of the states mentioned here except for STATE-UNKNOWN, the SNAC router is expected to treat its
 	    infrastructure interface as an advertising interface as described in <xref target="RFC4861" section="6.2.2"/>.
 	    There are two sets of information that need to be sent in RA messages in general.
 	    The first is the on-link prefix, if any, that is to be advertised on the AIL. Whether or not such a prefix is
