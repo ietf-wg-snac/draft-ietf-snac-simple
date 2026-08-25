@@ -1395,16 +1395,19 @@
 	  (<xref target="nat64-infra"/>), or a DNS resolver, these services are used when they are found, which improves the
 	  reachability of the stub network. None of these services is required for the stub network itself to keep working.
 	</t><t>
-	  This document defines a few settings that a vendor should make configurable to facilitate expert users; the mechanism
-	  to configure them is out of scope.
+	  This document defines a few settings that a vendor can or should make configurable to facilitate expert users
+	  (Sections <xref target="stub-reachability" format="counter"/>, <xref target="discoverability-stub" format="counter"/>,
+	  <xref target="nat64" format="counter"/>, <xref target="nat64-infra" format="counter"/>,
+	  <xref target="nat64-by-snac" format="counter"/>, <xref target="services-provided" format="counter"/> and
+	  <xref target="security-considerations" format="counter"/>); the mechanism to configure them is out of scope.
 	</t><t>
       Multiple SNAC routers that serve the same stub network on
 	  the same AIL is an expected deployment; connecting SNAC routers that serve one stub network to more than one AIL is out
-	  of scope (<xref target="common-maint"/>) and is a deployment error that may be hard to diagnose.
+	  of scope (<xref target="supported-topologies"/>) and is a deployment error that may be hard to diagnose.
       See <xref target="oper-troubleshooting"/>.
 	</t><t>
 	  Network administrators who do not want SNAC routers to provide routing and addressability on their network (AIL) can filter
-      Router Advertisement messages from unauthorized routers, for example using RA-Guard <xref target="RFC7113"/>.
+      Router Advertisement messages from unauthorized routers, for example using RA-Guard <xref target="RFC6105"/> <xref target="RFC7113"/>.
 	</t>
       </section>
 
@@ -1470,7 +1473,7 @@
 	<t>
 	  Renumbering events, prefix deprecations/invalidations, a change of router that provides the on-link prefix on the AIL, and the loss or
 	  return of a default route on the AIL are the events that could best explain a user-visible failure, so recording such events with a
-	  (NTP-synchronized) timestamp is especially useful.
+	  timestamp is especially useful. The time source should be synchronized via NTP when available, or else (relative) system uptime.
 	</t>
       </section>
 
@@ -1484,7 +1487,7 @@
 	<dl newline="true" spacing="normal">
 	  <dt>Multiple AILs connected to a single stub network:</dt>
 	  <dd>SNAC routers that serve the same stub network are attached to different AILs, which is out of scope for this document
-	    (<xref target="common-maint"/>) and causes packets to be dropped when they are forwarded to an AIL from which the
+	    (<xref target="supported-topologies"/>) and causes packets to be dropped when they are forwarded to an AIL from which the
 	    destination is not reachable (<xref target="stub-reachability"/>).
 	    A typical symptom is that only part of the stub network can be used from the infrastructure network, and that which
 	    part this is depends on the link to which the infrastructure host is attached: hosts on the stub network may register
@@ -1500,8 +1503,10 @@
 	    ports; it cannot occur when the stub network uses a distinct technology such as a 6LoWPAN <xref target="RFC4944"/>.
 	    A clear diagnosis is a Router Advertisement message with the 'SNAC router' flag bit set to '1' that is seen on the
 	    stub network link, because a SNAC router sets this flag only in the Router Advertisement messages that it sends on
-	    its AIL interface (<xref target="appendix-ra-stub"/>). A SNAC router that receives such a message on the interface
-	    that it uses as its stub network interface takes action as described in <xref target="common-supported-topologies"/>.
+	    its AIL interface (see <xref target="appendix-ra-ail"/> and <xref target="appendix-ra-stub"/>).
+        A SNAC router that receives such a message on the interface
+	    that it uses as its stub network interface takes appropriate actions such as warning the user or ceasing to operate
+        as a SNAC router until the situation is resolved.
         A related symptom is that no SNAC router advertises reachability to the OSNR prefix
 	    on the AIL, so the stub network cannot be reached from the infrastructure network at all.
 	    The remedy is for the user to correct the cabling.
@@ -1509,7 +1514,7 @@
 
 	  <dt>Router Advertisement messages of the SNAC router are blocked on the AIL:</dt>
 	  <dd>The infrastructure network filters Router Advertisement messages from unauthorized routers, for example using
-	    RA-Guard <xref target="RFC7113"/>. Services on the stub network are then still discoverable on the infrastructure
+	    RA-Guard <xref target="RFC6105"/> <xref target="RFC7113"/>. Services on the stub network are then still discoverable on the infrastructure
 	    network, because multicast DNS is not affected, but hosts on the AIL do not install a route to the OSNR prefix and
 	    therefore cannot reach stub network hosts. Communication that is originated by stub network hosts and uses NAT64 keeps
 	    working. This can be diagnosed by verifying on a host on the AIL that no route to the OSNR prefix is present, while the
