@@ -1453,6 +1453,10 @@
         And because a SNAC router operates as an SRP registrar,
         the security and privacy considerations of Section 6 and 7 of <xref target="RFC9665"/> apply.</t>
       <t>
+        Specific considerations for SNAC routers connected to an infrastructure network that has deployed RA-Guard
+        <xref target="RFC6105"/> <xref target="RFC7113"/> can be found in <xref target="appendix-managed-network"/>.
+      </t>
+      <t>
         Secure DNS communications with the SNAC router is enabled by DNS-over-TLS as defined in <xref target="dns-over-tls"/>.
         This provides opportunistic security <xref target="RFC7435"/> and
 	    opportunistic privacy (<xref target="RFC7858" section="3.1" sectionFormat="of"/>).
@@ -1518,6 +1522,7 @@
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.1256.xml" />
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.2328.xml" />
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.4944.xml" />
+      <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.6105.xml" />
 	  <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.6147.xml" />
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.6282.xml" />
 	  <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.6877.xml" />
@@ -1608,11 +1613,11 @@
 	    connected to it.
 	  </t>
       </section>
-      <section>
+      <section anchor="appendix-managed-network">
 	<name>Use on a managed network</name>
 	<t>
 	  In this scenario, a non-expert user attaches a SNAC router to an infrastructure network that's managed and provides both IPv6 and IPv4.
-	  This network has correctly deployed RA-Guard <xref target="RFC7113"/> and/or port-based access control.
+	  This network has correctly deployed RA-Guard <xref target="RFC6105"/> <xref target="RFC7113"/> and/or port-based access control.
 	  As a result, the SNAC router won't succeed in advertising a prefix on the managed network.
 	  Communications originating on the stub network that are able to communicate using NAT64 will still work.
 	</t>
