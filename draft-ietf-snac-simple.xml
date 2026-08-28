@@ -449,7 +449,7 @@
         <t>
         This section specifies requirements that are common to both AIL and stub network links, as well as general
         requirements for SNAC routers.</t>
-    <section>
+    <section anchor="common-ipv6-nd">
       <name>Support for IPv6 Neighbor Discovery</name>
       <t>
 	This specification requires that the AIL is able to support IPv6 Neighbor Discovery (ND) <xref target="RFC4861"/>, and specifically that
@@ -465,7 +465,7 @@
 	  If Neighbor Discovery, including Router Advertisements, is being used on the stub network, the SNAC router MUST similarly join these two multicast groups on the stub network interface as well.
 	</t>
     </section>
-    <section>
+    <section anchor="common-supported-topologies">
     <name>Supported network topologies</name>
       <t>
       A network topology of a single stub network connected via multiple SNAC routers to more than one AIL is explicitly out of scope of this document;
@@ -966,7 +966,7 @@
 	<name>Managing reachability on the adjacent infrastructure link</name>
 	<t>
 	  A SNAC router MUST advertise reachability to stub network OSNR prefixes on its AIL interface using Route Information Options (RIOs) in Router
-	  Advertisement (RA) messages. As specified in <xref target="common-maint"/>, these options are combined with other RA options, to avoid unnecessary multicast traffic.
+	  Advertisement (RA) messages. As specified in <xref target="common-ipv6-nd"/>, these options are combined with other RA options, to avoid unnecessary multicast traffic.
 	</t><t>
 	  Each stub network will have some set of prefixes that are advertised as on-link for that network. A SNAC router connected
 	  to that stub network SHOULD advertise reachability to all such prefixes on the AIL to which it is attached.
@@ -1017,8 +1017,8 @@
 	  another SNAC router will be dropped by the SNAC router that received it.
     </t>
 	<t>
-	  As indicated in <xref target="common-maint"/>, support for multiple AILs connected to the same stub network is out of scope of
-	  this specification.
+	  As indicated in <xref target="common-supported-topologies"/>, support for multiple AILs connected to the same stub
+      network is out of scope of this specification.
 	  Nevertheless, to support future versions of this specification or related extensions, which may provide support
       for multiple AILs, a SNAC router:
     </t>
@@ -1275,8 +1275,8 @@
 	  traffic. If some SNAC routers are connected to different AILs than others, some of which support
 	  NAT64 and some of which do not, then the default route may not carry traffic to the correct link for NAT64 service.
 	  Advertising (on the stub network) a specific route to the NAT64 prefix would resolve this issue.
-	  However, given that support for multiple AILs connected to the same stub network is out of scope (see <xref target="common-maint"/>),
-	  there are no normative requirements related to this for a SNAC router.
+	  However, given that support for multiple AILs connected to the same stub network is out of scope
+      (see <xref target="common-supported-topologies"/>), there are no normative requirements related to this for a SNAC router.
 	</t>
 	<t>
 	  In order for infrastructure-provided NAT64 to work, the stub network must have an OSNR prefix that is known to the
