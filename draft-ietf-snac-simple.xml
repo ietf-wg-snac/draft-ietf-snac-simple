@@ -1121,6 +1121,21 @@
         For example, Thread <xref target="Thread"/> SNAC routers advertise the IPv6 address of their SRP registrar through
         network-wide configuration data.</t>
 	</section>
+
+    <section anchor="dns-over-tls">
+      <name>DNS-over-TLS security</name>
+      <t>
+        A SNAC router MUST support DNS-over-TLS (DoT) as specified in <xref target="RFC9665" section="7" sectionFormat="of"/>
+        for any DNS unicast communication with hosts (acting as DNS clients) in the stub network.
+        This provides opportunistic privacy for SRP Updates as well as for DNS queries.
+		See <xref target="RFC7435"/> for the "opportunistic security" concept and
+	    <xref target="RFC7858" section="3.1" sectionFormat="of"/> for the opportunistic privacy profile as defined for DNS-over-TLS.
+        Support for non-opportunistic DNS-over-TLS is out of scope for this document.
+      </t><t>
+        See <xref target="security-considerations"/> for security considerations related to this requirement.
+      </t>
+    </section>
+
       </section>
     </section>
 
@@ -1438,15 +1453,12 @@
         And because a SNAC router operates as an SRP registrar,
         the security and privacy considerations of Section 6 and 7 of <xref target="RFC9665"/> apply.</t>
       <t>
-        A SNAC router MUST support DNS-over-TLS as specified in <xref target="RFC9665" section="7" sectionFormat="of"/>
-        for any DNS unicast communication with hosts (acting as DNS clients) in the stub network.
-        This provides opportunistic privacy for SRP Updates as well as for DNS queries.
-		See <xref target="RFC7435"/> for the "opportunistic security" concept and
-	    <xref target="RFC7858" section="3.1" sectionFormat="of"/> for the opportunistic privacy profile as defined for DNS-over-TLS.
-	    This prevents eavesdroppers on the stub network that are not able to intercept the TLS connection from determining
-	    what queries are being made. However, there is no protection against interception on the stub network other than
+        Secure DNS communications with the SNAC router is enabled by DNS-over-TLS as defined in <xref target="dns-over-tls"/>.
+        This provides opportunistic security <xref target="RFC7435"/> and
+	    opportunistic privacy (<xref target="RFC7858" section="3.1" sectionFormat="of"/>).
+	    It prevents eavesdroppers on the stub network that are not able to intercept the TLS connection from determining
+	    what queries are being made. However, there is no protection against connection interception on the stub network other than
 	    that it may be difficult to accomplish.
-        Support for non-opportunistic DNS-over-TLS is out of scope for this document.
       </t><t>
         There is also no guarantee that privacy-preserving DNS service will be available on the AIL.
 		When such DNS service is present, the SNAC router SHOULD use it, if it is technically capable of doing so.
