@@ -1403,7 +1403,7 @@
 	</t><t>
       Multiple SNAC routers that serve the same stub network on
 	  the same AIL is an expected deployment; connecting SNAC routers that serve one stub network to more than one AIL is out
-	  of scope (<xref target="supported-topologies"/>) and is a deployment error that may be hard to diagnose.
+	  of scope (<xref target="common-supported-topologies"/>) and is a deployment error that may be hard to diagnose.
       See <xref target="oper-troubleshooting"/>.
 	</t><t>
 	  Network administrators who do not want SNAC routers to provide routing and addressability on their network (AIL) can filter
@@ -1487,7 +1487,7 @@
 	<dl newline="true" spacing="normal">
 	  <dt>Multiple AILs connected to a single stub network:</dt>
 	  <dd>SNAC routers that serve the same stub network are attached to different AILs, which is out of scope for this document
-	    (<xref target="supported-topologies"/>) and causes packets to be dropped when they are forwarded to an AIL from which the
+	    (<xref target="common-supported-topologies"/>) and causes packets to be dropped when they are forwarded to an AIL from which the
 	    destination is not reachable (<xref target="stub-reachability"/>).
 	    A typical symptom is that only part of the stub network can be used from the infrastructure network, and that which
 	    part this is depends on the link to which the infrastructure host is attached: hosts on the stub network may register
