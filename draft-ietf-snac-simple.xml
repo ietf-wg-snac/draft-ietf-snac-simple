@@ -58,7 +58,7 @@
   </front>
 
   <middle>
-    <section>
+    <section anchor="introduction">
       <name>Introduction</name>
       <t>
 	This document specifies a set of practices for automatically connecting IPv6 stub networks to adjacent infrastructure networks.
@@ -146,9 +146,9 @@
 	</ul>
 	<t>
 	  Discoverability here means "discoverable using DNS, or DNS Service Discovery".  DNS Service Discovery includes multicast
-	  DNS <xref target="RFC6762"/>. As an example, when one host connected to
+	  DNS (mDNS) <xref target="RFC6762"/>. As an example, when one host connected to
 	  a specific Wi-Fi network wishes to discover services on hosts connected to that same Wi-Fi network, it can do so using
-	  multicast DNS.  Similarly, when a host on some other network
+	  mDNS.  Similarly, when a host on some other network
 	  wishes to discover the same service, it must use DNS-based Service Discovery <xref target="RFC6763"/>.  In both cases,
 	  "discoverable using DNS" means that the host has one or more entries in the DNS that serve to make it discoverable.</t>
 	<t>
@@ -470,12 +470,12 @@
       <t>
       A network topology of a single stub network connected via multiple SNAC routers to more than one AIL is explicitly out of scope of this document;
 	  such a topology will likely have a negative effect on the reachability and discoverability of hosts.
+      </t><t>
       If a SNAC router is able to determine that an AIL (other than its own) is already in use for its stub network, for example provided by
 	  one or more other SNAC routers or by other router types, it is advised that the SNAC router takes appropriate actions such as warning
 	  the user or ceasing to operate as a SNAC router until the situation is resolved.
 	  How a SNAC router might detect this situation is however out of scope for this document.
-	  </t>
-      <t>
+	  </t><t>
       Similarly, a SNAC router that is simultaneously active on more than one AIL is explicitly out of scope of this
       document. This means that a SNAC router also never provides routing between AILs when connected to more than one such link.</t>
       <t>
@@ -1043,11 +1043,12 @@
       <section>
 	<name>Providing discoverability between stub network links and infrastructure network links</name>
 	<t>
-	  Since DNS-SD <xref target="RFC6763"/> is in wide use, and provides for ad-hoc, self-configuring advertising using the mDNS transport, this is a
+	  Since DNS-SD <xref target="RFC6763"/> is in wide use, and provides for ad-hoc, self-configuring advertising using
+      the multicast DNS (mDNS) <xref target="RFC6762"/> transport, this is a
 	  suitable mandatory-to-implement protocol for stub networks, which must be able to attach to infrastructure networks
 	  without the help of new mechanisms provided by the infrastructure. Therefore, a SNAC router MUST provide DNS-SD
 	  service as described in this section.</t>
-	<section>
+	<section anchor="ail-discoverability">
 	  <name>Discoverability by hosts on adjacent infrastructure links</name>
 	  <t>
 	    The adjacent infrastructure link can be assumed to already enable some service discovery mechanism between hosts on
@@ -1063,16 +1064,16 @@
 	    case a low-power, low-cost stub network provides connectivity for IoT devices that provide services to the infrastructure. For
 	    such networks, it is necessary that hosts on the infrastructure network are able to discover these devices on the stub network.</t>
 	  <t>
-	    The most basic use case for this is to provide feature parity with existing solutions like multicast DNS (mDNS). For
+	    The most basic use case for this is to provide feature parity with existing solutions like mDNS. For
 	    example, a light bulb with built-in Wi-Fi connectivity might be discoverable on the adjacent infrastructure link to which it is
 	    connected, using mDNS, but likely is not discoverable on other links. To provide equivalent functionality for an equivalent
 	    device on a constrained network that is a stub network, the stub network device must be discoverable on the infrastructure
 	    link (which is an AIL from the perspective of the stub network).</t>
 	  <t>
-	    If services are to be advertised using DNS Service Discovery <xref target="RFC6763"/>, there are in principle two ways to
+	    If services are to be advertised using DNS-SD, there are in principle two ways to
 	    accomplish this. One is to present services on the stub network as a DNS zone which can then be configured as a browsing
 	    domain in the DNS (<xref target="RFC6763" section="11" sectionFormat="comma"/>). The second is to advertise stub network
-	    services on the AIL using multicast DNS (mDNS) <xref target="RFC6762"/>.</t>
+	    services on the AIL using mDNS.</t>
 	  <t>
 	    Because this document defines behavior for SNAC routers connecting to infrastructure networks that do not provide any
 	    new mechanism for integrating stub networks, there is no way for a SNAC router to provide DNS-SD service on an adjacent
@@ -1086,7 +1087,7 @@
 	    However, a discovery proxy is queried using DNS, not mDNS. This requires assistance from the infrastructure network,
 	    and is therefore out of scope for this document.</t>
 	</section>
-	<section>
+	<section anchor="stub-discoverability">
 	  <name>Providing discoverability of adjacent infrastructure hosts on the stub network</name>
 	  <t>
 	    Hosts on the stub network may need to discover hosts on the AIL, or on the stub network. In
