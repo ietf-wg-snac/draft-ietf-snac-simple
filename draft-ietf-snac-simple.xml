@@ -1375,16 +1375,16 @@
     </section>
 
     <section anchor="operational-considerations">
-      <name>Operational Considerations</name>
-      <t>
-	This section discusses operational aspects of deploying, running and troubleshooting SNAC routers, following the
-	guidance of <xref target="RFC5706"/>. This section is informative.
-      </t>
+    <name>Operational Considerations</name>
+    <t>
+	  This section discusses operational aspects of deploying, running and troubleshooting SNAC routers, following the
+	  guidance of <xref target="RFC5706"/>. This section is informative.
+    </t>
 
-      <section anchor="oper-deployment">
+    <section anchor="oper-deployment">
 	<name>Deployment and initial setup</name>
 	<t>
-	  A SNAC router is intended to be installed by a person who is not a network administrator, and to operate without any
+	  A SNAC router is intended to be installed by a person who is not a network administrator, and intended to operate without any
 	  configuration (<xref target="usability-goals"/>). All parameters defined in <xref target="constants"/> have a default
 	  value that is expected to work in the deployment scenarios that this document targets, so that in a typical SNAC router
 	  product none of these parameters needs to be exposed to the user.
@@ -1392,11 +1392,11 @@
 	  No specific support is needed from the infrastructure network. A SNAC router operates on an AIL that has no IP service,
       or provides only IPv4 service, or has IPv6 but no service beyond on-link addressing, or has full IPv6 service.
       When the infrastructure network provides DHCPv6 prefix delegation (<xref target="dhcpv6-pd"/>), NAT64
-	  (<xref target="nat64-infra"/>), or a DNS resolver, these services are used when they are found, which improves the
+	  (<xref target="nat64-infra"/>), or a DNS resolver (<xref target="ail-discoverability"/>), these services are used when they are found, which improves the
 	  reachability of the stub network. None of these services are required in order for the SNAC router to function.
 	</t><t>
 	  This document defines a few settings that a vendor can or should make configurable to facilitate expert users
-	  (Sections <xref target="stub-reachability" format="counter"/>, <xref target="discoverability-stub" format="counter"/>,
+	  (see Sections <xref target="stub-reachability" format="counter"/>, <xref target="discoverability-stub" format="counter"/>,
 	  <xref target="nat64" format="counter"/>, <xref target="nat64-infra" format="counter"/>,
 	  <xref target="nat64-by-snac" format="counter"/>, <xref target="services-provided" format="counter"/> and
 	  <xref target="security-considerations" format="counter"/>); the mechanism to configure them is out of scope.
@@ -1410,19 +1410,18 @@
       Router Advertisement messages from unauthorized routers, for example using RA-Guard <xref target="RFC6105"/> <xref target="RFC7113"/>.
       If SNAC router functionality is wanted but addressability on the AIL is unwanted, an administrator can achieve this
       by providing IPv6 service and DHCPv6-PD on the AIL in combination with RA-Guard.
-      If the DHCPv6-PD delegated prefix is correctly routed to the node to which it was delegated, then the SNAC router
+      If the DHCPv6-PD delegated prefix is correctly routed by infrastructure routers to the node to which it was delegated, then the SNAC router
       will function correctly even though its Router Advertisement messages are being blocked.
-      This case is also detailed in <xref target="appendix-managed-network"/>.
+      This case is detailed in <xref target="appendix-managed-network"/>.
 	</t>
-      </section>
+    </section>
 
-      <section anchor="oper-impact">
-	<name>Impact on the infrastructure network (AIL)</name>
+    <section anchor="oper-impact">
+	<name>Impact on the infrastructure network and AIL</name>
     <t>SNAC routers are designed to coexist with routers that are already present on an AIL: a SNAC router provides an
 	  on-link IPv6 prefix on the AIL only when no suitable prefix is present, and stops doing so when a regular IP router starts to
 	  provide one (<xref target="suitable-prefix-state-machine"/>).
-    </t>
-	<t>
+    </t><t>
 	  Each SNAC router adds some traffic to the AIL: unsolicited multicast Router Advertisement messages, on average
 	  one every 3 minutes (with the default values); Router Advertisement messages sent in
 	  response to Router Solicitation messages; Neighbor Solicitation messages used to verify the reachability of the routers
@@ -1431,15 +1430,15 @@
 	  linearly with the number of SNAC routers attached to the AIL.
 	</t><t>
 	  A SNAC router does not take over any function of the infrastructure network. It never advertises itself as a default
-	  router on the AIL, and it advertises only routes to its stub network.
+	  router on the AIL, and it advertises only specific routes to its stub network.
 	</t><t>
-	  On wireless media, wireless access points may filter, rate-limit, delay or convert multicast traffic
-      <xref target="RFC9119"/>. This impacts multicast Router Advertisement messages and multicast DNS messages used by
+	  On wireless media AILs, wireless access points may filter, rate-limit, delay or convert multicast traffic
+      <xref target="RFC9119"/>. This impacts multicast Router Advertisement messages and mDNS messages used by
       a SNAC router on its AIL, potentially degrading performance.
 	</t>
-      </section>
+    </section>
 
-      <section anchor="oper-ail-failure">
+    <section anchor="oper-ail-failure">
 	<name>Operation when the adjacent infrastructure link fails</name>
 	<t>
       There can be situations in which the AIL becomes unavailable or unusable for all the SNAC routers of a stub
@@ -1453,9 +1452,9 @@
       assume that possibly one or more of the peer SNAC routers do have AIL connectivity.
       The failure situation handling therefore is identical to that described in <xref target="oper-degraded-ail"/>.
     </t>
-  </section>
+    </section>
 
-      <section anchor="oper-degraded-ail">
+    <section anchor="oper-degraded-ail">
 	<name>Operation when the adjacent infrastructure link interface cannot be used</name>
     <t>
       There can be situations in which the AIL becomes unavailable or unusable for one SNAC router of a stub
@@ -1468,11 +1467,13 @@
       The case of being connected to a separate (other) AIL is described in <xref target="common-supported-topologies"/>
       and the handling of an unusable AIL interface is the same.
     </t><t>
-      That implies the handling of this situation is implementation-dependent:
-      a SNAC router that is able to detect that at least one other SNAC router is connected to the same stub network and
-      is still connected to an AIL can take appropriate action such as disabling all its SNAC router functions.
+      That implies an implementation-dependent handling:
+      a SNAC router that is able to detect that at least one other SNAC router is connected to the same stub network, and
+      is still connected to an AIL, can take appropriate action such as disabling all its SNAC router functions.
+      As mentioned in <xref target="common-supported-topologies"/>, the means of detecting this is out of scope of this
+      document.
     </t><t>
-      Then, the stub network continues to operate - with one SNAC router less.
+      After the suggested action of disabling SNAC router functions is taken, the stub network continues to function - with one SNAC router less.
       Routing, addressability, service registration and service discovery will automatically be taken over by other
       SNAC routers (that do have AIL connectivity) as needed.
 	</t><t>
@@ -1480,19 +1481,21 @@
       (out of multiple on the stub network) loses its AIL connectivity, any DHCPv6-PD delegated prefix that this SNAC
       router is using as the OSNR prefix on the stub network continues to be used until it expires.
       Therefore, a temporary AIL outage shorter than the remaining lifetime of the delegated prefix will not result
-      in a renumbering event either on loss of AIL connectivity, or on regaining it.
+      in a renumbering event, not upon loss of AIL connectivity, and not on regaining it.
     </t><t>
+      If the outage is longer than that, the delegated OSNR prefix expires.
       After expiry of the delegated OSNR prefix the SNAC router uses the ULA prefix that it allocated itself
       (<xref target="ula-site-prefix"/>) as the OSNR prefix, so hosts on the stub network remain addressable (by ULA),
       and the SNAC router keeps providing the services listed in
 	  <xref target="services-provided"/> to its stub network, in particular the DNS resolver and the SRP registrar.
-      Hosts on the stub network can therefore still discover each other and communicate with each other.
+      Hosts on the stub network can therefore still discover each other and communicate with each other, but are
+      isolated from the infrastructure network and from the Internet.
     </t><t>
       Recovery from such a situation is automatic. When the AIL becomes usable again, the state machine of
       <xref target="suitable-prefix-state-machine"/> and (if available) DHCPv6 prefix delegation resume.
-      Note that a change from the self-allocated ULA prefix to a delegated prefix, or vice versa, is a renumbering
-      event for the stub network: existing connections that use an address from the old
-	  prefix can break, and it takes time for new connections to be made using an address from the new prefix
+      Note that a change from the self-allocated ULA prefix to a delegated OSNR prefix, or vice versa, is a renumbering
+      event for the stub network: existing connections that use an address from the old OSNR
+	  prefix can break, and it takes time for new connections to be made using an address from the new OSNR prefix
 	  (<xref target="ula-site-prefix"/>, <xref target="maintenance-restarts"/>).
 	</t>
   </section>
@@ -1501,8 +1504,9 @@
 	<name>Operation when a SNAC router fails or is removed</name>
     <t>
 	  When one SNAC router of a stub network fails or is removed while other SNAC routers of that stub network remain, the
-	  remaining SNAC routers take over the functions of the failed one, as described in <xref target="maintenance-restarts"/>
-	  and <xref target="appendix-failure-change"/>. During such a takeover, the OSNR prefix(es) of the stub network may change,
+	  remaining SNAC routers take over the functions of the failed one, as described in <xref target="maintenance-restarts"/>,
+	  <xref target="oper-degraded-ail"/> and <xref target="appendix-failure-change"/>.
+      During such a takeover, the OSNR prefix(es) of the stub network may change,
 	  with the same consequences as described in the previous section for a renumbering event.
 	</t>
    </section>
@@ -1519,7 +1523,9 @@
 	<t>
 	  Renumbering events, prefix deprecations/invalidations, a change of router that provides the on-link prefix on the AIL, and the loss or
 	  return of a default route on the AIL are the events that could best explain a user-visible failure, so recording such events with a
-	  timestamp is especially useful. The time source should be synchronized via NTP when available, or else (relative) system uptime.
+	  timestamp is especially useful.
+      The SNAC router's clock should be synchronized via NTP when available, or else (relative) system uptime is used
+      for timestamps.
 	</t>
       </section>
 
@@ -1532,7 +1538,7 @@
 	</t>
 	<dl newline="true" spacing="normal">
 	  <dt>Multiple AILs connected to a single stub network:</dt>
-	  <dd>SNAC routers that serve the same stub network are attached to different AILs, which is out of scope for this document
+	  <dd>SNAC routers that serve the same stub network are attached to different AILs. This topology is out of scope for this document
 	    (<xref target="common-supported-topologies"/>) and causes packets to be dropped when they are forwarded to an AIL from which the
 	    destination is not reachable (<xref target="stub-reachability"/>).
 	    A typical symptom can be that only a subset of stub network hosts are discoverable from an AIL, and which
@@ -1544,32 +1550,38 @@
      </dd>
 
 	  <dt>AIL interface and stub network interface are swapped:</dt>
-	  <dd>The interface that is used as the AIL interface is attached to the stub network link and vice versa. This can only
-	    happen when both links use a technology that the SNAC router could use for either function, such as two Ethernet
-	    ports; it cannot occur when the stub network uses a distinct technology such as a 6LoWPAN <xref target="RFC4944"/>.
-        For that reason, this situation is unlikely to occur because the purpose of a SNAC router is to connect incompatible
-        L2 technologies and not L2-compatible technologies.
-	    A clear diagnosis is a Router Advertisement message with the 'SNAC router' flag bit set to '1' that is seen on the
-	    stub network link, because a SNAC router sets this flag only in the Router Advertisement messages that it sends on
-	    its AIL interface (see <xref target="appendix-ra-ail"/> and <xref target="appendix-ra-stub"/>).
-        A SNAC router that receives such a message on the interface
-	    that it uses as its stub network interface should take appropriate action such as warning the user or disabling
-        the network port/link connecting the offending device until the situation is resolved.
+	  <dd>The AIL interface of the SNAC router is attached to the stub network and vice versa the stub network interface
+        is attached to the actual AIL. This can only
+	    happen when both interfaces use a technology that the SNAC router could use for either function, such as two Ethernet
+	    ports; it cannot occur when the stub network uses a different L2 technology than the AIL.
+        This situation is unlikely to occur because the purpose of a SNAC router is to connect an infrastructure network
+        to a stub network that is in some way incompatible at layer 2.
+        Nevertheless, if there would be such a SNAC router product and the interfaces would be swapped,
+	    a clear diagnosis is a Router Advertisement message with the 'SNAC router' flag bit set to '1' that is seen on the
+	    stub network link. Because a SNAC router sets this flag only in the Router Advertisement messages that it sends on
+	    its AIL interface (see <xref target="appendix-ra-ail"/> and <xref target="appendix-ra-stub"/>), the flag bit
+        value '1' should never be seen on the stub network under correct operation.
+        A SNAC router that receives such a message with flag bit '1' on the stub network interface
+	    should take appropriate action like warning the user or disabling
+        the network port/link connecting the offending device, until the situation is resolved.
       </dd>
 
 	  <dt>SNAC routers are concatenated/chained:</dt>
-	  <dd>One failure mode described in <xref target="introduction"/> is the concatenation or chaining of two or more
-        SNAC routers. That means a second SNAC router is attached on its AIL interface to the stub network of the first
-        SNAC router connected to an AIL. This can only happen when both interfaces use a technology that the SNAC router
-        could use for either function, such as Ethernet or Wi-Fi.
-        For that reason, this situation is unlikely to occur because the purpose of a SNAC router is to connect incompatible
-        L2 technologies and Ethernet/Wi-Fi can be bridged instead, without using a SNAC router.
-        Given its unlikely occurrence in SNAC router implementations, this specification does not define any mechanism
-        to detect cases of SNAC router chaining or to mitigate the negative effects of doing so.
+	  <dd>A failure mode mentioned in <xref target="introduction"/> is the concatenation or chaining of two or more
+        SNAC routers. That means a SNAC router is attached via its AIL interface to the stub network of another
+        SNAC router. This can only happen when both interfaces use a technology that the SNAC router
+        can use for either function, such as Ethernet or Wi-Fi.
+        This situation is unlikely to occur because the purpose of a SNAC router is to connect incompatible
+        networking technologies as mentioned in the previous case.
+        The detection/diagnosis method for this case is the same as described in the previous case: detecting a
+        Router Advertisement message with a 'SNAC router' flag bit set to '1' on the stub network link.
+        A SNAC router that receives such a message
+	    should take appropriate action like warning the user or disabling
+        the network port/link connecting the offending (chained) SNAC router, until the situation is resolved.
       </dd>
 
 	  <dt>Router Advertisement messages of the SNAC router are blocked on the AIL:</dt>
-	  <dd>The infrastructure network filters Router Advertisement messages from unauthorized routers, for example using
+	  <dd>The infrastructure network can filter Router Advertisement messages from unauthorized routers, for example using
 	    RA-Guard <xref target="RFC6105"/> <xref target="RFC7113"/>. Services on the stub network are then still discoverable on the infrastructure
 	    network, because multicast DNS is not affected, but hosts on the AIL do not install a route to the OSNR prefix and
 	    therefore cannot reach stub network hosts. Communication that is originated by stub network hosts and uses NAT64 keeps
@@ -1601,9 +1613,10 @@
         partitions and heals (<xref target="appendix-failure-change"/>).
 	    The timestamped record of prefix changes described in <xref target="oper-diagnostics"/> identifies which event
 	    triggered each renumbering; comparing the records of the individual SNAC routers shows which one initiated it.
-	    The remedy is to remove the underlying instability, for example by making the SNAC router persist its ULA link
-	    prefix across reboots, by improving the AIL attachment or the stub network
-	    connectivity, or by configuring longer prefix lifetimes on the DHCPv6-PD server.
+	    The remedy is to remove the underlying instability, for example by removing a SNAC router that does not persist
+        its ULA site prefix across reboots, or does not persist its ULA OSNR prefix, or by improving the AIL attachment
+        (cabling) of the SNAC router, or by configuring longer prefix lifetimes on the infrastructure network
+        DHCPv6-PD server.
       </dd>
 
 	</dl>
