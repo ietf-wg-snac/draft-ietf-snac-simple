@@ -62,7 +62,7 @@
       <name>Introduction</name>
       <t>
 	This document specifies a set of practices for automatically connecting IPv6 stub networks to adjacent infrastructure networks.
-          The connection is enabled through a Stub Network Auto-Configuring router, or SNAC router.</t>
+	The connection is enabled through a Stub Network Auto-Configuring router, or SNAC router.</t>
       <t>
 	What makes stub networks a distinct type of network is simply that a stub network never provides transit between networks to
 	which it is connected. The term "stub" refers to the way the network is seen by the link to which it is connected: there is
@@ -74,14 +74,7 @@
 	Stub networks may be globally reachable, or may be only locally reachable. A
 	host on a locally reachable stub network can only interoperate with hosts on the network link(s) to which it is connected.
 	A host on a globally reachable stub network should be able to interoperate with hosts on other network links in the same
-	infrastructure as well as hosts on the global Internet.</t>
-      <t>
-	It may be noted that just as one can plug several CE Router devices together in series to form multi-layer NATs, there is
-	nothing preventing the owner of a stub router from attaching it to a stub network as if that network were its
-	infrastructure network. In the case of an IoT wireless network, there may be no way to do this, nor would it be desirable,
-	but a stub router that uses Ethernet on both the infrastructure and stub network sides could be connected this way. Nothing
-	in this document is intended to prevent this from being done, but neither does this document attempt to solve the problems that this
-	could create.</t>
+	infrastructure network as well as hosts on the global Internet.</t>
       <t>
 	There are several use cases for stub networks. Motivating factors in these use cases include:</t>
       <ul>
@@ -120,8 +113,20 @@
       </ul>
       <t>
 	The goal of this document is to specify the minimal set of changes or behaviors required to use existing IETF
-	specifications to support the stub network use cases. The result is intended to be deployable on existing IPv4/IPv6 infrastructure networks without
+	specifications to support the stub network use cases. The result is the specification of the SNAC router,
+	intended to be deployable on existing IPv4/IPv6 infrastructure networks without
 	requiring changes to those networks.</t>
+      <t>
+	It may be noted that just as one can plug several CE router devices together in series using Ethernet cabling to form
+	multi-layer NATs, the owner of a stub router device could attach it to a stub network as if that network were its
+	infrastructure network, if the physical network connection (layer 1) and layer 2 are fully compatible.
+	However, for the SNAC router as specified in this document chaining of routers in series is unlikely to be
+	feasible, because the respective infrastructure and stub networking technologies in a SNAC router almost always differ.
+	For example, a SNAC router may provide an IoT wireless stub network to which an Ethernet plug or Wi-Fi client
+	cannot be connected.
+	Therefore, this document does not attempt to solve the problems that chaining of SNAC routers in series would create.
+      </t>
+
       <section anchor="interop-goals"><name>Interoperability Goals</name>
 	<t>
 	  The specific goal of this specification is for hosts on the stub network to be able to interoperate with hosts on the adjacent infrastructure
@@ -371,7 +376,7 @@
 	<dt>Stub Router:</dt>
 	<dd>A router that provides connectivity between a stub network and an infrastructure network. A stub router may also provide
 	  connectivity between other networks: the term "stub router" refers specifically to its role in providing connectivity to
-	  a stub network. For example, a CE Router may provide connectivity between a provider network (WAN) and a network
+	  a stub network. For example, a CE router may provide connectivity between a provider network (WAN) and a network
 	  (LAN), while at the same time providing connectivity between the LAN and a stub network. What distinguishes the LAN from
 	  the stub network in this case is that the LAN is potentially a candidate to act as a transit network to reach other routers,
 	  whereas the stub network is not.</dd>
