@@ -719,7 +719,8 @@
             applies for a non-zero Router Lifetime value.</li>
         </ul>
         <t>
-	      If there is no recent RA received from a non-SNAC-router, both 'M' and 'O' flag bits MUST be cleared.</t>
+	      If no RA from a non-SNAC-router remains in the set of received RAs after applying these exclusions,
+          both 'M' and 'O' flag bits MUST be cleared.</t>
 	    <t>
 	      The sent Router Advertisement message MUST also include a Route Information Option (<xref target="RFC4191" section="2.3"/>) for
 	      each OSNR prefix advertised on the stub network.</t>
