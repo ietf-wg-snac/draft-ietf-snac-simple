@@ -204,7 +204,7 @@
 
       <t>This document describes mechanisms for connecting IPv6 hosts in stub networks to the infrastructure network using
 		 SNAC routers as shown in <xref target="snac-rtr"/>. Although the use case depicted there is specific to home networks,
-		 the mechanisms apply for any type of infrastructure network and stub network attachment scenarios.</t>
+		 the mechanisms apply for multiple infrastructure network and stub network attachment scenarios.</t>
       <t>A SNAC router looks for a suitable IPv6 on-link prefix on the adjacent infrastructure link (AIL) to which it is connected.
 		 This prefix may be already provided by the infrastructure router, or when no infrastructure IPv6 service is present,
 		 by another SNAC router connected to the same AIL. If no suitable IPv6 on-link prefix is advertised on the AIL, the SNAC router
@@ -337,7 +337,9 @@
         For example, a SNAC router performs various functions in a host role while it is also a router.
 	    (Also, see the Note in <xref target="RFC8200" section="2" sectionFormat="of"/>.)</dd>
     <dt>IPv4-only Host:</dt>
-    <dd>A device that implements IPv4, but not IPv6; acting as an endpoint of IPv4 communication.</dd>
+    <dd>A host that implements and uses IPv4, but cannot be communicated with using IPv6 for some reason.
+        For example, IPv6 may be disabled, not implemented, or the host could not obtain a routable IPv6 address.
+        It acts as an endpoint of IPv4 communication.</dd>
 	<dt>Addressability:</dt>
 	<dd>The ability to associate each node on a link with its own IPv6 address.</dd>
 	<dt>Reachability:</dt>
