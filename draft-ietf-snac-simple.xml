@@ -428,6 +428,14 @@
 	<dt anchor="MaxRtrAdvInterval">MaxRtrAdvInterval (default: 206 seconds):</dt>
 	<dd>
 	  The maximum interval for periodic unsolicited RA message sending (as defined in <xref target="RFC4861" section="6.2.1" sectionFormat="of"/>) for a SNAC router.</dd>
+    <dt anchor="MAX_INITIAL_RTR_ADVERT_INTERVAL">MAX_INITIAL_RTR_ADVERT_INTERVAL (default: 16 seconds)</dt>
+    <dd>
+      The maximum interval for a router between sending its initial Router Advertisement (RA) messages.
+      The usage is defined in <xref target="RFC4861" sectionFormat="of" section="6.2.4"/>.</dd>
+    <dt anchor="MAX_RTR_SOLICITATIONS">MAX_RTR_SOLICITATIONS (default: 3):</dt>
+    <dd>
+      The maximum number of Router Solicitations sent by a host on an interface that becomes enabled.
+      The usage is defined in <xref target="RFC4861" sectionFormat="of" section="6.3.7"/>.</dd>
 	<dt anchor="MIN_PD_PREFIX_LIFETIME">MIN_PD_PREFIX_LIFETIME (default: 30 minutes):</dt>
 	<dd>
 	  The minimum preferred lifetime that a prefix, delegated with DHCPv6-PD, must have in order to be suitable as a
@@ -641,8 +649,9 @@
       <t>
 		When a SNAC router enables its AIL interface as an advertising interface and determines it needs to send unsolicited RAs
 		per <xref target="RFC4861" section="6.2.4" sectionFormat="of"/>, it MUST use a random delay between
-		0 and MAX_INITIAL_RTR_ADVERT_INTERVAL, instead of the effectively fixed delay of MAX_INITIAL_RTR_ADVERT_INTERVAL
-		currently specified by <xref target="RFC4861"/>.
+          0 and <xref format="none" target="MAX_INITIAL_RTR_ADVERT_INTERVAL">MAX_INITIAL_RTR_ADVERT_INTERVAL</xref>,
+          instead of the effectively fixed delay
+		  currently specified by <xref target="RFC4861"/>.
 	  </t>
       <t>
         See <xref target="appendix-ra-ail"/> for more details on the contents of the RA message sent on the AIL.
@@ -654,7 +663,7 @@
 	      When the SNAC router interface first connects to the AIL, it MUST begin router discovery as defined in
           <xref target="RFC4861" sectionFormat="of" section="6"/>.</t>
 	    <t>
-	      If, after router discovery concludes (by sending up to MAX_RTR_SOLICITATIONS as defined in
+	      If, after router discovery concludes (by sending up to <xref format="none" target="MAX_RTR_SOLICITATIONS">MAX_RTR_SOLICITATIONS</xref> as defined in
             <xref target="RFC4861" sectionFormat="of" section="6.3.7"/>) and no suitable on-link prefix has been found, the router moves this interface to
 	      STATE-BEGIN-ADVERTISING (<xref target="state-begin-advertising"/>).</t>
 	    <t>
