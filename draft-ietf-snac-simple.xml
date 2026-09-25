@@ -1213,7 +1213,7 @@
 	In the first case, infrastructure-provided NAT64 is preferred, and the SNAC router MUST advertise this NAT64 service
 	to the stub network.</t>
       <t>
-	In the second case, there is no way to provide connectivity to the infrastructure network: there is no IPv6 routing other than to
+	In the second case, there is no easy way to provide connectivity to the infrastructure network: there is no IPv6 routing other than to
 	the adjacent infrastructure link, because there is no routable prefix, and there is no NAT64 for the same reason, and there
 	is no IPv4, so the SNAC router can't do NAT64 on its own. In this case, the SNAC router MUST NOT advertise NAT64
 	service.</t>
