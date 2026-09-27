@@ -831,7 +831,7 @@
 	  A generic method for SNAC routers, applicable to all stub network technologies, to coordinate who provides the
 	  OSNR prefix is out of scope of this specification.
 	</t><t>
-	  If the stub network is a multicast-capable medium where Router Advertisement messages are used for router
+	  If the stub network is a multicast-capable medium where Router Advertisement messages are typically used for router
 	  discovery, then these RA messages are used to provide the OSNR prefix.
 	  <xref target="appendix-ra-stub"/> describes the contents of the RA messages for this case.
       The arbitration mechanism of <xref target="state-advertising-suitable"/> is then used to converge on a single
@@ -942,7 +942,7 @@
 	      <li>A renumbering event results in the old prefix being replaced with a new one</li>
 	    </ul>
 	    <t>
-	      The SNAC router MUST NOT use a prefix once the DHCPv6-PD client has determined that it is no longer valid. If the
+	      The SNAC router MUST NOT use a prefix once its DHCPv6-PD client has determined that it is no longer valid. If the
           DHCPv6-PD client provides a new prefix, and the old prefix is still valid, then:</t>
           <ul>
           <li>in a stub network where the "single OSNR prefix constraint" applies, the SNAC router MUST deprecate
