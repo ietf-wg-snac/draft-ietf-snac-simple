@@ -1052,10 +1052,11 @@
       can fully perform their functions that support multiple AILs.
 	</t>
 	<t>
-	  It is also possible that SNAC routers for more than one stub network are connected to the same AIL.
-	  In this case, the SNAC routers will be advertising Route Information Options (RIO) in their Router Advertisement messages for
+	  It is also possible that SNAC routers for other stub networks are connected to the same AIL.
+	  In this case, these SNAC routers will be advertising Route Information Options (RIO) in their Router Advertisement messages for
 	  their OSNR prefixes. A SNAC router MUST track the presence of such routes, and MUST advertise reachability to them on
-	  its stub network interface.</t>
+	  its stub network interface. This can be done efficiently by advertising a single default route or one or more route
+      prefixes that jointly encompass all the reachable routes, or by advertising all the individual reachable routes.</t>
       </section>
       <section>
 	<name>Providing discoverability between stub network links and infrastructure network links</name>
