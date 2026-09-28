@@ -2050,7 +2050,7 @@
 	    In this case, the value is the remaining lifetime of the default route that was detected on the AIL with
 	    a maximum of <xref format="none" target="STUB_NETWORK_ROUTE_LIFETIME">STUB_NETWORK_ROUTE_LIFETIME</xref>.
 	    If it is not a default router, the value is zero.</li>
-          <li> SNAC routers do not provide DHCPv6 service on the stub network. Therefore, the 'M' and 'O' flag bits must be zero.</li>
+          <li> SNAC routers do not provide DHCPv6 service on the stub network by default. Therefore, the 'M' and 'O' flag bits must be zero.</li>
 	      <li> The 'SNAC router' flag <xref target="I-D.ietf-6man-snac-router-ra-flag"/>: 0.
 		       Note that this flag is only set by the SNAC router in RA messages sent on its AIL interface.</li>
           <li> In the Cur Hop Limit field: 0 ("unspecified by this router")</li>
