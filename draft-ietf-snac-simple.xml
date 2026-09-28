@@ -1183,6 +1183,7 @@
       </t>
       <t>A SNAC router MUST be capable of providing NAT64 service itself, and MUST be capable of discovering the availability
 	of NAT64 service on the infrastructure network and providing it to its stub network when it is available and suitable.
+    The discovery of NAT64 service on the AIL MUST use the PREF64 Router Advertisement option <xref target="RFC8781"/>.
       </t>
       <t>
 	Some network media may provide their own mechanisms for advertising NAT64 service to the stub network. If such a mechanism
