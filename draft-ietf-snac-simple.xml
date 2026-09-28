@@ -705,7 +705,7 @@
 		MUST move this interface to the STATE-BEGIN-ADVERTISING state (<xref target="state-begin-advertising"/>).</t>
 	      <t>
 		If the scheduled time for sending a periodic unsolicited multicast RA message arrives, and there are no routers advertising suitable
-		prefixes that have a ReachableTime that is less than <xref target="MAX_SUITABLE_REACHABLE_TIME" format="none">MAX_SUITABLE_REACHABLE_TIME</xref>,
+		prefixes that have a ReachableTime that is less than or equal to <xref target="MAX_SUITABLE_REACHABLE_TIME" format="none">MAX_SUITABLE_REACHABLE_TIME</xref>,
 		then the router MUST move this interface to the STATE-BEGIN-ADVERTISING state.</t>
 	    </section>
 	  </section>
@@ -956,7 +956,7 @@
 	      If the DHCPv6-PD client determines that the prefix it provided to use as the OSNR prefix is no longer valid, and no
 	      replacement prefix is provided by the DHCPv6 server, then the SNAC router MUST switch to the ULA link prefix that it
 	      has allocated for use on the stub network.  In the case that the DHCPv6-PD client is unable to renew its lease on the
-	      current OSNR prefix, and time between the T2 interval for the prefix assignment
+	      current OSNR prefix, and the time period between the T2 interval for the prefix assignment
 	      (<xref target="RFC9915" section="21.4" sectionFormat="of"/>) and the end of the lease has been
 	      reached, then the SNAC router MUST deprecate the DHCPv6-PD-provided OSNR prefix and begin advertising the ULA link
 	      prefix.
@@ -1225,7 +1225,7 @@
 	to the stub network.</t>
       <t>
 	In the second case, there is no easy way to provide connectivity to the infrastructure network: there is no IPv6 routing other than to
-	the adjacent infrastructure link, because there is no routable prefix, and there is no NAT64 for the same reason, and there
+	the adjacent infrastructure link, because there is no routable prefix, and there is no usable NAT64 for the same reason, and there
 	is no IPv4, so the SNAC router can't do NAT64 on its own. In this case, the SNAC router MUST NOT advertise NAT64
 	service.</t>
       <t>
