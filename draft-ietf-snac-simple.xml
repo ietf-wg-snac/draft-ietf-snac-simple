@@ -154,7 +154,7 @@
 	  DNS (mDNS) <xref target="RFC6762"/>. As an example, when one host connected to
 	  a specific Wi-Fi network wishes to discover services on hosts connected to that same Wi-Fi network, it can do so using
 	  mDNS.  Similarly, when a host on some other network
-	  wishes to discover the same service, it must use DNS-based Service Discovery <xref target="RFC6763"/>.  In both cases,
+	  wishes to discover the same service, it must use unicast DNS-based Service Discovery <xref target="RFC6763"/>.  In both cases,
 	  "discoverable using DNS" means that the host has one or more entries in the DNS that serve to make it discoverable.</t>
 	<t>
 	  Discoverability is lumped in with reachability and addressability, both of which are essentially Layer 3 issues. The reason
@@ -347,7 +347,7 @@
 	  information required that allows the node to send packets to a router that can forward those packets towards a link where
 	  the destination address is on-link.</dd>
 	<dt>Adjacent Infrastructure Link (AIL):</dt>
-	<dd>any link to which a stub router is directly attached, that is part of an infrastructure network and is not the
+	<dd>Any link to which a stub router is directly attached, that is part of an infrastructure network and is not the
 	  stub network.</dd>
     <dt>Customer Edge (CE) Router:</dt>
     <dd>As defined in <xref target="I-D.ietf-v6ops-rfc7084bis"/>. A CE router is an infrastructure router that is intended
@@ -357,14 +357,14 @@
       ports, plus Wi-Fi, on the LAN side.</dd>
 	<dt>Infrastructure network:</dt>
 	<dd>
-	  the network infrastructure to which a stub router connects. This network can be a single link, or a network of links. The
+	  The network infrastructure to which a stub router connects. This network can be a single link, or a network of links. The
 	  network (in case of a network of links) is formed by one or more infrastructure routers.
-      In a home network, this is typically a CE router, which may also provide some services, such as a DNS resolver, a DHCPv4
+      In a home network, the infrastructure router is typically a CE router, which may also provide some services, such as a DNS resolver, a DHCPv4
 	  server, and a DHCPv6 prefix delegation (DHCPv6-PD, see <xref target="RFC9915" section="6.3" sectionFormat="of"/>) server, for example.</dd>
 	<dt>Infrastructure router:</dt>
 	<dd>An IP router that is part of an infrastructure network. For example, a CE router.</dd>
 	<dt>Off-Stub-Network-Routable (OSNR) Prefix:</dt>
-	<dd>an IPv6 prefix advertised on the stub network that can be used for communication with hosts not on the stub network.</dd>
+	<dd>An IPv6 prefix advertised on the stub network that can be used for communication with hosts not on the stub network.</dd>
     <dt>DNS Resolver / Resolver:</dt>
     <dd>A resolver as defined in <xref target="RFC9499" section="6" sectionFormat="of"/>.
 	    "DNS resolver" is used as a synonym for "resolver" to clearly point out the DNS context of this term.</dd>
@@ -378,7 +378,7 @@
 	<dt>Stub Router:</dt>
 	<dd>A router that provides connectivity between a stub network and an infrastructure network. A stub router may also provide
 	  connectivity between other networks: the term "stub router" refers specifically to its role in providing connectivity to
-	  a stub network. For example, a CE router may provide connectivity between a provider network (WAN) and a network
+	  a stub network. For example, a CE router may provide connectivity between a provider network (WAN) and a local network
 	  (LAN), while at the same time providing connectivity between the LAN and a stub network. What distinguishes the LAN from
 	  the stub network in this case is that the LAN is potentially a candidate to act as a transit network to reach other routers,
 	  whereas the stub network is not.</dd>
@@ -428,7 +428,7 @@
 	<dt anchor="MaxRtrAdvInterval">MaxRtrAdvInterval (default: 206 seconds):</dt>
 	<dd>
 	  The maximum interval for periodic unsolicited RA message sending (as defined in <xref target="RFC4861" section="6.2.1" sectionFormat="of"/>) for a SNAC router.</dd>
-    <dt anchor="MAX_INITIAL_RTR_ADVERT_INTERVAL">MAX_INITIAL_RTR_ADVERT_INTERVAL (default: 16 seconds)</dt>
+    <dt anchor="MAX_INITIAL_RTR_ADVERT_INTERVAL">MAX_INITIAL_RTR_ADVERT_INTERVAL (default: 16 seconds):</dt>
     <dd>
       The maximum interval for a router between sending its initial Router Advertisement (RA) messages.
       The usage is defined in <xref target="RFC4861" sectionFormat="of" section="6.2.4"/>.</dd>
@@ -438,7 +438,7 @@
       The usage is defined in <xref target="RFC4861" sectionFormat="of" section="6.3.7"/>.</dd>
 	<dt anchor="MIN_PD_PREFIX_LIFETIME">MIN_PD_PREFIX_LIFETIME (default: 30 minutes):</dt>
 	<dd>
-	  The minimum preferred lifetime that a prefix, delegated with DHCPv6-PD, must have in order to be suitable as a
+	  The minimum preferred lifetime that a prefix, delegated with DHCPv6-PD, must have in order to be suitable as an
       OSNR prefix for the stub network. The minimum lifetime is chosen to be long enough that a reboot of the DHCPv6
       server or the SNAC router will not prevent the successful renewal of the prefix.</dd>
 	<dt anchor="MAX_SUITABLE_REACHABLE_TIME">MAX_SUITABLE_REACHABLE_TIME (default: 60 seconds):</dt>
@@ -587,14 +587,14 @@
 	  <ul>
 	    <li>Prefix Length is 64, suitable for IPv6 Stateless Address Autoconfiguration (SLAAC), consistent with current implementations
 			of 64-bit interface identifiers in <xref target="RFC4291" section="2.5.1"/>,</li>
-        <li>'L' flag bit is set and</li>
+        <li>'L' flag bit is set, and</li>
 	    <li>either the 'A' flag bit or the 'P' flag bit <xref target="RFC9762"/> is set, and</li>
 	    <li>Preferred Lifetime of <xref target="MIN_SUITABLE_PREFIX_PREFERRED_LIFETIME" format="none">MIN_SUITABLE_PREFIX_PREFERRED_LIFETIME</xref>
 	      or higher.</li>
 	  </ul>
 	  <t>
 		  A prefix is not considered a suitable on-link prefix if the 'L' flag bit is not set, or if neither
-		  the 'A' flag bit nor the 'P' flag bit are set.
+		  the 'A' flag bit nor the 'P' flag bit is set.
 		  When the 'A' flag bit is not set, this indicates that individual node addresses cannot be configured with SLAAC.
 		  In this case, typically addresses are managed using DHCPv6 <xref target="RFC9915"/>, or (in rare cases) another method.
 		  If the 'P' flag bit is set, then hosts that wish to allocate their own addresses can do so by
@@ -649,8 +649,8 @@
       <t>
 		When a SNAC router enables its AIL interface as an advertising interface and determines it needs to send unsolicited RAs
 		per <xref target="RFC4861" section="6.2.4" sectionFormat="of"/>, it MUST use a random delay between
-          0 and <xref format="none" target="MAX_INITIAL_RTR_ADVERT_INTERVAL">MAX_INITIAL_RTR_ADVERT_INTERVAL</xref>,
-          instead of the effectively fixed delay
+          0 and <xref format="none" target="MAX_INITIAL_RTR_ADVERT_INTERVAL">MAX_INITIAL_RTR_ADVERT_INTERVAL</xref>
+          for each unsolicited RA sent, instead of the effectively fixed delay
 		  currently specified by <xref target="RFC4861"/>.
 	  </t>
       <t>
@@ -677,7 +677,7 @@
 	      receive a suitable on-link prefix in a Router Advertisement, it will not be able to communicate. Consequently, the SNAC router MUST monitor Router
 	      Solicitation and Router Advertisement messages on the interface in order to determine whether a prefix that has been advertised on the
 	      link is still being advertised. To accomplish this, the SNAC router uses two complementary methods: router staleness detection and
-	      neighbor unreachability detection.</t>
+	      router unreachability detection.</t>
 	    <section anchor="staleness"><name>Router staleness detection</name>
 	      <t>
 		The SNAC router MUST listen for Router Advertisement messages on the AIL to which the interface is
@@ -689,7 +689,7 @@
 	    <section anchor="nud"><name>Router Unreachability Detection</name>
 	      <t>
 		For each suitable prefix, the SNAC router MUST monitor the state of reachability to the router(s) that
-		advertised it as described in (<xref target="RFC4861" section="7.3.1" sectionFormat="comma"/>) using a ReachableTime
+		advertised it as described in <xref target="RFC4861" section="7.3.1" sectionFormat="comma"/> using a ReachableTime
 		value of no more than <xref target="MAX_SUITABLE_REACHABLE_TIME" format="none">MAX_SUITABLE_REACHABLE_TIME</xref>.
 		The reason for this is that if no router providing the on-link
 		prefix on the AIL is reachable, then when a new host first connects to the AIL, it will have no suitable on-link
@@ -701,7 +701,7 @@
 		is received, which resets ReachableTime to zero, or the maximum number of retransmissions has been sent.</t>
 	      <t>
 		The SNAC router MUST listen for Router Solicitation messages on the AIL. When a Router Solicitation message is
-		received, if none of the on-link routers on the AIL are marked reachable, the SNAC router
+		received, if none of the monitored on-link routers on the AIL are marked reachable, the SNAC router
 		MUST move this interface to the STATE-BEGIN-ADVERTISING state (<xref target="state-begin-advertising"/>).</t>
 	      <t>
 		If the scheduled time for sending a periodic unsolicited multicast RA message arrives, and there are no routers advertising suitable
@@ -713,8 +713,8 @@
 	    <name>IP addressability not present on adjacent infrastructure link (STATE-BEGIN-ADVERTISING)</name>
 	    <t>
 	      In this state, the SNAC router generates its own on-link prefix for the AIL. This prefix has a valid and
-	      preferred lifetime of <xref format="none" target="STUB_PROVIDED_PREFIX_LIFETIME">STUB_PROVIDED_PREFIX_LIFETIME</xref>
-	      seconds. The SNAC router sends a Router Advertisement (RA) message containing
+	      preferred lifetime of <xref format="none" target="STUB_PROVIDED_PREFIX_LIFETIME">STUB_PROVIDED_PREFIX_LIFETIME</xref>.
+          The SNAC router sends a Router Advertisement (RA) message containing
 	      this prefix in a Prefix Information option (PIO). In the PIO, the 'A' flag bit (autonomous address configuration),
 	      see <xref target="RFC4861" section="4.6.2"/>, MUST be set and the 'L' flag bit (on-link) MUST also be set.
 	      Link-layer technologies that require the 'L' flag bit to be cleared are out of scope of this document.
@@ -754,8 +754,7 @@
 	      prefix, and the 'SNAC Router' flag bit is not set in the Router Advertisement flags field, the SNAC router moves
 	      the interface to STATE-DEPRECATING (<xref target="state-deprecating"/>).</t>
 	    <t>
-	      If the 'SNAC Router' flag bit is set in the RA header flags field, then one of the following must be true in order for that prefix to
-	      be considered suitable:</t>
+	      If the 'SNAC Router' flag bit is set in the RA header flags field, then one of the following cases applies:</t>
 	    <ul>
 	      <li>
 		The prefixes are equal. In this case, the interface remains in STATE-ADVERTISING-SUITABLE.</li>
@@ -803,8 +802,8 @@
 	    <t>
 	      If VALID is less than <xref target="MaxRtrAdvInterval" format="none">MaxRtrAdvInterval</xref> seconds, the SNAC router
 	      does not include the deprecated prefix in the Router Advertisement.
-	      Note that VALID could be less than zero. Otherwise, the prefix is provided in the advertisement, but with
-	      a valid lifetime of VALID.
+	      Otherwise, the prefix is provided in the advertisement, but with a valid lifetime of VALID.
+          Note that VALID could be less than zero.
 	    </t>
 	    <t>
 	      If no more deprecated prefix(es) are included in its Router Advertisements, the deprecation is complete and
@@ -848,7 +847,7 @@
 	  <t>
 	    In order to be able to provide addressability either on the stub network or on the adjacent infrastructure link, a SNAC
 	    router MUST allocate its own ULA site prefix. ULA prefixes, described in Unique Local IPv6 Unicast Addresses
-	    <xref target="RFC4193"/> are randomly allocated prefixes. A SNAC router MUST allocate a single ULA site prefix for use in
+	    <xref target="RFC4193"/>, are randomly allocated prefixes. A SNAC router MUST allocate a single ULA site prefix for use in
 	    providing on-link prefixes to the stub network and the adjacent infrastructure link as described in <xref target="state-begin-advertising"/>.
 	  </t><t>
 	    Any ULA link prefixes allocated by a SNAC router SHOULD persist across reboots, and SHOULD remain stable over time.
@@ -903,11 +902,11 @@
           </t>
           <t>
             When multiple prefixes are available for delegation (e.g., both Global Unicast Address (GUA) and Unique Local Address (ULA) prefixes),
-            a SNAC router MUST select prefixes based on the following criteria, evaluated in order:
+            a SNAC router MUST select prefixes based on the following constraints, evaluated in order:
           </t>
           <ul>
             <li>Single OSNR prefix constraint: For constrained stub networks (e.g., 6LoWPAN, Thread mesh networks) that have limited support for multiple OSNR prefixes, a SNAC router MUST select only the single best prefix. Prefix type GUA MUST be preferred over ULA, then the prefix with the longest preferred lifetime is chosen for distribution.</li>
-            <li>Multiple OSNR prefix constraint: For stub networks without a "single OSNR prefix constraint", the GUA and ULA prefixes with the longest preferred lifetimes are chosen for distribution. Distributing both GUA and ULA prefixes allows hosts to decide how they will communicate.</li>
+            <li>Multiple OSNR prefix constraint: For stub networks without a "single OSNR prefix constraint", one GUA prefix and one ULA prefix with the longest preferred lifetimes are chosen for distribution. Distributing both GUA and ULA prefixes allows hosts to decide how they will communicate.</li>
           </ul>
           <t>
             The timeout/lifetime-based selection ensures that the stub network avoids frequent renumbering events that can
@@ -915,7 +914,7 @@
             prefix lifetimes and re-evaluate prefix selection when lifetimes are renewed or when new prefixes become available.
           </t>
           <t>
-            A SNAC router MUST check in the server's Advertise message that the preferred lifetime a DHCPv6-PD server
+            A SNAC router MUST check in the server's Advertise and Reply messages that the preferred lifetime a DHCPv6-PD server
             can offer is at least <xref format="none" target="MIN_PD_PREFIX_LIFETIME">MIN_PD_PREFIX_LIFETIME</xref>
             prior to requesting a prefix delegation to that
             server. If no DHCPv6-PD server can offer this, the SNAC router MUST treat all potential DHCPv6-PD prefixes
@@ -931,7 +930,7 @@
 	      about the infrastructure network attachment might change that affects the validity of that prefix for use on the stub
 	      network. The section of <xref target="RFC9915"/> titled "Refreshing Configuration Information"
 	      discusses the various scenarios that can occur. The DHCPv6 prefix delegation client being used by
-	      the SNAC router is assumed to conform to this specification.
+	      the SNAC router is assumed to conform to that specification.
 	    </t>
 	    <t>
 	      Situations that can occur include (but are not limited to):
@@ -1005,14 +1004,14 @@
 	<t>
 	  The SNAC router SHOULD advertise itself as a default router on the stub network, if it detects that a default route is
 	  present on the AIL.
-      The consequence for not following this recommendation is that some hosts on the infrastructure network and/or hosts
+      The consequence of not following this recommendation is that some hosts on the infrastructure network and/or hosts
       on the Internet potentially cannot be reached by a host on the stub network.
       As an exception, in some cases it may not be desirable to advertise reachability to the Internet as a whole; for such cases the SNAC
 	  router MAY be administratively configured to not advertise itself as a default router, or it MAY use an automated
 	  policy to make such a decision.
 	</t><t>
-	  A SNAC router MUST NOT advertise a default route lifetime on its stub network that is higher than the remaining default
-	  router lifetime on the AIL.
+	  A SNAC router MUST NOT advertise a default route lifetime on its stub network that is higher than the longest remaining default
+	  router lifetime advertised on the AIL.
 	  Also, when a SNAC router detects that the default route on the AIL is not available anymore (e.g. based on a received
 	  Router Advertisement message, or detecting that the default router is no longer available), it MUST stop advertising itself
 	  as a default router on the stub network.
@@ -1675,7 +1674,7 @@
 
 	  <dt>Level of maturity:</dt>
 	  <dd>Production; widely used. OpenThread is used in certified Thread products that implement the features defined in the
-	    Thread 1.4 specification <xref target="Thread"/>, which includes the Thread Border Router features that implement
+	    Thread 1.4.1 specification <xref target="Thread"/>, which includes the Thread Border Router features that implement
 	    the SNAC router functions.</dd>
 
 	  <dt>Version compatibility:</dt>
@@ -1696,7 +1695,7 @@
 		Thread Network Data. This supports the approach of <xref target="stub-addressability"/> to leave the mechanism
 		used on the stub network to the stub network technology.</li>
 	      <li>Thread is a stub network technology that explicitly supports operating multiple SNAC routers of the same
-        stub network on one AIL. This lead to some Thread-specific functions in the implementation, such as the use of
+        stub network on one AIL. This led to some Thread-specific functions in the implementation, such as the use of
         stub-network-wide shared configuration data to help detect OSNR prefixes and coordinate tasks among the
         multiple SNAC routers. These functions are out of scope of this document.</li>
 	    </ul>
@@ -1726,13 +1725,13 @@
         the security considerations of Section 11 of <xref target="RFC4861"/> apply.</t>
       <t>
         And because a SNAC router operates as an SRP registrar,
-        the security and privacy considerations of Section 6 and 7 of <xref target="RFC9665"/> apply.</t>
+        the security and privacy considerations of Sections 6 and 7 of <xref target="RFC9665"/> apply.</t>
       <t>
         Specific considerations for SNAC routers connected to an infrastructure network that has deployed RA-Guard
         <xref target="RFC6105"/> <xref target="RFC7113"/> can be found in <xref target="appendix-managed-network"/>.
       </t>
       <t>
-        Secure DNS communications with the SNAC router is enabled by DNS-over-TLS as defined in <xref target="dns-over-tls"/>.
+        Secure DNS communications with the SNAC router are enabled by DNS-over-TLS as defined in <xref target="dns-over-tls"/>.
         This provides opportunistic security <xref target="RFC7435"/> and
 	    opportunistic privacy (<xref target="RFC7858" section="3.1" sectionFormat="of"/>).
 	    It prevents eavesdroppers on the stub network that are not able to intercept the TLS connection from determining
@@ -1962,7 +1961,7 @@
 	  In this scenario, there is no IPv6 service being intentionally advertised on a managed network. Administrators of such networks
 	  may not be aware of the possibility of configuring RA-Guard.  In this situation, a SNAC router will connect and advertise
 	  services, which will be reachable just as they would be in a similar unmanaged network. A SNAC router that conforms to
-	  this specification will not advertise an IPv6 default route on any interface. Therefore, it should not cause operational problems, just as
+	  this specification will not advertise an IPv6 default route on its AIL interface. Therefore, it should not cause operational problems, just as
 	  connecting an IPv4 NAT gateway in the same scenario would not cause operational problems.
 	</t>
       </section>
@@ -2026,7 +2025,7 @@
 	    </ul></li>
 	</ul>
       <t>
-	Per <xref target="support-ail"/>, all RA options for a SNAC router must fit in a single RA message.
+	Per <xref target="common-ipv6-nd"/>, all RA options for a SNAC router must fit in a single RA message.
 	SNAC routers do not send multiple RAs with different information other than to announce that some information
 	that was previously advertised has changed.</t>
     </section>
@@ -2115,7 +2114,7 @@
               plugged/unplugged cables.</li>
       </ul>
       <t>
-    While the details of how a stub network technology supports these basic cases is out of scope of this document,
+    While the details of how a stub network technology supports these basic cases are out of scope of this document,
     some hints, suggestions and examples from current stub network technologies are discussed below.
       </t><t>
 	Some technologies used for stub networks, for example Thread or 6LoWPAN wireless mesh networks, can produce partitioned networks,
@@ -2136,7 +2135,7 @@
 	An implication of this is that when such a partition forms, the same OSNR prefix cannot be advertised on both partitions,
 	since this will result in ambiguous routing to/from the infrastructure network.
 	This problem is already addressed by the requirement that each SNAC
-    router generate its own ULA	site prefix (see <xref target="ula-site-prefix"/>), from which a unique ULA OSNR prefix
+    router generate its own ULA site prefix (see <xref target="ula-site-prefix"/>), from which a unique ULA OSNR prefix
 	is allocated.
       </t><t>
 	When partitions of this type occur, they may also heal at a later time. When a stub network heals in a situation where two SNAC routers have
