@@ -1211,7 +1211,7 @@
     Note that if NAT64 is disabled, the SNAC router's discovery and use of NAT64 service on the infrastructure network
     is also disabled.
       </t>
-      <t>There are four possible combinations of circumstances in which to consider how to provide NAT64 service:</t>
+      <t>There are give possible combinations of circumstances in which to consider how to provide NAT64 service:</t>
       <ol>
 	<li>
 	  Infrastructure provides DHCPv6-PD support, and the infrastructure provides NAT64
@@ -1223,8 +1223,11 @@
 	  Infrastructure provides no DHCPv6-PD support, infrastructure provides NAT64, and there is IPv4 on infrastructure
 	</li>
 	<li>
-	  Infrastructure provides no DHCPv6-PD support, infrastructure provides no NAT64 (and may also not be providing
+	  Infrastructure provides no NAT64 (and may also not be providing
 	  IPv6), and there is IPv4 on infrastructure
+	</li>
+	<li>
+	  Infrastructure provides no NAT64, and there is no IPv4 on infrastructure
 	</li>
       </ol>
       <t>
@@ -1240,6 +1243,9 @@
 	router MUST provide its own NAT64 service.</t>
       <t>
 	In the fourth case, the SNAC router MUST provide its own NAT64 service.</t>
+      <t>
+	In the fifth case, the SNAC router MUST NOT advertise or provide any NAT64 service because the lack of IPv4 makes
+    operating this service impossible.</t>
       <t>
 	An additional complication is that there may be more than one SNAC router connecting the stub network to infrastructure.  In
 	this case, it may be desirable to limit the number of SNAC routers providing NAT64 service, or it may be acceptable for all
