@@ -1640,6 +1640,45 @@
 
 	</dl>
       </section>
+      <section anchor="oper-icmpv6-redirect">
+	<name>ICMPv6 Redirects and Interactions with Prefix-Per-Device</name>
+	<t>
+          <xref target="RFC9663"/> defines a general mechanism whereby devices use DHCPv6 Prefix Delegation to obtain a prefix, and
+          use only addresses within that prefix when communicating: no on-link address is configured via SLAAC or DHCPv6 IA_NA.
+        </t>
+        <t>
+          Communication between adjacent devices which each have a prefix-per-device occurs via sending traffic through the
+          first-hop router.
+          That router MAY enforce various levels of isolation between clients as explained in <xref target="RFC8273"/>.
+        </t>
+        <t>
+          At one level, the SNAC router is just another device on the AIL that has obtained a prefix.
+          However, the SNAC router also emits a RIO onto the infrastructure network, and this means that traffic from other devices
+          will ideally flow directly to the SNAC router, avoiding a trip to the first-hop router.
+          For devices that have formed an address via SLAAC or DHCPv6 IA_NA, then the on-link nature of that prefix will result in
+          the SNAC router sending responses directly back.
+        </t>
+        <t>
+          When the corresponding node (a desktop or smartphone) is using prefix-per-device according to <xref target="RFC9663"/>,
+          then reverse traffic will have no specific return route as  <xref target="RFC9663"/> does not mandate that a RIO be sent
+          by those hosts.
+          The traffic will therefore go back to first-hop router, and the first-hop router will forward the traffic to the correct
+          host using the routing table that it has built based upon DHCPv6-PD.
+        </t>
+        <t>
+          Some Infrastructure routers might incorrectly do stateful connection tracking on traffic between internal nodes.
+          As the initial TCP SYN message will not have gone through the infrastructure router (due to the RIO), then no state may
+          exist, and the traffic could get dropped.
+          This behaviour is incorrect, and <xref target="RFC6092"/> does not recommend this.
+        </t>
+        <t>
+          A properly behaving Infrastructure Router will forward the traffic correctly, even if it can not see all of the traffic.
+          The Infrastructure Router ought to emit ICMPv6 Redirect messages (<xref target="RFC2461"/> Section 4.5) telling the SNAC
+          Router of the shorter route.
+          SNAC Routers, like all nodes, SHOULD exercise some skepticism about all ICMPv6 Redirect messages, but SHOULD accept
+          redirects for the infrastructure prefix when originating from the Infrastructure Router (as judged by layer-2 address)
+        </t>
+      </section>
     </section>
 
 
@@ -1768,6 +1807,7 @@
       <name>Normative References</name>
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.1034.xml" />
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.2119.xml" />
+      <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.2461.xml" />
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.4191.xml" />
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.4193.xml" />
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.4291.xml" />
@@ -1797,6 +1837,7 @@
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.2328.xml" />
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.4944.xml" />
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.5706.xml" />
+      <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.6092.xml" />
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.6105.xml" />
 	  <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.6147.xml" />
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.6282.xml" />
@@ -1805,7 +1846,8 @@
 	  <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.7217.xml" />
 	  <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.7435.xml" />
 	  <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.7942.xml" />
-	  <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.8305.xml" />
+      <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.8273.xml" />
+      <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.8305.xml" />
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.8978.xml" />
 	  <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.9119.xml" />
 	  <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.9364.xml" />
