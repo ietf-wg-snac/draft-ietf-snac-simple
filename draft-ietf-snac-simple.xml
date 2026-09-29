@@ -1119,7 +1119,7 @@
 	    provided on the stub network, as described in <xref target="RFC6763" section="11"/>.</t>
 	  <t>
 	    By implication, this means that a SNAC router MUST provide a DNS resolver. In addition, a SNAC router MUST provide
-	    a DNS zone for the AIL it is attached to, and MUST include this zone in its list of legacy browsing domains
+	    a DNS zone for the AIL it is attached to, and MUST include this zone in its list of automatic browsing domains
 	    as defined in <xref target="RFC6763" section="11" sectionFormat="of"/>.
 	    A SNAC router MUST provide a Discovery Proxy that operates with this DNS zone.
 	  </t>
@@ -1130,7 +1130,7 @@
 	  </t>
 	  <t>
 	    The SNAC router MUST also maintain an SRP registrar and use registrations made through that SRP registrar to populate
-	    a DNS zone which is advertised as a legacy browsing domain, in the same way as defined above.
+	    a DNS zone which is advertised as a automatic browsing domain, in the same way as defined above.
 		Note that per <xref target="RFC9665" section="3.1.2" sectionFormat="of"/> the special-use domain name '<tt>default.service.arpa</tt>'
 	    is always available for SRP registrations into this default DNS zone.
 		This SRP registrar MUST be advertised on the
@@ -1139,10 +1139,10 @@
         For example, Thread <xref target="Thread"/> SNAC routers advertise the IPv6 address of their SRP registrar through
         network-wide configuration data.</t>
       <t>
-        The above legacy browsing domains are made available through the SNAC router's DNS resolver, so that
+        The above automatic browsing domains are made available through the SNAC router's DNS resolver, so that
         a stub network host can use a PTR record query on the special name <tt>lb._dns-sd._udp.default.service.arpa.</tt>
-        to access the list of legacy browsing domains.
-        In addition to its own zones, a SNAC router MUST include the legacy browsing domains, if any, provided
+        to access the list of automatic browsing domains.
+        In addition to its own zones, a SNAC router MUST include the automatic browsing domains, if any, provided
         by the infrastructure network's DNS-SD service.</t>
 	</section>
 
@@ -1375,7 +1375,7 @@
 	<dt>Advertising Proxy:</dt><dd>In order to advertise SRP-registered services on the AIL, a SNAC router MUST act as an
 	  Advertising Proxy on the AIL to which it is attached.</dd>
 	<dt>SRP Registrar:</dt><dd>A SNAC router MUST provide SRP registrar service on its stub network.</dd>
-	<dt>Legacy Browsing Domains:</dt><dd>The DNS resolver in the SNAC router advertises legacy browsing domains
+	<dt>Automatic Browsing Domains:</dt><dd>The DNS resolver in the SNAC router advertises automatic browsing domains
 	  as defined in <xref target="stub-discoverability"/>.</dd>
 	<dt>NAT64:</dt><dd>A SNAC router needs to provide NAT64 service in particular circumstances so that (IPv6-only) hosts on the stub network
 	  can communicate with IPv4-only hosts on the infrastructure network and the global Internet.
