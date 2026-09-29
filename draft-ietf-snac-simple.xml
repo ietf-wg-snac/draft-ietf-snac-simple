@@ -588,7 +588,7 @@
 	    <li>Prefix Length is 64, suitable for IPv6 Stateless Address Autoconfiguration (SLAAC), consistent with current implementations
 			of 64-bit interface identifiers in <xref target="RFC4291" section="2.5.1"/>,</li>
         <li>'L' flag bit is set, and</li>
-	    <li>either the 'A' flag bit or the 'P' flag bit <xref target="RFC9762"/> is set, and</li>
+	    <li>at least one of the 'A' flag bit and the 'P' flag bit <xref target="RFC9762"/> is set, and</li>
 	    <li>Preferred Lifetime of <xref target="MIN_SUITABLE_PREFIX_PREFERRED_LIFETIME" format="none">MIN_SUITABLE_PREFIX_PREFERRED_LIFETIME</xref>
 	      or higher.</li>
 	  </ul>
@@ -597,7 +597,7 @@
 		  the 'A' flag bit nor the 'P' flag bit is set.
 		  When the 'A' flag bit is not set, this indicates that individual node addresses cannot be configured with SLAAC.
 		  In this case, typically addresses are managed using DHCPv6 <xref target="RFC9915"/>, or (in rare cases) another method.
-		  If the 'P' flag bit is set, then hosts that wish to allocate their own addresses can do so by
+		  If the 'P' flag bit is set, then hosts that wish to allocate their own addresses preferably do so by
 		  acquiring a prefix from which to allocate them using DHCPv6 prefix delegation <xref target="RFC9663"/>.
 		  Nodes are not required to use DHCPv6 to acquire individual addresses, so a
 	    prefix that requires the use of DHCPv6 for that purpose can't be considered "suitable"—not all hosts can actually use it.
@@ -622,8 +622,8 @@
 	  <t>
 	    The possible states of the SNAC router's AIL interface are described here, along with actions
 	    required to be taken to monitor the state. The purpose of the state machine described here is to ensure that at all
-	    times, when a new host arrives on the AIL, it is able to acquire an IPv6 address on that
-	    link using SLAAC.</t>
+	    times, when a new host arrives on the AIL, it is able to acquire an IPv6 address on that link.
+	  </t>
 	  <t>
         While in any of the states mentioned here except for STATE-UNKNOWN, the SNAC router is expected to treat its
 	    infrastructure interface as an advertising interface as described in <xref target="RFC4861" section="6.2.2"/>.
@@ -693,7 +693,7 @@
 		value of no more than <xref target="MAX_SUITABLE_REACHABLE_TIME" format="none">MAX_SUITABLE_REACHABLE_TIME</xref>.
 		The reason for this is that if no router providing the on-link
 		prefix on the AIL is reachable, then when a new host first connects to the AIL, it will have no suitable on-link
-		prefix to use for autoconfiguration, and thus will be unable to communicate with hosts on the stub network.</t>
+		prefix to use for address autoconfiguration (SLAAC), and thus will be unable to communicate with hosts on the stub network.</t>
 	      <t>
 		Whenever the ReachableTime for a router advertising a suitable prefix exceeds <xref format="none" target="MAX_SUITABLE_REACHABLE_TIME">
 		  MAX_SUITABLE_REACHABLE_TIME</xref>, the SNAC router
