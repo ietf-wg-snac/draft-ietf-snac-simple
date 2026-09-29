@@ -1095,9 +1095,7 @@
 	    Because this document defines behavior for SNAC routers connecting to infrastructure networks that do not provide any
 	    new mechanism for integrating stub networks, there is no way for a SNAC router to provide DNS-SD service on an adjacent
 	    infrastructure link in the form of a DNS zone in which to do discovery. Therefore, service on the adjacent infrastructure link
-	    MUST be provided with mDNS using an Advertising Proxy, as defined in <xref target="I-D.ietf-dnssd-advertising-proxy"/>.
-	    Also, a SNAC router MUST NOT advertise Domain Enumeration records (<xref target="RFC6763" sectionFormat="of" section="11"/>)
-	    for its own zones on the AIL using mDNS, because only the 'local.' domain name is used on the AIL.</t>
+	    MUST be provided with mDNS using an Advertising Proxy, as defined in <xref target="I-D.ietf-dnssd-advertising-proxy"/>.</t>
 	  <t>
 	    One limitation of this solution is that it requires that hosts on the stub network use the DNS-SD Service Registration
 	    Protocol (SRP) <xref target="RFC9665"/> to register their DNS-SD services. This means that in the case of a
