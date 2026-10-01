@@ -346,6 +346,9 @@
     <dd>Given an IPv6 destination address that is not on-link for any link to which a node is attached, the
 	  information required that allows the node to send packets to a router that can forward those packets towards a link where
 	  the destination address is on-link.</dd>
+    <dt>LastReachableTime:</dt>
+    <dd>A timer maintained by a SNAC router for a specific neighbor router on the AIL, tracking the time passed since
+        reachability of the neighbor router was last confirmed. See <xref target="nud"/>. </dd>
 	<dt>Adjacent Infrastructure Link (AIL):</dt>
 	<dd>Any link to which a stub router is directly attached, that is part of an infrastructure network and is not the
 	  stub network.</dd>
@@ -441,10 +444,10 @@
 	  The minimum preferred lifetime that a prefix, delegated with DHCPv6-PD, must have in order to be suitable as an
       OSNR prefix for the stub network. The minimum lifetime is chosen to be long enough that a reboot of the DHCPv6
       server or the SNAC router will not prevent the successful renewal of the prefix.</dd>
-	<dt anchor="MAX_SUITABLE_REACHABLE_TIME">MAX_SUITABLE_REACHABLE_TIME (default: 60 seconds):</dt>
+	<dt anchor="MAX_LAST_REACHABLE_TIME">MAX_LAST_REACHABLE_TIME (default: 60 seconds):</dt>
 	<dd>
-	  The maximum ReachableTime value that a router can have in the neighbor cache before any suitable
-	  prefixes it has advertised are no longer considered suitable.</dd>
+	  The maximum time that can pass, since the last reachability confirmation of a router on the AIL,
+	  before reachability probing is triggered for the router.</dd>
 	<dt anchor="STUB_NETWORK_ROUTE_LIFETIME">STUB_NETWORK_ROUTE_LIFETIME (default: 30 minutes):</dt>
 	<dd>The Route Lifetime that will be specified in Route Information Options (RIOs) sent by the SNAC router to
         advertise the route to its stub network on the AIL.
@@ -688,25 +691,32 @@
 	    </section>
 	    <section anchor="nud"><name>Router Unreachability Detection</name>
 	      <t>
-		For each suitable prefix, the SNAC router MUST monitor the state of reachability to the router(s) that
-		advertised it as described in <xref target="RFC4861" section="7.3.1" sectionFormat="comma"/> using a ReachableTime
-		value of no more than <xref target="MAX_SUITABLE_REACHABLE_TIME" format="none">MAX_SUITABLE_REACHABLE_TIME</xref>.
-		The reason for this is that if no router providing the on-link
-		prefix on the AIL is reachable, then when a new host first connects to the AIL, it will have no suitable on-link
-		prefix to use for address autoconfiguration (SLAAC), and thus will be unable to communicate with hosts on the stub network.</t>
+		For each suitable prefix, the SNAC router MUST monitor the reachability of the router(s) that
+		advertised it as described in <xref target="RFC4861" section="7.3.1" sectionFormat="comma"/>
+		while maintaining a per-router timer 'LastReachableTime' that tracks the time elapsed since reachability was
+		last confirmed.</t>
 	      <t>
-		Whenever the ReachableTime for a router advertising a suitable prefix exceeds <xref format="none" target="MAX_SUITABLE_REACHABLE_TIME">
-		  MAX_SUITABLE_REACHABLE_TIME</xref>, the SNAC router
-		MUST send unicast Neighbor Solicitation messages as described in <xref target="RFC4861" section="7.2.2"/> until either a response
-		is received, which resets ReachableTime to zero, or the maximum number of retransmissions has been sent.</t>
+		The reason for doing this is that if no router providing the on-link
+		prefix on the AIL is reachable, then when a new host first connects to the AIL, it will have no suitable on-link
+		prefix to use for address configuration, and thus will be unable to communicate with hosts on the stub network.</t>
+	      <t>
+		Monitoring of a router starts when the SNAC router receives a Router Advertisement from that router containing a suitable prefix.
+		If the router is not currently being monitored, or was marked unreachable before, the SNAC router initializes LastReachableTime to
+		MAX_LAST_REACHABLE_TIME, which immediately triggers NS probing as described below.</t>
+	      <t>
+		When the LastReachableTime for a monitored router reaches <xref format="none" target="MAX_LAST_REACHABLE_TIME">
+		MAX_LAST_REACHABLE_TIME</xref>, the SNAC router MUST send unicast Neighbor Solicitation (NS) messages
+		as described in <xref target="RFC4861" section="7.2.2"/> until either a response
+		is received, which resets LastReachableTime to zero, or the maximum number of NS retransmissions has been sent.
+		Then, if no response or other reachability confirmation is received from the router, it is marked unreachable.</t>
 	      <t>
 		The SNAC router MUST listen for Router Solicitation messages on the AIL. When a Router Solicitation message is
-		received, if none of the monitored on-link routers on the AIL are marked reachable, the SNAC router
-		MUST move this interface to the STATE-BEGIN-ADVERTISING state (<xref target="state-begin-advertising"/>).</t>
+		received, and none of the monitored on-link routers on the AIL are marked reachable, then the SNAC router
+		MUST move its AIL interface to STATE-BEGIN-ADVERTISING (<xref target="state-begin-advertising"/>).</t>
 	      <t>
-		If the scheduled time for sending a periodic unsolicited multicast RA message arrives, and there are no routers advertising suitable
-		prefixes that have a ReachableTime that is less than or equal to <xref target="MAX_SUITABLE_REACHABLE_TIME" format="none">MAX_SUITABLE_REACHABLE_TIME</xref>,
-		then the router MUST move this interface to the STATE-BEGIN-ADVERTISING state.</t>
+		If the scheduled time for sending a periodic unsolicited multicast RA message arrives, and there are no routers
+		advertising suitable prefixes that are marked reachable,
+		then the SNAC router MUST move its AIL interface to STATE-BEGIN-ADVERTISING.</t>
 	    </section>
 	  </section>
 	  <section anchor="state-begin-advertising">
