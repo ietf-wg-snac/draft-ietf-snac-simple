@@ -1247,8 +1247,8 @@
       <t>
 	In the fourth case, the SNAC router MUST provide its own NAT64 service.</t>
       <t>
-	In the fifth case, the SNAC router MUST NOT advertise any NAT64 service because the infrastructure does
-	not provide NAT64 and the lack of IPv4 prevents the SNAC router from providing its own NAT64 service.</t>
+	In the fifth case, the SNAC router can't advertise infrastructure NAT64 service since it's not provided,
+	and MUST NOT provide its own NAT64 service since there's no IPv4 address to use for translation.</t>
       <t>
 	An additional complication is that there may be more than one SNAC router connecting the stub network to infrastructure.  In
 	this case, it may be desirable to limit the number of SNAC routers providing NAT64 service, or it may be acceptable for all
