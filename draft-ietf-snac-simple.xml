@@ -443,7 +443,7 @@
       server or the SNAC router will not prevent the successful renewal of the prefix.</dd>
 	<dt anchor="ROUTER_BASE_REACHABLE_TIME">ROUTER_BASE_REACHABLE_TIME (default: 60 seconds):</dt>
 	<dd>
-	  The BaseReachableTime value (<xref target="RFC4861" section="6.3.4" sectionFormat="comma"/>) used to compute
+	  The BaseReachableTime value (<xref target="RFC4861" section="6.3.2" sectionFormat="comma"/>) used to compute
 	  the ReachableTime that is used for monitoring routers providing a suitable prefix on the AIL (see <xref target="nud"/>).</dd>
 	<dt anchor="STUB_NETWORK_ROUTE_LIFETIME">STUB_NETWORK_ROUTE_LIFETIME (default: 30 minutes):</dt>
 	<dd>The Route Lifetime that will be specified in Route Information Options (RIOs) sent by the SNAC router to
@@ -688,37 +688,37 @@
 	    </section>
 	    <section anchor="nud"><name>Router Unreachability Detection</name>
 	      <t>
-		For each router advertising a suitable on-link prefix on the AIL, the SNAC router MUST monitor reachability
-        to it as described in <xref target="RFC4861" section="7.3" sectionFormat="comma"/>.
-		This is done using a ReachableTime value calculated per <xref target="RFC4861" section="6.3.4" sectionFormat="of"/>
-        where the BaseReachableTime value is fixed to <xref format="none" target="ROUTER_BASE_REACHABLE_TIME">ROUTER_BASE_REACHABLE_TIME</xref>.</t>
+		For each router advertising a suitable on-link prefix on the AIL, the SNAC router MUST monitor it
+		by maintaining an entry for it in a Monitored Routers List. Each entry is marked either Active or
+        Unreachable and has a countdown timer. An entry is added when a Router Advertisement containing a suitable
+		prefix is first received from a router, and removed when the corresponding router no longer advertises
+        any suitable prefix per <xref target="suitable"/> and <xref target="staleness"/>.</t>
 	      <t>
-		The reason for doing reachability monitoring is that if no router providing the on-link
-		prefix on the AIL is reachable, then when a new host first connects to the AIL, it will have no suitable on-link
+		The reason for doing reachability monitoring is that if no router providing the on-link prefix on the AIL is
+        available, then when a new host first connects to the AIL, it will have no suitable on-link
 		prefix to use for address configuration, and thus will be unable to communicate with hosts on the stub network.</t>
 	      <t>
-        The cache called Neighbor Cache in <xref target="RFC4861"/> is referred to as the Reachable Routers Cache for the
-        monitoring method described here, and is conceptually distinct.
-        A monitored router is only considered reachable if it has an entry in the Reachable Routers Cache.
-		Monitoring of a router starts when the SNAC router receives a Router Advertisement from a router that is not
-        monitored yet, containing a suitable prefix.
-		The cache entry is then created and initially set to the REACHABLE state.
-        Monitoring of a router stops immediately, and its entry is removed from the Reachable Routers Cache, when the
-        router no longer advertises any suitable prefix per <xref target="suitable"/> and <xref target="staleness"/>.</t>
-	      <t>
-		When a cache entry becomes STALE, the SNAC router MUST transition the cache entry to PROBE state (skipping the
-        DELAY state) and probe by sending unicast Neighbor Solicitation (NS) messages
-        as described in <xref target="RFC4861" section="7.3.3"/> until either a response
-		is received, which sets the cache entry to REACHABLE, or the probe fails,
-        which removes the entry from the Reachable Routers Cache.</t>
+        When an entry is added to the List it is marked Active, with the timer set to a value ReachableTime as
+        calculated in <xref target="RFC4861" section="6.3.2" sectionFormat="of"/> but with the BaseReachableTime
+        value set to <xref format="none" target="ROUTER_BASE_REACHABLE_TIME">ROUTER_BASE_REACHABLE_TIME</xref>.</t>
+          <t>
+		When an entry's timer expires, the SNAC router performs Neighbor Unreachability Detection (NUD) for the associated router as
+		described in <xref target="RFC4861" section="7.3.3" sectionFormat="of"/>, as if it had a packet to send to the router.
+		In this procedure, NUD succeeds if the Neighbor Cache entry for the router is, or becomes, REACHABLE.
+        Note that probing using Neighbor Solicitations is skipped if the entry is already REACHABLE,
+        for example due to a recent packet exchange with the router.
+        If NUD succeeds, the List entry is marked Active. If NUD fails, the List entry is marked Unreachable.
+        In both cases, the timer is restarted with the initial value ReachableTime.
+        Therefore, a router marked Unreachable is ignored until a later NUD attempt succeeds,
+        or until its entry is removed from the List.</t>
+          <t>
+		Using a randomized ReachableTime value prevents all SNAC routers on the AIL from probing
+        a router at the same time after receiving its multicast Router Advertisement.</t>
 	      <t>
 		The SNAC router MUST listen for Router Solicitation messages on the AIL. When a Router Solicitation message is
-		received, and the Reachable Routers Cache has zero entries, then the SNAC router
-		MUST move its AIL interface to STATE-BEGIN-ADVERTISING (<xref target="state-begin-advertising"/>).</t>
-	      <t>
-		If the scheduled time for sending a periodic unsolicited multicast RA message arrives, and there are zero entries
-		in the Reachable Routers Cache,
-		then the SNAC router MUST move its AIL interface to STATE-BEGIN-ADVERTISING.</t>
+		received, or the scheduled time for sending a periodic unsolicited multicast RA message arrives, and no monitored
+		router entry is marked Active, the SNAC router MUST move its AIL interface to STATE-BEGIN-ADVERTISING
+		(<xref target="state-begin-advertising"/>).</t>
 	    </section>
 	  </section>
 	  <section anchor="state-begin-advertising">
@@ -761,12 +761,15 @@
               <xref target="state-begin-advertising"/>, at a random time between <xref target="MinRtrAdvInterval" format="none">MinRtrAdvInterval</xref>
 	      and <xref format="none" target="MaxRtrAdvInterval">MaxRtrAdvInterval</xref>.</t>
 	    <t>
-	      The SNAC router may receive a Router Advertisement message containing one or more suitable on-link prefixes on the AIL.
-	      If any of these prefixes are different from the prefix the SNAC router is advertising as the on-link suitable
-	      prefix, and the 'SNAC Router' flag bit is not set in the Router Advertisement flags field, the SNAC router moves
-	      the interface to STATE-DEPRECATING (<xref target="state-deprecating"/>).</t>
+	      In this state, the SNAC router monitors other routers advertising suitable on-link prefixes on the AIL as described
+	      in <xref target="nud"/>. If the Monitored Routers List contains an entry marked Active and the entry's router
+          advertises any suitable on-link prefix
+	      that is different from the prefix the SNAC router is advertising as the on-link suitable
+	      prefix, and the 'SNAC Router' flag bit is not set in the flags field of that router's Router Advertisement,
+	      the SNAC router moves the interface to STATE-DEPRECATING (<xref target="state-deprecating"/>).</t>
 	    <t>
-	      If the 'SNAC Router' flag bit is set in the RA header flags field, then one of the following cases applies:</t>
+	      If the 'SNAC Router' flag bit is set in the flags field of that router's Router Advertisement, then one of the
+	      following cases applies:</t>
 	    <ul>
 	      <li>
 		The prefixes are equal. In this case, the interface remains in STATE-ADVERTISING-SUITABLE.</li>
