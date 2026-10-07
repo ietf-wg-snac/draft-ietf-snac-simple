@@ -698,11 +698,11 @@
         reachable, then when a new host first connects to the AIL, it will have no suitable on-link
 		prefix to use for address configuration, and thus will be unable to communicate with hosts on the stub network.</t>
 	      <t>
-        When an entry is added to the List it is marked Active, with the timer set to a value ReachableTime as
+        When an entry is added to the List it is marked Active, with the timer set to ReachableTime as
         calculated in <xref target="RFC4861" section="6.3.2" sectionFormat="of"/> but with the BaseReachableTime
         value set to <xref format="none" target="ROUTER_BASE_REACHABLE_TIME">ROUTER_BASE_REACHABLE_TIME</xref>.
-        If a new (unicast or multicast) Router Advertisement with a suitable on-link prefix is received from a
-        monitored router, its entry is marked Active.</t>
+        If a subsequent (unicast or multicast) Router Advertisement with a suitable on-link prefix is received from a
+        monitored router, its entry is marked Active immediately.</t>
           <t>
 		When an entry's timer expires, the SNAC router performs Neighbor Unreachability Detection (NUD) for the associated router as
 		described in <xref target="RFC4861" section="7.3.3" sectionFormat="of"/>, as if it had a packet to send to the router.
@@ -712,7 +712,7 @@
         If NUD succeeds, the List entry is marked Active. If NUD fails, the List entry is marked Unreachable.
         In both cases, the timer is restarted with the initial value ReachableTime.
         A router marked Unreachable remains so until a later NUD attempt succeeds, or a new RA from that
-        router is received, or its entry becomes stale and is removed from the List.</t>
+        router is received, or its entry is removed from the List.</t>
           <t>
 		Using a randomized ReachableTime value prevents all SNAC routers on the AIL from probing
         a router at the same time after receiving its multicast Router Advertisement.</t>
