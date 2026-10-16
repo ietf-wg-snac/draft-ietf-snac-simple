@@ -436,7 +436,11 @@
     <dd>
       The maximum number of Router Solicitations sent by a host on an interface that becomes enabled.
       The usage is defined in <xref target="RFC4861" sectionFormat="of" section="6.3.7"/>.</dd>
-	<dt anchor="MIN_PD_PREFIX_LIFETIME">MIN_PD_PREFIX_LIFETIME (default: 30 minutes):</dt>
+	<dt anchor="MAX_UNICAST_SOLICIT">MAX_UNICAST_SOLICIT (default: 3):</dt>
+    <dd>
+      The maximum number of unicast Neighbor Solicitations sent by a node when probing a neighbor for reachability.
+      The usage is defined in <xref target="RFC4861" sectionFormat="of" section="7.3.3"/>.</dd>
+    <dt anchor="MIN_PD_PREFIX_LIFETIME">MIN_PD_PREFIX_LIFETIME (default: 30 minutes):</dt>
 	<dd>
 	  The minimum preferred lifetime that a prefix, delegated with DHCPv6-PD, must have in order to be suitable as an
       OSNR prefix for the stub network. The minimum lifetime is chosen to be long enough that a reboot of the DHCPv6
@@ -688,9 +692,9 @@
 	    </section>
 	    <section anchor="nud"><name>Router Unreachability Detection</name>
 	      <t>
-		For each router advertising a suitable on-link prefix on the AIL, the SNAC router MUST monitor it
-		by maintaining an entry for it in a Monitored Routers List. Each entry is marked either Active or
-        Unreachable and has a countdown timer. An entry is added when a Router Advertisement containing a suitable
+		A SNAC router MUST monitor each router advertising a suitable on-link prefix on the AIL
+		by maintaining an entry for the router in a Monitored Routers List. Each entry has a countdown timer
+        associated to it. An entry is added when a Router Advertisement containing a suitable
 		prefix is received from a router not yet in the List, and removed when the corresponding router no longer
         advertises any suitable prefix per <xref target="suitable"/> and <xref target="staleness"/>.</t>
 	      <t>
@@ -698,33 +702,32 @@
         reachable, then when a new host first connects to the AIL, it will have no suitable on-link
 		prefix to use for address configuration, and thus will be unable to communicate with hosts on the stub network.</t>
 	      <t>
-        When an entry is added to the List it is marked Active, with the timer set to ReachableTime as
+        When an entry is added to the List its timer is set to a value ReachableTime as
         calculated in <xref target="RFC4861" section="6.3.2" sectionFormat="of"/> with the BaseReachableTime
         value set to <xref format="none" target="ROUTER_BASE_REACHABLE_TIME">ROUTER_BASE_REACHABLE_TIME</xref>.
         While a router's entry is in the List, the SNAC router MUST monitor reachability to the router as
         as described in <xref target="RFC4861" section="7.3.1" sectionFormat="comma"/>.
-        Each positive confirmation of reachability (as defined in that section) marks the entry Active and sets
-        the timer to ReachableTime.
-        Furthermore, if a subsequent (unicast or multicast) Router Advertisement with a suitable on-link prefix
-        is received from a monitored router, its entry is marked Active immediately and, if its timer is not active,
-        the timer is set to ReachableTime.</t>
+        Each positive confirmation of reachability (as defined in that section) resets
+        the entry's timer to ReachableTime.
+        Also a subsequent (unicast or multicast) Router Advertisement with a suitable on-link prefix received
+        from a monitored router resets the entry's timer to ReachableTime.</t>
           <t>
-        When an entry's timer expires, the SNAC router MUST send up to MAX_UNICAST_SOLICIT unicast Neighbor
+        When an entry's timer reaches zero, the SNAC router MUST send up to
+        <xref format="none" target="MAX_UNICAST_SOLICIT">MAX_UNICAST_SOLICIT</xref> unicast Neighbor
         Solicitation messages, as described for entering the PROBE state
-        in <xref target="RFC4861" section="7.3.3"/>, until either a response is received, which keeps the router's
-        List entry marked Active and restarts the timer at ReachableTime,
-        or the maximum number of retransmissions has been sent,
-        which marks the router's List entry Unreachable.</t>
+        in <xref target="RFC4861" section="7.3.3"/>, until either a response is received,
+        which resets the entry's timer to ReachableTime, or the maximum number of retransmissions has been sent,
+        which removes the entry from the List.</t>
           <t>
-        As a result of these procedures, a router marked Unreachable remains so until its unicast reachability
-        is again confirmed, or a new RA from that router is received, or its stale entry gets removed from the List.
-		Using a randomized ReachableTime value prevents all SNAC routers on the AIL from NS probing
-        a router at the same time after receiving its initial multicast Router Advertisement.</t>
+        As a result of these procedures, a router's entry remains in the List as long as the router is reachable
+        and its last-sent Router Advertisement is not stale.
+		Using a randomized ReachableTime value prevents multiple SNAC routers on an AIL from probing a
+        router all at the same time after receiving a multicast Router Advertisement from it.</t>
 	      <t>
 		The SNAC router MUST listen for Router Solicitation messages on the AIL. When a Router Solicitation message is
-		received, or the scheduled time for sending a periodic unsolicited multicast RA message arrives, and no monitored
-		router entry is marked Active, the SNAC router MUST move its AIL interface to STATE-BEGIN-ADVERTISING
-		(<xref target="state-begin-advertising"/>).</t>
+		received, or the scheduled time for sending a periodic unsolicited multicast RA message arrives, and
+		the Monitored Routers List is empty, the SNAC router MUST move its AIL interface to
+        STATE-BEGIN-ADVERTISING (<xref target="state-begin-advertising"/>).</t>
 	    </section>
 	  </section>
 	  <section anchor="state-begin-advertising">
@@ -802,7 +805,7 @@
 	      <li>
 		the valid lifetime for its prefix is reduced with each subsequent Router Advertisement message.</li>
 	      <li>
-		the usability of the infrastructure-provided on-link prefix is monitored as in the STATE-SUITABLE state; if
+		the suitability of the infrastructure-provided on-link prefix is monitored as in the STATE-SUITABLE state; if
 		during the deprecation period, the SNAC router detects that there are no longer any suitable prefixes on the link, as
 		described in <xref target="staleness"/> or in <xref target="nud"/>, it MUST return the interface to the
 		STATE-BEGIN-ADVERTISING (<xref target="state-begin-advertising"/>) state and resume advertising its prefix with the
