@@ -702,16 +702,19 @@
         calculated in <xref target="RFC4861" section="6.3.2" sectionFormat="of"/> with the BaseReachableTime
         value set to <xref format="none" target="ROUTER_BASE_REACHABLE_TIME">ROUTER_BASE_REACHABLE_TIME</xref>.
         While a router's entry is in the List, the SNAC router MUST monitor reachability to the router as
-        as described in <xref target="RFC4861" section="7.3.1" sectionFormat="comma"/>, and set the timer to
-        ReachableTime for each positive confirmation of reachability (as defined in that section).
+        as described in <xref target="RFC4861" section="7.3.1" sectionFormat="comma"/>.
+        Each positive confirmation of reachability (as defined in that section) marks the entry Active and sets
+        the timer to ReachableTime.
         Furthermore, if a subsequent (unicast or multicast) Router Advertisement with a suitable on-link prefix
-        is received from a monitored router, its entry is marked Active immediately.</t>
+        is received from a monitored router, its entry is marked Active immediately and, if its timer is not active,
+        the timer is set to ReachableTime.</t>
           <t>
-		When an entry's timer expires, the SNAC router MUST send unicast Neighbor Solicitation messages as described
-        in <xref target="RFC4861" section="7.2.2"/> until either a response is received, which keeps the router's
-        List entry marked Active, or the maximum number of retransmissions has been sent,
-        which marks the router's List entry Unreachable.
-        In both cases, the timer is restarted with the initial value ReachableTime.</t>
+        When an entry's timer expires, the SNAC router MUST send up to MAX_UNICAST_SOLICIT unicast Neighbor
+        Solicitation messages, as described for entering the PROBE state
+        in <xref target="RFC4861" section="7.3.3"/>, until either a response is received, which keeps the router's
+        List entry marked Active and restarts the timer at ReachableTime,
+        or the maximum number of retransmissions has been sent,
+        which marks the router's List entry Unreachable.</t>
           <t>
         As a result of these procedures, a router marked Unreachable remains so until its unicast reachability
         is again confirmed, or a new RA from that router is received, or its stale entry gets removed from the List.
@@ -1471,7 +1474,7 @@
     </t><t>
 	  Each SNAC router adds some traffic to the AIL: unsolicited multicast Router Advertisement messages, on average
 	  one every 3 minutes (with the default values); Router Advertisement messages sent in
-	  response to Router Solicitation messages; Neighbor Solicitation messages used to verify the reachability of the routers
+	  response to Router Solicitation messages; unicast Neighbor Solicitation messages used to verify the reachability of the routers
 	  that advertise a suitable prefix (<xref target="nud"/>); and the mDNS traffic of the Discovery Proxy and the
 	  Advertising Proxy (<xref target="services-provided"/>). This load is expected to scale
 	  linearly with the number of SNAC routers attached to the AIL.
