@@ -719,9 +719,8 @@
         as defined for the PROBE state in <xref target="RFC4861" section="7.3.3"/>,
         sending up to <xref format="none" target="MAX_UNICAST_SOLICIT">MAX_UNICAST_SOLICIT</xref> unicast Neighbor
         Solicitation messages.
-        If a probe response is received, the entry's timer is reset to ReachableTime.
-        A suitable Router Advertisement from the router or a positive confirmation of reachability also resets the
-        timer to ReachableTime.
+        If a probe response, a suitable Router Advertisement from the router, or a positive confirmation of
+        reachability is received, the probe attempt is stopped and the entry's timer is reset to ReachableTime.
         Otherwise, at the time that probe retransmissions cease, the entry is removed from the Monitored Routers List.</t>
           <t>
         As a result, a router's entry remains in the List as long as the router is reachable
