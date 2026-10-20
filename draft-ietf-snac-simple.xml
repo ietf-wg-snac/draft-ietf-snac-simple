@@ -673,7 +673,8 @@
 	    <t>
 	      If, during router discovery, a suitable on-link prefix is found, the router moves the interface to
 	      STATE-SUITABLE (<xref target="state-suitable"/>).
-          This also starts monitoring of the discovered router(s) per <xref target="nud"/>.</t>
+          This also starts monitoring of the discovered router(s) per <xref target="staleness"/> and
+          <xref target="nud"/>.</t>
 	  </section>
 	  <section anchor="state-suitable">
 	    <name>IP addressability already present on adjacent infrastructure link (STATE-SUITABLE)</name>
@@ -724,7 +725,7 @@
         Otherwise, at the time that probe retransmissions cease, the entry is removed from the Monitored Routers List.</t>
           <t>
         As a result, a router's entry remains in the List as long as the router is reachable
-        and its last-received suitable Router Advertisement is not stale.
+        and its last-received Router Advertisement is suitable and not stale.
 		Using a randomized ReachableTime value makes it less likely that multiple SNAC routers on an AIL probe a
         router all at the same time after receiving a multicast Router Advertisement from it.</t>
 	      <t>
