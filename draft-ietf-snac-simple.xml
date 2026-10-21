@@ -776,7 +776,7 @@
 	      and <xref format="none" target="MaxRtrAdvInterval">MaxRtrAdvInterval</xref>.</t>
 	    <t>
 	      The SNAC router may receive a Router Advertisement message containing one or more suitable on-link prefixes on the AIL.
-	      If any of these prefixes are different from the prefix the SNAC router is advertising as the on-link suitable
+	      If any of these prefixes are different from the prefix the SNAC router is advertising as the suitable on-link
 	      prefix, and the 'SNAC Router' flag bit is not set in the Router Advertisement flags field, the SNAC router moves
 	      the interface to STATE-DEPRECATING (<xref target="state-deprecating"/>).</t>
 	    <t>
