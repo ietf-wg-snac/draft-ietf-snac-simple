@@ -177,7 +177,7 @@
 	<t>
 	  To achieve the reachability goal described above, this document assumes hosts attempting to reach destinations on the stub
 	  network maintain a routing table — Type C hosts as defined in <xref target="RFC4191" section="3.1"/>. Type A and Type B
-	  hosts are out-of-scope for this document.
+	  hosts are out of scope for this document.
 	</t>
       </section>
       <section anchor="usability-goals"><name>Usability Goals</name>
