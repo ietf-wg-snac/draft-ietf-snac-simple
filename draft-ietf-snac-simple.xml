@@ -860,7 +860,7 @@
 	  discovery, then these RA messages are used to provide the OSNR prefix.
 	  <xref target="appendix-ra-stub"/> describes the contents of the RA messages for this case.
       The arbitration mechanism of <xref target="state-advertising-suitable"/> is then used to converge on a single
-      SNAC router advertising the numerically lowest OSNR prefix, with the difference that the value of the 'SNAC router'
+      SNAC router advertising the numerically lowest OSNR prefix, with the difference that the value of the 'SNAC Router'
       flag bit in received RA messages is disregarded and assumed to be set ('1') for the purpose of prefix arbitration.
 	</t><t>
 	  Stub networks that do not support the use of Router Advertisements for router discovery need to use some similar
@@ -1614,7 +1614,7 @@
         This situation is unlikely to occur because the purpose of a SNAC router is to connect an infrastructure network
         to a stub network that is in some way incompatible at layer 2.
         Nevertheless, if there were such a SNAC router product and the interfaces were swapped,
-	    a clear diagnosis is a Router Advertisement message with the 'SNAC router' flag bit set to '1' that is seen on the
+	    a clear diagnosis is a Router Advertisement message with the 'SNAC Router' flag bit set to '1' that is seen on the
 	    stub network link. Because a SNAC router sets this flag only in the Router Advertisement messages that it sends on
 	    its AIL interface (see <xref target="appendix-ra-ail"/> and <xref target="appendix-ra-stub"/>), the flag bit
         value '1' should never be seen on the stub network under correct operation.
@@ -1631,7 +1631,7 @@
         This situation is unlikely to occur because the purpose of a SNAC router is to connect incompatible
         networking technologies as mentioned in the previous case.
         The detection/diagnosis method for this case is the same as described in the previous case: detecting a
-        Router Advertisement message with a 'SNAC router' flag bit set to '1' on the stub network link.
+        Router Advertisement message with a 'SNAC Router' flag bit set to '1' on the stub network link.
         A SNAC router that receives such a message
 	    should take appropriate action like warning the user or disabling
         the network port/link connecting the offending (chained) SNAC router, until the situation is resolved.
@@ -1718,7 +1718,7 @@
 
 	  <dt>Version compatibility:</dt>
 	  <dd>The Thread 1.4 specification <xref target="Thread"/> references revision -06 of this document.
-          Support for the 'SNAC router' flag was added to OpenThread in September 2024.</dd>
+          Support for the 'SNAC Router' flag bit was added to OpenThread in September 2024.</dd>
 
 	  <dt>Licensing:</dt>
 	  <dd>Open source, using the BSD 3-Clause license.</dd>
@@ -1743,7 +1743,7 @@
 	  <dt>Interoperability:</dt>
 	  <dd>The behavior of the SNAC router on the AIL is covered by test cases included in the automated test suite of
         OpenThread; they verify,
-	    among other things, that the 'SNAC router' flag is set and that a Route Information Option for the OSNR prefix is
+	    among other things, that the 'SNAC Router' flag bit is set and that a Route Information Option for the OSNR prefix is
 	    advertised on the AIL. Scenarios with multiple SNAC routers on one AIL are regularly tested in simulation.</dd>
 
 	  <dt>Contact information:</dt>
@@ -2023,7 +2023,7 @@
 	    in a SNAC router's Router Advertisements sent on the AIL.</li>
           <li> For the 'M' and 'O' flag bits, <xref target="state-begin-advertising"/> specifies how the values are set.
 			   In case that no other router (excluding SNAC routers) on the AIL has set these flags, they are both set to zero.</li>
-	      <li> The 'SNAC router' flag <xref target="I-D.ietf-6man-snac-router-ra-flag"/>: 1</li>
+	      <li> The 'SNAC Router' flag bit <xref target="I-D.ietf-6man-snac-router-ra-flag"/>: 1</li>
           <li> In the Cur Hop Limit field: 0 ("unspecified by this router")</li>
           <li> In the Reachable Time field: 0 ("unspecified by this router")</li>
           <li> In the Retrans Timer field: 0 ("unspecified by this router")</li>
@@ -2089,7 +2089,7 @@
 	    a maximum of <xref format="none" target="STUB_NETWORK_ROUTE_LIFETIME">STUB_NETWORK_ROUTE_LIFETIME</xref>.
 	    If it is not a default router, the value is zero.</li>
           <li> SNAC routers do not provide DHCPv6 service on the stub network by default. Therefore, the 'M' and 'O' flag bits must be zero.</li>
-	      <li> The 'SNAC router' flag <xref target="I-D.ietf-6man-snac-router-ra-flag"/>: 0.
+	      <li> The 'SNAC Router' flag bit <xref target="I-D.ietf-6man-snac-router-ra-flag"/>: 0.
 		       Note that this flag is only set by the SNAC router in RA messages sent on its AIL interface.</li>
           <li> In the Cur Hop Limit field: 0 ("unspecified by this router")</li>
           <li> In the Reachable Time field: 0 ("unspecified by this router")</li>
