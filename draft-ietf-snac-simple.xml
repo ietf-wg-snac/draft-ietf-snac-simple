@@ -150,7 +150,7 @@
 	    is able to reach hosts on the Internet</li>
 	</ul>
 	<t>
-	  Discoverability here means "discoverable using DNS, or DNS Service Discovery".  DNS Service Discovery includes multicast
+	  Discoverability here means "discoverable using DNS, or DNS Service Discovery".  DNS Service Discovery (DNS-SD) includes multicast
 	  DNS (mDNS) <xref target="RFC6762"/>. As an example, when one host connected to
 	  a specific Wi-Fi network wishes to discover services on hosts connected to that same Wi-Fi network, it can do so using
 	  mDNS.  Similarly, when a host on some other network
