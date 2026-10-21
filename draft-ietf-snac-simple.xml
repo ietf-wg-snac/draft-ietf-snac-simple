@@ -1974,7 +1974,7 @@
 	  <t>
 	    In case a host on the AIL attempts to communicate with a host using a site ULA prefix on a different link, it may
 	    choose a ULA address as its source address.  If it were to choose the autonomously configured ULA address as its source
-	    address, this would fail, because there is no route back from the different link to the SNAC-router-provided ULA OSNR prefix.
+	    address, this would fail, because there is no route back from the different link to the SNAC-router-provided ULA on-link prefix.
 	  </t>
 	  <t>
 	    However, this can only happen in practice if the host did not receive an address from DHCPv6.  In this case, the host
