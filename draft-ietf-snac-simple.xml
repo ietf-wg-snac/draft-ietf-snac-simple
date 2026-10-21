@@ -372,7 +372,7 @@
 	<dd>A network link that is connected by one or more stub routers to an AIL in an infrastructure network, but
 	  is not used for transit between that link and any other link. <xref target="RFC2328" section="2.1" sectionFormat="of"/>
 	  describes the distinction between stub networks and transit networks from a topological perspective: a stub network is
-	  simply any network that does not provide transit within a routing fabric. There is reachability through a stub network
+	  simply any network that does not provide transit within a routing fabric. There is reachability through a stub
 	  router to hosts on the stub network, but there is no reachability through the stub network to any link beyond the
 	  stub network link.</dd>
 	<dt>Stub Router:</dt>
@@ -630,7 +630,7 @@
 	  </t>
 	  <t>
         While in any of the states mentioned here except for STATE-UNKNOWN, the SNAC router is expected to treat its
-	    infrastructure interface as an advertising interface as described in <xref target="RFC4861" section="6.2.2"/>.
+	    AIL interface as an advertising interface as described in <xref target="RFC4861" section="6.2.2"/>.
 	    There are two sets of information that need to be sent in RA messages in general.
 	    The first is the on-link prefix, if any, that is to be advertised on the AIL. Whether or not such a prefix is
 	    advertised, and what exactly is advertised regarding that prefix, is determined by the state machine. The second set of
@@ -640,7 +640,7 @@
 	  </t>
 	  <t>
         In case neither of the two sets of information is present, the SNAC router
-	    MUST NOT send any RA message even if it is treating the infrastructure interface as an advertising interface.
+	    MUST NOT send any RA message even if it is treating the AIL interface as an advertising interface.
 	  </t>
 	  <t>
 	    It is important to note that it is possible for an OSNR prefix to be advertised and then withdrawn on the
