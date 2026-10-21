@@ -119,7 +119,7 @@
       <t>
 	It may be noted that just as one can plug several CE router devices together in series using Ethernet cabling to form
 	multi-layer NATs, the owner of a stub router device could attach it to a stub network as if that network were its
-	infrastructure network, if the physical network connection (layer 1) and layer 2 are fully compatible.
+	infrastructure network, if the physical network connection (Layer 1) and Layer 2 are fully compatible.
 	However, for the SNAC router as specified in this document chaining of routers in series is unlikely to be
 	feasible, because the respective infrastructure and stub networking technologies in a SNAC router almost always differ.
 	For example, a SNAC router may provide an IoT wireless stub network to which an Ethernet plug or Wi-Fi client
@@ -1610,9 +1610,9 @@
 	  <dd>The AIL interface of the SNAC router is attached to the stub network and vice versa the stub network interface
         is attached to the actual AIL. This can only
 	    happen when both interfaces use a technology that the SNAC router could use for either function, such as two Ethernet
-	    ports; it cannot occur when the stub network uses a different L2 technology than the AIL.
+	    ports; it cannot occur when the stub network uses a different Layer 2 technology than the AIL.
         This situation is unlikely to occur because the purpose of a SNAC router is to connect an infrastructure network
-        to a stub network that is in some way incompatible at layer 2.
+        to a stub network that is in some way incompatible at Layer 2.
         Nevertheless, if there were such a SNAC router product and the interfaces were swapped,
 	    a clear diagnosis is a Router Advertisement message with the 'SNAC Router' flag bit set to '1' that is seen on the
 	    stub network link. Because a SNAC router sets this flag only in the Router Advertisement messages that it sends on
