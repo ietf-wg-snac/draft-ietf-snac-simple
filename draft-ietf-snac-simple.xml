@@ -208,7 +208,7 @@
       <t>A SNAC router looks for a suitable IPv6 on-link prefix on the adjacent infrastructure link (AIL) to which it is connected.
 		 This prefix may already be provided by the infrastructure router, or when no infrastructure IPv6 service is present,
 		 by another SNAC router connected to the same AIL. If no suitable IPv6 on-link prefix is advertised on the AIL, the SNAC router
-		 will provide one itself by including a Prefix Information Option (PIO) in the Router Advertisement (RA) messages it transmits on the AIL.
+		 will provide one itself by including a Prefix Information option (PIO) in the Router Advertisement (RA) messages it transmits on the AIL.
       </t>
 
       <figure title="SNAC Router connecting Stub Networks to Infrastructure" anchor="snac-rtr">
@@ -616,7 +616,7 @@
 	    response which contains a Prefix Information option (<xref target="RFC4861" section="4.6.2" sectionFormat="comma"/>)
 	    for that prefix.
 	  </t><t>
-	    After an RA message containing a suitable on-link prefix has been received, it can be assumed for the indicated period of time (Valid Lifetime in the Prefix Information Option) thereafter that that prefix
+	    After an RA message containing a suitable on-link prefix has been received, it can be assumed for the indicated period of time (Valid Lifetime in the Prefix Information option) thereafter that that prefix
 	    is still valid on the link. However, prefix lifetimes and router lifetimes are often quite long. In addition to knowing that
 	    a prefix has been advertised on the link in the past, and is still valid, it must therefore be ensured
 	    that at least one router that has advertised this prefix is still alive to respond to Router Solicitation messages.</t>
