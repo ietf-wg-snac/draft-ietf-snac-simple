@@ -762,8 +762,8 @@
 	      The sent Router Advertisement message MUST also include a Route Information Option (<xref target="RFC4191" section="2.3"/>) for
 	      each OSNR prefix advertised on the stub network.</t>
 	    <t>
-	      After having sent the initial Router Advertisement, the SNAC router moves the interface into the STATE-ADVERTISING-SUITABLE
-	      state (<xref target="state-advertising-suitable"/>).</t>
+	      After having sent the initial Router Advertisement, the SNAC router moves the interface to
+	      STATE-ADVERTISING-SUITABLE (<xref target="state-advertising-suitable"/>).</t>
 	  </section>
 	  <section anchor="state-advertising-suitable">
 	    <name>IP addressability provided by the SNAC router (STATE-ADVERTISING-SUITABLE)</name>
@@ -786,7 +786,7 @@
 		The prefixes are equal. In this case, the interface remains in STATE-ADVERTISING-SUITABLE.</li>
 	      <li>
 		The prefix the SNAC router is advertising is a ULA prefix <xref target="RFC4193"/>, and the received prefix is a non-ULA
-		prefix. In this case, the interface moves into the STATE-DEPRECATING (<xref target="state-deprecating"/>) state.</li>
+		prefix. In this case, the interface moves to STATE-DEPRECATING (<xref target="state-deprecating"/>).</li>
 	      <li>
 		Both prefixes are ULA prefixes, and the received prefix, considered as a 128-bit big-endian unsigned integer,
 		is numerically lower, then the interface moves to STATE-DEPRECATING (<xref target="state-deprecating"/>).</li>
@@ -810,10 +810,10 @@
 	      <li>
 		the valid lifetime for its prefix is reduced with each subsequent Router Advertisement message.</li>
 	      <li>
-		the suitability of the other on-link prefix(es) is monitored as in the STATE-SUITABLE state; if
+		the suitability of the other on-link prefix(es) is monitored as in STATE-SUITABLE; if
 		during the deprecation period, the SNAC router detects that there are no longer any suitable prefixes on the link, as
-		described in <xref target="staleness"/> or in <xref target="nud"/>, it MUST return the interface to the
-		STATE-BEGIN-ADVERTISING (<xref target="state-begin-advertising"/>) state and resume advertising its on-link prefix with the
+		described in <xref target="staleness"/> or in <xref target="nud"/>, it MUST return the interface to
+		STATE-BEGIN-ADVERTISING (<xref target="state-begin-advertising"/>) and resume advertising its on-link prefix with the
 		valid and preferred lifetimes described there.</li>
 	    </ul>
 	    <t>
@@ -833,7 +833,7 @@
 	    </t>
 	    <t>
 	      If no more deprecated prefix(es) are included in its Router Advertisements, the deprecation is complete and
-	      the SNAC router returns to the state STATE-SUITABLE (<xref target="state-suitable"/>).
+	      the SNAC router returns to STATE-SUITABLE (<xref target="state-suitable"/>).
 	    </t>
 	  </section>
 	</section>
