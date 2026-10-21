@@ -635,7 +635,7 @@
 	    The first is the on-link prefix, if any, that is to be advertised on the AIL. Whether or not such a prefix is
 	    advertised, and what exactly is advertised regarding that prefix, is determined by the state machine. The second set of
 	    information is a set of routes to (OSNR) prefixes on the stub network. Whenever the SNAC router knows of a reachable (scope is not
-	    link-local and not realm-local) prefix on the stub network, it includes an RIO option in the RA sent on the AIL indicating that
+	    link-local and not realm-local) prefix on the stub network, it includes an RIO in the RA sent on the AIL indicating that
 	    that prefix is reachable through the SNAC router.
 	  </t>
 	  <t>
@@ -646,7 +646,7 @@
 	    It is important to note that it is possible for an OSNR prefix to be advertised and then withdrawn on the
 	    stub network, but for it to still be valid, and for there to still be some communication occurring using that prefix.
 	    In order to avoid prematurely interrupting such communication, the SNAC router maintains a list of OSNR prefixes known
-	    to be valid on the stub network, even if those prefixes have been deprecated, and includes RIO options for all
+	    to be valid on the stub network, even if those prefixes have been deprecated, and includes RIOs for all
 	    such prefixes in the RAs that it sends on the adjacent infrastructure link.
         This is specified in <xref target="managing-reachability-ail"/>.
 	  </t>
@@ -2116,7 +2116,7 @@
 		  but see <xref target="state-deprecating"/>.</li>
 	      </ul></li>
 	      <li> <t>Route Information Option: when a SNAC router is not advertising a default route, it must include one or more
-		RIO options in Router Advertisement messages on the stub network to provide reachability to infrastructure. This is discussed in
+		RIOs in Router Advertisement messages on the stub network to provide reachability to infrastructure. This is discussed in
 		<xref target="stub-reachability"/>. The following settings apply:</t>
 	      <ul>
 		<li> Prefix Length: the length of the prefix covered by the route, not necessarily 64.</li>
