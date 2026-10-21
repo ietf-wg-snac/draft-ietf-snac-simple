@@ -176,7 +176,7 @@
 	  that router, it will ultimately reach host (B) on the stub network.</t>
 	<t>
 	  To achieve the reachability goal described above, this document assumes hosts attempting to reach destinations on the stub
-	  network maintain a routing table -- Type C hosts as defined in <xref target="RFC4191" section="3.1"/>. Type A and Type B
+	  network maintain a routing table — Type C hosts as defined in <xref target="RFC4191" section="3.1"/>. Type A and Type B
 	  hosts are out-of-scope for this document.
 	</t>
       </section>
@@ -603,8 +603,8 @@
 		  In this case, typically addresses are managed using DHCPv6 <xref target="RFC9915"/>, or (in rare cases) another method.
 		  If the 'P' flag bit is set, then hosts that wish to allocate their own addresses preferably do so by
 		  acquiring a prefix from which to allocate them using DHCPv6 prefix delegation <xref target="RFC9663"/>.
-		  Nodes are not required to use DHCPv6 to acquire individual addresses, so a
-	    prefix that requires the use of DHCPv6 for that purpose can't be considered "suitable"—not all hosts can actually use it.
+		  Nodes are not required to use DHCPv6 to acquire individual addresses, so a prefix that requires the use of DHCPv6
+          for that purpose can't be considered "suitable"—not all hosts can actually use it.
 	  </t>
 	  <t>
 	    Note: there can be layer-two networks where Neighbor Discovery is not supported and therefore the 'L' flag bit cannot be set,
@@ -889,7 +889,7 @@
 	  </t>
         <ol>
             <li>The SNAC router remains connected to the same stub network, and the ULA site prefix value is
-                generated based on properties of the stub network (such as configuration data - an example is
+                generated based on properties of the stub network (such as configuration data — an example is
 				the Thread Extended PAN ID detailed in <xref target="maintenance-restarts"/>).</li>
            <li>The SNAC router is configured by the user or an administrator to behave otherwise.</li>
         </ol>
@@ -1530,7 +1530,7 @@
       As mentioned in <xref target="common-supported-topologies"/>, the means of detecting this is out of scope of this
       document.
     </t><t>
-      After the suggested action of disabling SNAC router functions is taken, the stub network continues to function -- with one fewer SNAC router.
+      After the suggested action of disabling SNAC router functions is taken, the stub network continues to function — with one fewer SNAC router.
       Routing, addressability, service registration and service discovery will automatically be taken over by other
       SNAC routers (that do have AIL connectivity) as needed.
 	</t><t>
