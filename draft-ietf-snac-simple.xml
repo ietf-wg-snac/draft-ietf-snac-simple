@@ -355,13 +355,13 @@
       Local-Area Network. A CE router may be provided by an ISP and only capable of connecting directly to the ISP's
       means of service delivery, e.g. Cable or DSL, or it may have an Ethernet port on the WAN side and one or more Ethernet
       ports, plus Wi-Fi, on the LAN side.</dd>
-	<dt>Infrastructure network:</dt>
+	<dt>Infrastructure Network:</dt>
 	<dd>
 	  The network infrastructure to which a stub router connects. This network can be a single link, or a network of links. The
 	  network (in case of a network of links) is formed by one or more infrastructure routers.
       In a home network, the infrastructure router is typically a CE router, which may also provide some services, such as a DNS resolver, a DHCPv4
 	  server, and a DHCPv6 prefix delegation (DHCPv6-PD, see <xref target="RFC9915" section="6.3" sectionFormat="of"/>) server.</dd>
-	<dt>Infrastructure router:</dt>
+	<dt>Infrastructure Router:</dt>
 	<dd>An IP router that is part of an infrastructure network. For example, a CE router.</dd>
 	<dt>Off-Stub-Network-Routable (OSNR) Prefix:</dt>
 	<dd>An IPv6 prefix advertised on the stub network that can be used for communication with hosts not on the stub network.</dd>
