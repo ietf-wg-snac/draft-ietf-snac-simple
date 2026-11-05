@@ -495,9 +495,11 @@
 	  such a topology will likely have a negative effect on the reachability and discoverability of hosts.
       </t><t>
       If a SNAC router is able to determine that an AIL (other than its own) is already in use for its stub network, for example provided by
-	  one or more other SNAC routers or by other router types, it is advised that the SNAC router takes appropriate actions such as warning
-	  the user or ceasing to operate as a SNAC router until the situation is resolved.
-	  How a SNAC router might detect this situation is however out of scope for this document.
+	  one or more other SNAC routers or by other router types, it stops acting as a SNAC router, logs the fault condition and,
+      where possible, notifies the user or administrator.
+	  How a SNAC router might determine this situation is however out of scope for this document.
+      If the SNAC router is able to determine that this multi-AIL situation has been resolved it resumes its
+      SNAC router functionality again.
 	  </t><t>
       Similarly, a SNAC router that is simultaneously active on more than one AIL is explicitly out of scope of this
       document. This means that a SNAC router also never provides routing between AILs when connected to more than one such link.</t>
@@ -692,8 +694,8 @@
 	    <section anchor="staleness"><name>Router staleness detection</name>
 	      <t>
 		The SNAC router MUST listen for Router Advertisement messages on the AIL to which the interface is
-		attached, and record the time at which each Router Advertisement was received. The router MUST NOT consider any Router
-		Advertisement that is older than <xref target="STALE_RA_TIME" format="none">STALE_RA_TIME</xref> to be suitable.  When
+		attached, and record the time at which each Router Advertisement was received. A Router Advertisement that is
+        older than <xref target="STALE_RA_TIME" format="none">STALE_RA_TIME</xref> MUST be treated as stale.  When
 		the last non-stale Router Advertisement message containing
 		a suitable prefix on the link is marked stale, the SNAC router MUST move the interface to STATE-BEGIN-ADVERTISING.</t>
 	    </section>
@@ -753,12 +755,9 @@
           The 'SNAC Router' flag bit (<xref target="I-D.ietf-6man-snac-router-ra-flag"/>) MUST be set in the RA flags field.
 	      The values of the 'M' and 'O' flag bits MUST be copied from the respective 'M' and 'O' flag bit values seen in the
           most recent (unicast or multicast) RA received from a non-SNAC-router.
-          For the selection of the most recent RA, the following RAs MUST be excluded:
-        </t>
-        <ul>
-            <li>An RA received from a router longer ago than the Router Lifetime period indicated in the RA header. This only
-            applies for a non-zero Router Lifetime value.</li>
-        </ul>
+          For the selection of the most recent RA, the SNAC router MUST exclude an RA received from a router longer
+          ago than the Router Lifetime period indicated in the RA header. This only
+          applies for a non-zero Router Lifetime value.</t>
         <t>
 	      If no RA from a non-SNAC-router remains in the set of received RAs after applying these exclusions,
           both 'M' and 'O' flag bits MUST be cleared.</t>
@@ -944,7 +943,7 @@
             prefix lifetimes and re-evaluate prefix selection when lifetimes are renewed or when new prefixes become available.
           </t>
           <t>
-            A SNAC router MUST check in the server's Advertise and Reply messages that the preferred lifetime a DHCPv6-PD server
+            A SNAC router checks in the server's Advertise and Reply messages that the preferred lifetime a DHCPv6-PD server
             can offer is at least <xref format="none" target="MIN_PD_PREFIX_LIFETIME">MIN_PD_PREFIX_LIFETIME</xref>
             prior to requesting a prefix delegation from that
             server. If no DHCPv6-PD server can offer this, the SNAC router MUST treat all potential DHCPv6-PD prefixes
@@ -1023,10 +1022,11 @@
 	  A SNAC router MUST NOT advertise itself as a default router on its AIL by setting a non-zero Router Lifetime value in the
 	  header of its Router Advertisements.
 	</t><t>
-	  In case a new OSNR prefix is configured for its stub network (i.e. one which was not previously advertised on the AIL),
-	  a SNAC router MUST proactively advertise this new prefix on its AIL as defined in <xref target="RFC4861" section="6.2.4" sectionFormat="of"/>,
-	  fourth paragraph. The exception case is where the SNAC router detects that another router is already advertising a route
-	  to this new OSNR prefix on the AIL: in this case, the SNAC router can optionally skip the proactive advertising.
+	  In case a new OSNR prefix is configured for its stub network (i.e. one which was not previously advertised in an RIO on the AIL),
+	  a SNAC router MUST proactively advertise this new prefix on its AIL as defined in
+      <xref target="RFC4861" section="6.2.4" sectionFormat="of"/>, fourth paragraph, unless it determines that another
+      router is already advertising this prefix in an RIO on the AIL.
+      In the latter case, it MAY proactively advertise the new OSNR prefix in an RIO on the AIL.
 	</t>
       </section>
       <section anchor="stub-reachability">
@@ -1051,7 +1051,7 @@
 	  If the SNAC router is not advertising itself as a default router on the stub network, it MUST advertise reachability to any
 	  prefixes that are being advertised as on-link on its AIL. This is true for prefixes it is advertising,
 	  and for other prefixes being advertised on that link.
-      For stub networks supporting IPv6 Neighbor Discovery, reachability is advertised by Route Information Options (RIOs)
+      For stub networks supporting IPv6 ND, reachability is advertised by Route Information Options (RIOs)
       in Router Advertisement messages (as detailed in <xref target="appendix-ra-stub"/>).
       These RIOs are constructed such that they cover all the on-link prefixes on the AIL.
       For stub networks that support another method, the respective other method is used.
