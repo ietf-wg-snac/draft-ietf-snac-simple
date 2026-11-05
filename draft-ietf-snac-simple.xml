@@ -2002,7 +2002,7 @@
         the SNAC-router-provided ULA prefix as the source address to reach the site-provided ULA destination,
         and communication would then fail.
         Recovering from this requires the AIL host to detect the failure and try an alternative source address
-        (for example, an address based on the infrastructure-provided GUA).
+        (for example, its infrastructure-provided GUA).
         Such source-address selection and connection-racing behavior by a host is out of scope for this document.
 	  </t>
 	</section>
