@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<rfc category="std" submissionType="IETF" docName="draft-ietf-snac-simple-13" ipr="trust200902"
+<rfc category="std" submissionType="IETF" docName="draft-ietf-snac-simple-14" ipr="trust200902"
      xmlns:xi="http://www.w3.org/2001/XInclude" version="3"
      scripts="Common,Latin" sortRefs="false" consensus="true"
      symRefs="true" tocDepth="3" tocInclude="true" xml:lang="en">
@@ -481,8 +481,12 @@
 	Multiple RA messages with different information contents are only sent to indicate that previously sent information changed.</t>
 	<t>
 	 As part of standard IPv6 router behavior on the AIL interface, the SNAC router MUST join the All-Routers link-local multicast address (ff02::2) to receive Router Solicitation messages and other host-to-router and router-to-router communications, and MUST join the All-Nodes link-local multicast address (ff02::1) to receive Router Advertisement messages and other host-to-host communications as described in <xref target="RFC4861"/>.
-	  If Neighbor Discovery, including Router Advertisements, is being used on the stub network, the SNAC router MUST similarly join these two multicast groups on the stub network interface.
-	</t>
+	 If Neighbor Discovery, including Router Advertisements, is being used on the stub network, the SNAC router MUST similarly join these two multicast groups on the stub network interface.</t>
+	<t>
+	 When sending Neighbor Advertisement (NA) messages on the AIL interface (and on the stub network interface,
+	 if Neighbor Discovery is used there), the SNAC router MUST set the Router ('R') flag bit to '1' as specified in
+	 <xref target="RFC4861"/>, even though it sets the Router Lifetime to zero in Router Advertisement messages
+	 sent on the AIL.</t>
     </section>
     <section anchor="common-supported-topologies">
     <name>Supported network topologies</name>
@@ -1482,10 +1486,12 @@
     </t><t>
 	  Each SNAC router adds some traffic to the AIL: unsolicited multicast Router Advertisement messages, on average
 	  one every 3 minutes (with the default values); Router Advertisement messages sent in
-	  response to Router Solicitation messages; unicast Neighbor Solicitation messages used to verify the reachability of the routers
-	  that advertise a suitable prefix (<xref target="nud"/>); and the mDNS traffic of the Discovery Proxy and the
-	  Advertising Proxy (<xref target="services-provided"/>). This load is expected to scale
-	  linearly with the number of SNAC routers attached to the AIL.
+	  response to Router Solicitation messages; unicast Neighbor Solicitation and Neighbor Advertisement messages used
+	  to verify the reachability of the routers that advertise a suitable prefix (<xref target="nud"/>);
+	  unicast Neighbor Solicitation and Neighbor Advertisement messages used by some nodes on the AIL to perform
+	  Neighbor Unreachability Detection (NUD) <xref target="RFC4861"/> toward the SNAC router;
+	  and the mDNS traffic of the Discovery Proxy and the Advertising Proxy (<xref target="services-provided"/>).
+	  This load is expected to scale linearly with the number of SNAC routers attached to the AIL.
 	</t><t>
 	  A SNAC router does not take over any function of the infrastructure network. It never advertises itself as a default
 	  router on the AIL, and it advertises only specific routes to its stub network.
