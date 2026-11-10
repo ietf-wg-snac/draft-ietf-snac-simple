@@ -495,10 +495,18 @@
 	  such a topology will likely have a negative effect on the reachability and discoverability of hosts.
       </t><t>
       If a SNAC router is able to determine that an AIL (other than its own) is already in use for its stub network, for example provided by
-	  one or more other SNAC routers or by other router types, it stops acting as a SNAC router, logs the fault condition and,
+	  one or more other SNAC routers or by other router types, it MUST stop acting as a SNAC router; it logs the fault condition and,
       where possible, notifies the user or administrator.
-	  How a SNAC router might determine this situation is however out of scope for this document.
-      If the SNAC router is able to determine that this multi-AIL situation has been resolved it resumes its
+      Because this specification does not define how the SNAC router discovers this situation,
+      there is no requirement to do so. The 'MUST' condition stated above applies
+      only when the multiple-AILs situation can be detected. The reason that this is desirable
+      is that this specification does not describe how to handle the case where
+      one stub network is connected to two or more AILs. Because of this, it makes sense
+      to behave predictably in this scenario, if possible.
+      While handling of multiple AILs is out of scope for this document, support for this scenario is desirable
+      and may be addressed in a future document.
+	  </t><t>
+      If the SNAC router is able to determine that the multiple-AILs situation has been resolved it MAY resume its
       SNAC router functionality again.
 	  </t><t>
       Similarly, a SNAC router that is simultaneously active on more than one AIL is explicitly out of scope of this
@@ -575,10 +583,11 @@
       A SNAC router MUST forward IPv6 packets between its AIL interface and its stub network
       interface, in both directions, consistent with the reachability it advertises as specified
       in <xref target="managing-reachability-ail"/> and <xref target="stub-reachability"/>.
-      General requirements for IPv6 routers (including ICMPv6 support) are specified by <xref target="RFC8200"/>.
+      General requirements for IPv6 routers (including ICMPv6 support) are specified by <xref target="RFC8200"/>
+      and for IPv6 nodes by <xref target="RFC8504"/>.
     </t><t>
-      Because the stub network may have a significantly lower data transport capacity than the infrastructure network,
-      queues can build up in the SNAC router when it forwards packets from the AIL to the stub network.
+      Because the stub network may have a significantly lower bandwidth than the infrastructure network, queues can
+      build up in the SNAC router when it receives packets from the AIL to be forwarded to the stub network.
       Therefore, a SNAC router SHOULD implement Active Queue Management (AQM) for its forwarding queues
       as specified by <xref target="BCP197"/>.
       Although this BCP is highlighted due to its importance, other IETF BCPs for IPv6 nodes and routers also
@@ -774,7 +783,7 @@
           most recent (unicast or multicast) RA received from a non-SNAC-router.
           For the selection of the most recent RA, the SNAC router MUST exclude an RA received from a router longer
           ago than the Router Lifetime period indicated in the RA header. This only
-          applies for a non-zero Router Lifetime value.</t>
+          applies for RAs with a non-zero Router Lifetime value.</t>
         <t>
 	      If no RA from a non-SNAC-router remains in the set of received RAs after applying these exclusions,
           both 'M' and 'O' flag bits MUST be cleared.</t>
@@ -1040,10 +1049,11 @@
 	  header of its Router Advertisements.
 	</t><t>
 	  In case a new OSNR prefix is configured for its stub network (i.e. one which was not previously advertised in an RIO on the AIL),
-	  a SNAC router MUST proactively advertise this new prefix on its AIL as defined in
-      <xref target="RFC4861" section="6.2.4" sectionFormat="of"/>, fourth paragraph, unless it is able to determine that another
-      router is already advertising this prefix in an RIO on the AIL.
-      In the latter case, it MAY proactively advertise the new OSNR prefix in an RIO on the AIL.
+	  a SNAC router MUST advertise this new prefix on its AIL as defined in
+      <xref target="RFC4861" section="6.2.4" sectionFormat="of"/>, final paragraph, unless it is able to determine that another
+      router has already advertised this prefix in an RIO of an RA sent via multicast on the AIL.
+      In the latter case, it MAY defer its own unsolicited advertisement of the new OSNR prefix
+      until it sends its next scheduled unsolicited multicast RA as per <xref target="state-advertising-suitable"/>.
 	</t>
       </section>
       <section anchor="stub-reachability">
@@ -1845,6 +1855,7 @@
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.8106.xml" />
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.8174.xml" />
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.8200.xml" />
+      <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.8504.xml" />
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.8766.xml" />
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.8781.xml" />
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.9499.xml" />
