@@ -559,7 +559,8 @@
       it is rebooted or otherwise offline for a period of time.
       In this case, if other SNAC routers are present, they can continue to advertise routes to that prefix on the AIL.
 	  Ideally, the original OSNR prefix would be preserved by the other SNAC router(s) until the SNAC router that originally
-      advertised it returns. However, any coordination method to do so is out of scope of this specification.
+      advertised it returns. However, any coordination method to do so is out of scope of this specification as it is
+      currently an unsolved problem. A future document may specify a coordination method.
       In the absence of such a coordination method, if a host on the stub network multicasts a Router Solicitation message
       to the stub network link and the SNAC router (that was previously advertising the OSNR prefix) is still not present,
       or if the OSNR prefix is in danger of expiring, another SNAC router will eventually take over and
@@ -568,6 +569,22 @@
         </t>
     </section>
       </section>
+  <section anchor="forwarding">
+    <name>Forwarding between the adjacent infrastructure link and the stub network</name>
+    <t>
+      A SNAC router MUST forward IPv6 packets between its AIL interface and its stub network
+      interface, in both directions, consistent with the reachability it advertises as specified
+      in <xref target="managing-reachability-ail"/> and <xref target="stub-reachability"/>.
+      General requirements for IPv6 routers (including ICMPv6 support) are specified by <xref target="RFC8200"/>.
+    </t><t>
+      Because the stub network may have a significantly lower data transport capacity than the infrastructure network,
+      queues can build up in the SNAC router when it forwards packets from the AIL to the stub network.
+      Therefore, a SNAC router SHOULD implement Active Queue Management (AQM) for its forwarding queues
+      as specified by <xref target="BCP197"/>.
+      Although this BCP is highlighted due to its importance, other IETF BCPs for IPv6 nodes and routers also
+      apply to a SNAC router.
+    </t>
+  </section>
     </section>
 
     <section anchor="support-ail">
@@ -1024,7 +1041,7 @@
 	</t><t>
 	  In case a new OSNR prefix is configured for its stub network (i.e. one which was not previously advertised in an RIO on the AIL),
 	  a SNAC router MUST proactively advertise this new prefix on its AIL as defined in
-      <xref target="RFC4861" section="6.2.4" sectionFormat="of"/>, fourth paragraph, unless it determines that another
+      <xref target="RFC4861" section="6.2.4" sectionFormat="of"/>, fourth paragraph, unless it is able to determine that another
       router is already advertising this prefix in an RIO on the AIL.
       In the latter case, it MAY proactively advertise the new OSNR prefix in an RIO on the AIL.
 	</t>
@@ -1419,6 +1436,8 @@
 	<dt>NAT64:</dt><dd>A SNAC router needs to provide NAT64 service in particular circumstances so that (IPv6-only) hosts on the stub network
 	  can communicate with IPv4-only hosts on the infrastructure network and the global Internet.
 	  See <xref target="nat64-by-snac"/> for detailed requirements.</dd>
+    <dt>IPv6 Forwarding:</dt><dd>A SNAC router provides bidirectional IPv6 forwarding between the stub network and
+      the AIL as defined in <xref target="forwarding"/>.</dd>
       </dl>
     </section>
 
@@ -1811,6 +1830,7 @@
   <back>
     <references>
       <name>Normative References</name>
+      <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml9/reference.BCP.0197.xml" />
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.1034.xml" />
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.2119.xml" />
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.4191.xml" />
@@ -1855,6 +1875,7 @@
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.8978.xml" />
 	  <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.9119.xml" />
 	  <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.9364.xml" />
+      <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml3/reference.I-D.ietf-6man-rfc6724-update.xml" />
       <reference anchor="IANA-SERVICE-ARPA" target="https://www.iana.org/assignments/locally-served-dns-zones/locally-served-dns-zones.xhtml#service-arpa-subdomain">
         <front>
           <title>service.arpa Subdomain Registry (Locally-Served DNS Zones Registry Group)</title>
@@ -1997,13 +2018,12 @@
 	  </t>
 	  <t>
 	    The one scenario where a communication problem can actually be expected is when there is a GUA prefix advertised
-        by infrastructure but no ULA prefix, but there is a ULA destination to reach.
-        In this case, the source address selection rules of <xref target="RFC6724"/> would let the host choose
-        the SNAC-router-provided ULA prefix as the source address to reach the site-provided ULA destination,
-        and communication would then fail.
-        Recovering from this requires the AIL host to detect the failure and try an alternative source address
-        (for example, its infrastructure-provided GUA).
-        Such source-address selection and connection-racing behavior by a host is out of scope for this document.
+        on the AIL by infrastructure but no ULA prefix, but there is a ULA destination to reach.
+        In this case, based on the source address selection rules of <xref target="RFC6724" sectionFormat="of" section="5"/>,
+        a host that does not implement Rule 5.5 would select
+        its source address as the address autoconfigured from the SNAC-router-provided ULA on-link prefix.
+        Using this source address, communication to the site-provided ULA destination would then fail.
+        <xref target="I-D.ietf-6man-rfc6724-update"/> resolves this issue by making Rule 5.5 mandatory for all hosts.
 	  </t>
 	</section>
       <section>
