@@ -769,7 +769,7 @@
 	      Link-layer technologies that require the 'L' flag bit to be cleared are out of scope of this document.
         </t>
         <t>
-          The 'SNAC Router' flag bit (<xref target="I-D.ietf-6man-snac-router-ra-flag"/>) MUST be set in the RA flags field.
+          The 'SNAC Router' flag bit <xref target="RFC10075"/> MUST be set in the RA flags field.
 	      The values of the 'M' and 'O' flag bits MUST be copied from the respective 'M' and 'O' flag bit values seen in the
           most recent (unicast or multicast) RA received from a non-SNAC-router.
           For the selection of the most recent RA, the SNAC router MUST exclude an RA received from a router longer
@@ -1852,8 +1852,8 @@
 	  <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.9665.xml" />
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.9762.xml" />
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.9915.xml" />
+      <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.10075.xml" />
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml3/reference.I-D.ietf-dnssd-advertising-proxy.xml" />
-      <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml3/reference.I-D.ietf-6man-snac-router-ra-flag.xml" />
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml3/reference.I-D.ietf-v6ops-rfc7084bis.xml" />
 
     </references>
@@ -2055,7 +2055,7 @@
 	    in a SNAC router's Router Advertisements sent on the AIL.</li>
           <li> For the 'M' and 'O' flag bits, <xref target="state-begin-advertising"/> specifies how the values are set.
 			   In case that no other router (excluding SNAC routers) on the AIL has set these flags, they are both set to zero.</li>
-	      <li> The 'SNAC Router' flag bit <xref target="I-D.ietf-6man-snac-router-ra-flag"/>: 1</li>
+	      <li> The 'SNAC Router' flag bit <xref target="RFC10075"/>: 1</li>
           <li> In the Cur Hop Limit field: 0 ("unspecified by this router")</li>
           <li> In the Reachable Time field: 0 ("unspecified by this router")</li>
           <li> In the Retrans Timer field: 0 ("unspecified by this router")</li>
@@ -2121,7 +2121,7 @@
 	    a maximum of <xref format="none" target="STUB_NETWORK_ROUTE_LIFETIME">STUB_NETWORK_ROUTE_LIFETIME</xref>.
 	    If it is not a default router, the value is zero.</li>
           <li> SNAC routers do not provide DHCPv6 service on the stub network by default. Therefore, the 'M' and 'O' flag bits must be zero.</li>
-	      <li> The 'SNAC Router' flag bit <xref target="I-D.ietf-6man-snac-router-ra-flag"/>: 0.
+	      <li> The 'SNAC Router' flag bit <xref target="RFC10075"/>: 0.
 		       Note that this flag is only set by the SNAC router in RA messages sent on its AIL interface.</li>
           <li> In the Cur Hop Limit field: 0 ("unspecified by this router")</li>
           <li> In the Reachable Time field: 0 ("unspecified by this router")</li>
