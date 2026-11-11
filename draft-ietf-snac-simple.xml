@@ -424,7 +424,7 @@
 	  router will transmit these multicast RA messages.
 	  This should be frequent enough that a missed Router Solicitation (RS) message (e.g. due to congestion on a Wi-Fi link)
 	  will not result in an extremely long outage (assuming the congestion passes before the RA is sent, of course).
-	  The Min/Max default values lead to an unsolicited RA multicast every 3 minutes ( (154+206)/2 = 180 ), on average.</dd>
+	  The Min/Max default values lead to an unsolicited multicast RA every 3 minutes ( (154+206)/2 = 180 ), on average.</dd>
 	<dt anchor="MaxRtrAdvInterval">MaxRtrAdvInterval (default: 206 seconds):</dt>
 	<dd>
 	  The maximum interval for periodic unsolicited RA message sending (as defined in <xref target="RFC4861" section="6.2.1" sectionFormat="of"/>) for a SNAC router.</dd>
@@ -494,20 +494,13 @@
       A network topology of a single stub network connected via multiple SNAC routers to more than one AIL is explicitly out of scope of this document;
 	  such a topology will likely have a negative effect on the reachability and discoverability of hosts.
       </t><t>
-      If a SNAC router is able to determine that an AIL (other than its own) is already in use for its stub network, for example provided by
-	  one or more other SNAC routers or by other router types, it MUST stop acting as a SNAC router; it logs the fault condition and,
-      where possible, notifies the user or administrator.
-      Because this specification does not define how the SNAC router discovers this situation,
-      there is no requirement to do so. The 'MUST' condition stated above applies
-      only when the multiple-AILs situation can be detected. The reason that this is desirable
-      is that this specification does not describe how to handle the case where
-      one stub network is connected to two or more AILs. Because of this, it makes sense
-      to behave predictably in this scenario, if possible.
-      While handling of multiple AILs is out of scope for this document, support for this scenario is desirable
-      and may be addressed in a future document.
-	  </t><t>
-      If the SNAC router is able to determine that the multiple-AILs situation has been resolved it MAY resume its
-      SNAC router functionality again.
+      If a SNAC router is able to determine that an AIL (other than its own) is already in use for its stub network,
+      for example provided by one or more other SNAC routers or by other routers, it SHOULD log the fault condition and,
+      where possible, notify the user or the administrator.
+      Because this specification does not define how a SNAC router makes this determination,
+      there is no requirement to do so.
+      Additional methods to handle, prevent or resolve a situation of multiple AILs may be defined by a future specification.
+      <xref target="oper-degraded-ail"/> provides informative examples of possible solution directions.
 	  </t><t>
       Similarly, a SNAC router that is simultaneously active on more than one AIL is explicitly out of scope of this
       document. This means that a SNAC router also never provides routing between AILs when connected to more than one such link.</t>
@@ -1053,7 +1046,8 @@
       <xref target="RFC4861" section="6.2.4" sectionFormat="of"/>, final paragraph, unless it is able to determine that another
       router has already advertised this prefix in an RIO of an RA sent via multicast on the AIL.
       In the latter case, it MAY defer its own unsolicited advertisement of the new OSNR prefix
-      until it sends its next scheduled unsolicited multicast RA as per <xref target="state-advertising-suitable"/>.
+      until it sends its next scheduled unsolicited multicast RA as defined (for each of the states) in
+      <xref target="suitable-prefix-state-machine"/>.
 	</t>
       </section>
       <section anchor="stub-reachability">
@@ -1541,8 +1535,8 @@
     </t><t>
       Each SNAC router then can only perform a subset of its functions: provide addressability on the stub
       network and discoverability for stub network hosts.
-      Because no SNAC router is aware of the state of the AIL for its peer SNAC routers,
-      the handling of this failure situation is necessarily identical to that in <xref target="oper-degraded-ail"/>.
+      Because generally a SNAC router is not aware of the state of the AIL for its peer SNAC routers,
+      the handling of this failure situation is identical to that in <xref target="oper-degraded-ail"/>.
     </t>
     </section>
 
@@ -1554,20 +1548,32 @@
       That happens, for example, when an Ethernet cable is unplugged, or a Wi-Fi link fails, or an Ethernet switch is
       powered off.
     </t><t>
-	  If its AIL interface is down or the AIL is otherwise unusable, the SNAC router cannot perform all of its usual functions.
+	  If its AIL interface is down or the AIL is otherwise unusable, a SNAC router cannot perform all of its usual functions.
       A SNAC router handles the case of an unusable AIL interface as if it were connected to a separate "degenerate" AIL.
       The case of being connected to a separate (other) AIL is described in <xref target="common-supported-topologies"/>
       and the handling of an unusable AIL interface is the same.
     </t><t>
-      That implies implementation-dependent handling:
-      a SNAC router that is able to detect that at least one other SNAC router is connected to the same stub network, and
-      is still connected to an AIL, can take appropriate action such as disabling all its SNAC router functions.
-      As mentioned in <xref target="common-supported-topologies"/>, the means of detecting this is out of scope of this
-      document.
+      That implies implementation-dependent handling: if the SNAC router is able to determine that at least one
+      non-degenerate AIL is provided by another (SNAC) router, it logs the fault condition and, where possible,
+      notifies the user or the administrator.
+      As mentioned in <xref target="common-supported-topologies"/>, how to detect another AIL in this way
+      is out of scope of this document.
+      If the SNAC router is not able to perform detection of other AILs, or it did attempt a detection but no other AILs
+      were found, then it just logs the AIL interface state change as
+      diagnostic information (see <xref target="oper-diagnostics"/>).
     </t><t>
-      After the suggested action of disabling SNAC router functions is taken, the stub network continues to function — with one fewer SNAC router.
-      Routing, addressability, service registration and service discovery will automatically be taken over by other
-      SNAC routers (that do have AIL connectivity) as needed.
+      Note that a SNAC router might implement a method for automatic disabling of its SNAC router
+      functions in particular situations, to prevent the above fault condition from occurring in the first place.
+      For example, a SNAC router with an unusable AIL interface may detect that at least one other SNAC router is
+      still actively connected to an AIL, in which case it can disable its own SNAC router functions because there
+      is a "better" SNAC router available that can also perform these functions.
+      Such automatic disabling could be done, for example, only if the AIL interface remains unusable for a minimum
+      time period, to prevent a temporary AIL link loss from causing overhead like IPv6 renumbering or extra SRP
+      Updates in the stub network.
+      Forwarding, addressability, service registration and service discovery will automatically be taken over by
+      one of the remaining SNAC routers after the SNAC router has disabled its functions.
+      The SNAC router may also automatically re-enable its SNAC router functions when its AIL becomes usable again,
+      or when it detects that there is no other SNAC router remaining on the stub network anymore.
 	</t><t>
 	  If the only SNAC router on the stub network loses its AIL connectivity, or the last SNAC router
       (out of multiple on the stub network) loses its AIL connectivity, any DHCPv6-PD delegated prefix that this SNAC
@@ -1613,9 +1619,9 @@
       a web interface, or a log that can be exported from the device.
     </t>
 	<t>
-	  Renumbering events, prefix deprecations/invalidations, a change of router that provides the on-link prefix on the AIL, and the loss or
-	  return of a default route on the AIL are the events that could best explain a user-visible failure, so recording such events with a
-	  timestamp is especially useful.
+	  Renumbering events, prefix deprecations/invalidations, a change of router that provides the on-link prefix on the AIL,
+      the loss or return of AIL connectivity, and the loss or return of a default route on the AIL are the events that
+      could best explain a user-visible failure, so recording such events with a timestamp is especially useful.
       The SNAC router's clock should be synchronized via NTP when available; otherwise, (relative) system uptime can be used
       for timestamps.
 	</t>
